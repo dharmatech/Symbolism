@@ -1369,6 +1369,13 @@ namespace Symbolism
 
                 AssertIsTrue(3.4 * x * 1.2 * y == 4.08 * x * y);
 
+                // Power.Simplify
+
+                AssertIsTrue((0 ^ x) == Int(0));
+                AssertIsTrue((1 ^ x) == Int(1));
+                AssertIsTrue((x ^ 0) == Int(1));
+                AssertIsTrue((x ^ 1) == x);
+
                 // Product.Simplify
 
                 AssertIsTrue(x * 0 == new Integer(0));
@@ -1379,50 +1386,7 @@ namespace Symbolism
 
                 AssertIsTrue(x - y == x + -1 * y);
 
-                // Console.WriteLine((x == Int(4)).ToString());
-
-                // Console.WriteLine((Equation)(x == Int(4)));
-
-                // Console.WriteLine(new Equation() { a = x, b = y });
-
-                // Console.WriteLine((Boolean)new Equation() { a = x, b = y });
-
-                // var val = (Boolean)new Equation() { a = x, b = y };
-
-                //if (new Equation() { a = x, b = x })
-                //    Console.WriteLine("Equation to bool");
-
-                //Console.WriteLine((Int(2) == Int(3)).ToString());
-
-                //Console.WriteLine(Int(1) != Int(2));
-
-                //Console.WriteLine((x == y * 5).ToString());
-
-                //Console.WriteLine((x == y).ToString());
-
-                //Console.WriteLine("expr");
-                //Console.WriteLine(x == x);
-                //Console.WriteLine(x == y);
-
-                //{
-                //    var a = new Double(1.0);
-                //    var b = new Double(1.0);
-                //    var c = a;
-
-                //    Console.WriteLine(a.Equals(a));
-                //    Console.WriteLine(a.Equals(b));
-                //    Console.WriteLine(a.Equals(c));
-
-                //    Decimal d = 1.10M;
-                //    Decimal e = 1.100M;
-
-                //    Console.WriteLine(d);
-                //    Console.WriteLine(e);
-
-                //    Console.WriteLine(d == e);
-
-                //}
-
+                
                 AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == Int(20));
                 AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == Int(10));
 
@@ -1446,83 +1410,27 @@ namespace Symbolism
                 AssertIsTrue((x + y + z).Substitute(x, y) == ((y * 2) + z));
                 AssertIsTrue((x + y + z).Substitute(x + y + z, x) == x);
 
-                AssertIsTrue((0 ^ x) == Int(0));
-                AssertIsTrue((1 ^ x) == Int(1));
-                AssertIsTrue((x ^ 0) == Int(1));
-                AssertIsTrue((x ^ 1) == x);
-
-                //Console.WriteLine((10 * x * (z + 2) == y).ToString());
-
-                //Console.WriteLine((x + y * 2 * (z + 4) + (x ^ 2) == z).ToString());
-
-                //Console.WriteLine((x + y * 2 * (z + 4) + (x ^ 2) + (x * 3 ^ (2 + z)) == z).ToString());
-
-                Console.WriteLine();
-
-                Console.WriteLine(((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2).ToString());
-
-                Console.WriteLine(
+                AssertIsTrue(
                     ((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2)
                         .Substitute(x, Int(10))
                         .Substitute(y, Int(20))
                         .Substitute(z, Int(3))
+                        == Int(16200)
                         );
-
-
-                //{
-                //    var tbl = new Dictionary<Object, int>();
-
-                //    tbl.Add(new Integer(1), 100);
-
-                //    tbl.Add(1, 200);
-
-                //    Console.WriteLine(tbl[new Integer(1)]);
-                //    Console.WriteLine(tbl[1]);
-                //}
 
                 Func<MathObject, MathObject> sin = arg => new Sin(arg).Simplify();
 
-                Console.WriteLine(sin(x));
+                AssertIsTrue(sin(new Double(3.14159 / 2)) == new Double(0.99999999999911982));
 
-                Console.WriteLine(sin(new Double(3.14159 / 2)));
+                AssertIsTrue(sin(x + y) + sin(x + y) == 2 * sin(x + y));
 
-                Console.WriteLine(sin(x + y) + sin(x + y));
+                AssertIsTrue(sin(x + x) == sin(2 * x));
 
-                Console.WriteLine(sin(x + x));
+                AssertIsTrue(sin(x + x).Substitute(x, Int(1)) == sin(Int(2)));
 
-                Console.WriteLine(sin(x + x).Substitute(x, Int(1)));
+                AssertIsTrue(sin(x + x).Substitute(x, new Double(1.0)) == new Double(0.90929742682568171));
 
-                Console.WriteLine(sin(x + x).Substitute(x, new Double(1.0)));
-
-                {
-                    var a = sin(2 * x);
-
-                    var b = a.Substitute(x, y);
-
-                    Console.WriteLine(a);
-                    Console.WriteLine(b);
-                }
-
-                {
-                    var a = new List<MathObject>() { x, y, z };
-                    var b = new List<MathObject>() { x, y, z };
-
-                    Console.WriteLine(a == b);
-
-                    Console.WriteLine(a.SequenceEqual(b));
-
-                }
-
-                {
-                    var a = x * y;
-                    var b = x + y;
-
-                    Console.WriteLine(a == b);
-
-                    // Console.WriteLine(((Product)a).Equals(b));
-
-                    // Console.WriteLine(new Integer(10) == 10);
-                }
+                AssertIsTrue(sin(2 * x).Substitute(x, y) == sin(2 * y));
             }
 
             Console.ReadLine();
