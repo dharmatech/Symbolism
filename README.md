@@ -4,6 +4,8 @@ To get an idea of the kinds of expressions it handles, see the [tests towards th
 
 The automatic simplification algorithm comes from the book "Computer Algebra and Symbolic Computation: Mathematical Methods" by Joel S. Cohen.
 
+[GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
+
 References:
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
