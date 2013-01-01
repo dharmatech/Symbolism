@@ -1048,13 +1048,7 @@ namespace Symbolism
         {
             if (elts.Count == 1) return elts[0];
 
-            Func<MathObject, bool> IsZero = obj =>
-            {
-                if (obj is Integer) return ((Integer)obj).val == 0;
-                return false;
-            };
-
-            if (elts.Any(IsZero)) return new Integer(0);
+            if (elts.Any(elt => elt == new Integer(0))) return new Integer(0);
 
             var res = RecursiveSimplify(elts);
 
@@ -1374,6 +1368,10 @@ namespace Symbolism
                 AssertIsTrue(3 * x * 1.2 * y == 3.5999999999999996 * x * y);
 
                 AssertIsTrue(3.4 * x * 1.2 * y == 4.08 * x * y);
+
+                // Product.Simplify
+
+                AssertIsTrue(x * 0 == new Integer(0));
 
                 // Difference
 
