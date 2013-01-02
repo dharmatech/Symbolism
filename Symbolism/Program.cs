@@ -998,10 +998,10 @@ namespace Symbolism
                     return new List<MathObject>() { P };
                 }
 
-                if (elts[0] is Integer && ((Integer)elts[0]).val == 1)
+                if (elts[0] == new Integer(1))
                     return new List<MathObject>() { elts[1] };
 
-                if (elts[1] is Integer && ((Integer)elts[1]).val == 1)
+                if (elts[1] == new Integer(1))
                     return new List<MathObject>() { elts[0] };
 
                 var p = elts[0];
@@ -1009,15 +1009,7 @@ namespace Symbolism
 
                 if (OrderRelation.Base(p) == OrderRelation.Base(q))
                 {
-                    // var res = Base(p) ^ (Exponent(p) + Exponent(q));
-
-                    var res =
-                        new Power(
-                            OrderRelation.Base(p),
-                            new Sum(
-                                OrderRelation.Exponent(p),
-                                OrderRelation.Exponent(q)).Simplify()
-                            ).Simplify();
+                    var res = OrderRelation.Base(p) ^ (OrderRelation.Exponent(p) + OrderRelation.Exponent(q));
 
                     if (res is Integer && ((Integer)res).val == 1)
                         return new List<MathObject>() { };
@@ -1266,9 +1258,6 @@ namespace Symbolism
             return str.ToString();
         }
 
-        //public static MathObject operator +(Sum a, MathObject b)
-        //{ return new Sum(a, b).Simplify(); }
-
         public MathObject Substitute(MathObject a, MathObject b)
         {
             return
@@ -1431,6 +1420,12 @@ namespace Symbolism
                 AssertIsTrue(sin(x + x).Substitute(x, new Double(1.0)) == new Double(0.90929742682568171));
 
                 AssertIsTrue(sin(2 * x).Substitute(x, y) == sin(2 * y));
+
+                // Product.RecursiveSimplify
+
+                AssertIsTrue(1 * x == x);
+
+                AssertIsTrue(x * 1 == x);
             }
 
             Console.ReadLine();
