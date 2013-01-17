@@ -47,35 +47,35 @@ namespace Symbolism
         #region overloads for 'double'
 
         public static MathObject operator +(MathObject a, double b)
-        { return a + new Double(b); }
+        { return a + new DoubleFloat(b); }
 
         public static MathObject operator -(MathObject a, double b)
-        { return a - new Double(b); }
+        { return a - new DoubleFloat(b); }
 
         public static MathObject operator *(MathObject a, double b)
-        { return a * new Double(b); }
+        { return a * new DoubleFloat(b); }
 
         public static MathObject operator /(MathObject a, double b)
-        { return a / new Double(b); }
+        { return a / new DoubleFloat(b); }
 
         public static MathObject operator ^(MathObject a, double b)
-        { return a ^ new Double(b); }
+        { return a ^ new DoubleFloat(b); }
 
 
         public static MathObject operator +(double a, MathObject b)
-        { return new Double(a) + b; }
+        { return new DoubleFloat(a) + b; }
 
         public static MathObject operator -(double a, MathObject b)
-        { return new Double(a) - b; }
+        { return new DoubleFloat(a) - b; }
 
         public static MathObject operator *(double a, MathObject b)
-        { return new Double(a) * b; }
+        { return new DoubleFloat(a) * b; }
 
         public static MathObject operator /(double a, MathObject b)
-        { return new Double(a) / b; }
+        { return new DoubleFloat(a) / b; }
 
         public static MathObject operator ^(double a, MathObject b)
-        { return new Double(a) ^ b; }
+        { return new DoubleFloat(a) ^ b; }
 
         #endregion
         //////////////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ namespace Symbolism
         public Boolean ToBoolean()
         {
             if (a is Integer && b is Integer) return ((Integer)a).Equals(b);
-            if (a is Double && b is Double) return ((Double)a).Equals(b);
+            if (a is DoubleFloat && b is DoubleFloat) return ((DoubleFloat)a).Equals(b);
             if (a is Symbol && b is Symbol) return ((Symbol)a).Equals(b);
             if (a is Sum && b is Sum) return ((Sum)a).Equals(b);
             if (a is Product && b is Product) return ((Product)a).Equals(b);
@@ -196,11 +196,11 @@ namespace Symbolism
         { return val.GetHashCode(); }
     }
 
-    public class Double : Number
+    public class DoubleFloat : Number
     {
         public double val;
 
-        public Double(double n) { val = n; }
+        public DoubleFloat(double n) { val = n; }
 
         public string ObjectPrint()
         { return "Double(" + val.ToString("R") + ")"; }
@@ -210,7 +210,7 @@ namespace Symbolism
 
         public override bool Equals(object obj)
         {
-            if (obj is Double) return val == ((Double)obj).val;
+            if (obj is DoubleFloat) return val == ((DoubleFloat)obj).val;
             return false;
         }
 
@@ -229,7 +229,7 @@ namespace Symbolism
         public override string ToString()
         { return "Fraction(" + numerator + ", " + denominator + ")"; }
 
-        public Double ToDouble() { return new Double((double)numerator.val / (double)denominator.val); }
+        public DoubleFloat ToDouble() { return new DoubleFloat((double)numerator.val / (double)denominator.val); }
         //////////////////////////////////////////////////////////////////////
 
         public override bool Equals(object obj)
@@ -552,8 +552,8 @@ namespace Symbolism
     {
         MathObject SinProc(params MathObject[] ls)
         {
-            if (ls[0] is Double)
-                return new Double(Math.Sin(((Double)ls[0]).val));
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Sin(((DoubleFloat)ls[0]).val));
 
             return new Sin(ls[0]);
         }
@@ -631,7 +631,7 @@ namespace Symbolism
 
                 if (res.elts[0] is Fraction) return res.elts[0];
 
-                if (res.elts[0] is Double) return res.elts[0];
+                if (res.elts[0] is DoubleFloat) return res.elts[0];
 
                 return new Integer(1);
             }
@@ -654,17 +654,17 @@ namespace Symbolism
 
         public static bool Compare(MathObject u, MathObject v)
         {
-            if (u is Double && v is Double) return ((Double)u).val < ((Double)v).val;
+            if (u is DoubleFloat && v is DoubleFloat) return ((DoubleFloat)u).val < ((DoubleFloat)v).val;
 
-            if (u is Double && v is Integer) return ((Double)u).val < ((Integer)v).val;
+            if (u is DoubleFloat && v is Integer) return ((DoubleFloat)u).val < ((Integer)v).val;
 
-            if (u is Double && v is Fraction) return
-                ((Double)u).val < ((double)((Fraction)v).numerator.val) / ((double)((Fraction)v).denominator.val);
+            if (u is DoubleFloat && v is Fraction) return
+                ((DoubleFloat)u).val < ((double)((Fraction)v).numerator.val) / ((double)((Fraction)v).denominator.val);
 
-            if (u is Integer && v is Double) return ((Integer)u).val < ((Double)v).val;
+            if (u is Integer && v is DoubleFloat) return ((Integer)u).val < ((DoubleFloat)v).val;
 
-            if (u is Fraction && v is Double) return
-                ((double)((Fraction)u).numerator.val) / ((double)((Fraction)u).denominator.val) < ((Double)v).val;
+            if (u is Fraction && v is DoubleFloat) return
+                ((double)((Fraction)u).numerator.val) / ((double)((Fraction)u).denominator.val) < ((DoubleFloat)v).val;
 
             if (u is Integer)
                 return Compare(new Fraction((Integer)u, new Integer(1)), v);
@@ -739,9 +739,9 @@ namespace Symbolism
                     String.Compare(u_.name, v_.name) < 0;
             }
 
-            if ((u is Integer || u is Fraction || u is Double)
+            if ((u is Integer || u is Fraction || u is DoubleFloat)
                 &&
-                !(v is Integer || v is Fraction || v is Double))
+                !(v is Integer || v is Fraction || v is DoubleFloat))
                 return true;
 
             if (u is Product &&
@@ -832,17 +832,17 @@ namespace Symbolism
             if ((v is Integer || v is Fraction) && n is Integer)
                 return Rational.SimplifyRNE(new Power(v, n));
 
-            if (v is Double && w is Integer)
-                return new Double(Math.Pow(((Double)v).val, ((Integer)w).val));
+            if (v is DoubleFloat && w is Integer)
+                return new DoubleFloat(Math.Pow(((DoubleFloat)v).val, ((Integer)w).val));
 
-            if (v is Double && w is Fraction)
-                return new Double(Math.Pow(((Double)v).val, ((Fraction)w).ToDouble().val));
+            if (v is DoubleFloat && w is Fraction)
+                return new DoubleFloat(Math.Pow(((DoubleFloat)v).val, ((Fraction)w).ToDouble().val));
 
-            if (v is Integer && w is Double)
-                return new Double(Math.Pow(((Integer)v).val, ((Double)w).val));
+            if (v is Integer && w is DoubleFloat)
+                return new DoubleFloat(Math.Pow(((Integer)v).val, ((DoubleFloat)w).val));
 
-            if (v is Fraction && w is Double)
-                return new Double(Math.Pow(((Fraction)v).ToDouble().val, ((Double)w).val));
+            if (v is Fraction && w is DoubleFloat)
+                return new DoubleFloat(Math.Pow(((Fraction)v).ToDouble().val, ((DoubleFloat)w).val));
 
             if (v is Power && w is Integer)
             { return ((Power)v).bas ^ (((Power)v).exp * w); }
@@ -941,11 +941,11 @@ namespace Symbolism
             throw new Exception();
         }
 
-        static List<MathObject> SimplifyDoubleNumberProduct(Double a, Number b)
+        static List<MathObject> SimplifyDoubleNumberProduct(DoubleFloat a, Number b)
         {
             double val = 0.0;
 
-            if (b is Double) val = a.val * ((Double)b).val;
+            if (b is DoubleFloat) val = a.val * ((DoubleFloat)b).val;
 
             if (b is Integer) val = a.val * ((Integer)b).val;
 
@@ -953,7 +953,7 @@ namespace Symbolism
 
             if (val == 1.0) return new List<MathObject>() { };
 
-            return new List<MathObject>() { new Double(val) };
+            return new List<MathObject>() { new DoubleFloat(val) };
         }
 
         public static List<MathObject> RecursiveSimplify(List<MathObject> elts)
@@ -977,11 +977,11 @@ namespace Symbolism
 
                 //////////////////////////////////////////////////////////////////////
 
-                if (elts[0] is Double && elts[1] is Number)
-                    return SimplifyDoubleNumberProduct((Double)elts[0], (Number)elts[1]);
+                if (elts[0] is DoubleFloat && elts[1] is Number)
+                    return SimplifyDoubleNumberProduct((DoubleFloat)elts[0], (Number)elts[1]);
 
-                if (elts[0] is Number && elts[1] is Double)
-                    return SimplifyDoubleNumberProduct((Double)elts[1], (Number)elts[0]);
+                if (elts[0] is Number && elts[1] is DoubleFloat)
+                    return SimplifyDoubleNumberProduct((DoubleFloat)elts[1], (Number)elts[0]);
 
                 //////////////////////////////////////////////////////////////////////
 
@@ -1101,11 +1101,11 @@ namespace Symbolism
             throw new Exception();
         }
 
-        static List<MathObject> SimplifyDoubleNumberSum(Double a, Number b)
+        static List<MathObject> SimplifyDoubleNumberSum(DoubleFloat a, Number b)
         {
             double val = 0.0;
 
-            if (b is Double) val = a.val + ((Double)b).val;
+            if (b is DoubleFloat) val = a.val + ((DoubleFloat)b).val;
 
             if (b is Integer) val = a.val + ((Integer)b).val;
 
@@ -1113,7 +1113,7 @@ namespace Symbolism
 
             if (val == 0.0) return new List<MathObject>() { };
 
-            return new List<MathObject>() { new Double(val) };
+            return new List<MathObject>() { new DoubleFloat(val) };
         }
 
         static List<MathObject> RecursiveSimplify(List<MathObject> elts)
@@ -1137,11 +1137,11 @@ namespace Symbolism
 
                 //////////////////////////////////////////////////////////////////////
 
-                if (elts[0] is Double && elts[1] is Number)
-                    return SimplifyDoubleNumberSum((Double)elts[0], (Number)elts[1]);
+                if (elts[0] is DoubleFloat && elts[1] is Number)
+                    return SimplifyDoubleNumberSum((DoubleFloat)elts[0], (Number)elts[1]);
 
-                if (elts[0] is Number && elts[1] is Double)
-                    return SimplifyDoubleNumberSum((Double)elts[1], (Number)elts[0]);
+                if (elts[0] is Number && elts[1] is DoubleFloat)
+                    return SimplifyDoubleNumberSum((DoubleFloat)elts[1], (Number)elts[0]);
 
                 //////////////////////////////////////////////////////////////////////
 
@@ -1292,143 +1292,5 @@ namespace Symbolism
 
         public MathObject Simplify()
         { return elts[0] * (elts[1] ^ -1); }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            {
-                var x = new Symbol("x");
-                var y = new Symbol("y");
-                var z = new Symbol("z");
-
-                Func<int, Integer> Int = (n) => new Integer(n);
-
-                Action<Equation> AssertIsTrue = (eq) =>
-                {
-                    if (!eq) Console.WriteLine(eq.ToString());
-                };
-
-                AssertIsTrue(x + x == 2 * x);
-
-                AssertIsTrue(x + x == 2 * x);
-
-                AssertIsTrue(x + x + x == 3 * x);
-
-                AssertIsTrue(5 + x + 2 == 7 + x);
-
-                AssertIsTrue(3 + x + 5 + x == 8 + 2 * x);
-
-                AssertIsTrue(4 * x + 3 * x == 7 * x);
-
-                AssertIsTrue(x + y + z + x + y + z == 2 * x + 2 * y + 2 * z);
-
-                AssertIsTrue(10 - x == 10 + x * -1);
-
-                AssertIsTrue(x * y / 3 == Int(1) / 3 * x * y);
-
-                AssertIsTrue(x / y == x * (y ^ -1));
-
-                AssertIsTrue(x / 3 == x * (Int(1) / 3));
-
-                AssertIsTrue(6 * x * y / 3 == 2 * x * y);
-
-                AssertIsTrue((((x ^ Int(1) / 2) ^ Int(1) / 2) ^ 8) == (x ^ 2));
-
-                AssertIsTrue(((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2) == (x * y * (z ^ 4)));
-
-                AssertIsTrue(x / x == Int(1));
-
-                AssertIsTrue(x / y * y / x == Int(1));
-
-                AssertIsTrue((x ^ 2) * (x ^ 3) == (x ^ 5));
-
-                AssertIsTrue(x + y + x + z + 5 + z == 5 + 2 * x + y + 2 * z);
-
-                AssertIsTrue(((Int(1) / 2) * x + (Int(3) / 4) * x) == Int(5) / 4 * x);
-
-                AssertIsTrue(1.2 * x + 3 * x == 4.2 * x);
-
-                AssertIsTrue(3 * x + 1.2 * x == 4.2 * x);
-
-                AssertIsTrue(1.2 * x * 3 * y == 3.5999999999999996 * x * y);
-
-                AssertIsTrue(3 * x * 1.2 * y == 3.5999999999999996 * x * y);
-
-                AssertIsTrue(3.4 * x * 1.2 * y == 4.08 * x * y);
-
-                // Power.Simplify
-
-                AssertIsTrue((0 ^ x) == Int(0));
-                AssertIsTrue((1 ^ x) == Int(1));
-                AssertIsTrue((x ^ 0) == Int(1));
-                AssertIsTrue((x ^ 1) == x);
-
-                // Product.Simplify
-
-                AssertIsTrue(x * 0 == new Integer(0));
-
-                // Difference
-
-                AssertIsTrue(-x == -1 * x);
-
-                AssertIsTrue(x - y == x + -1 * y);
-
-                
-                AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == Int(20));
-                AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == Int(10));
-
-                AssertIsTrue(new Double(1.0).Substitute(new Double(1.0), new Double(2.0)) == new Double(2.0));
-                AssertIsTrue(new Double(1.0).Substitute(new Double(1.5), new Double(2.0)) == new Double(1.0));
-
-                AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 2, Int(3) / 4) == Int(3) / 4);
-                AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 3, Int(3) / 4) == Int(1) / 2);
-
-                AssertIsTrue(x.Substitute(x, y) == y);
-                AssertIsTrue(x.Substitute(y, y) == x);
-
-                AssertIsTrue((x ^ y).Substitute(x, Int(10)) == (10 ^ y));
-                AssertIsTrue((x ^ y).Substitute(y, Int(10)) == (x ^ 10));
-
-                AssertIsTrue((x ^ y).Substitute(x ^ y, Int(10)) == Int(10));
-
-                AssertIsTrue((x * y * z).Substitute(x, y) == ((y ^ 2) * z));
-                AssertIsTrue((x * y * z).Substitute(x * y * z, x) == x);
-
-                AssertIsTrue((x + y + z).Substitute(x, y) == ((y * 2) + z));
-                AssertIsTrue((x + y + z).Substitute(x + y + z, x) == x);
-
-                AssertIsTrue(
-                    ((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2)
-                        .Substitute(x, Int(10))
-                        .Substitute(y, Int(20))
-                        .Substitute(z, Int(3))
-                        == Int(16200)
-                        );
-
-                Func<MathObject, MathObject> sin = arg => new Sin(arg).Simplify();
-
-                AssertIsTrue(sin(new Double(3.14159 / 2)) == new Double(0.99999999999911982));
-
-                AssertIsTrue(sin(x + y) + sin(x + y) == 2 * sin(x + y));
-
-                AssertIsTrue(sin(x + x) == sin(2 * x));
-
-                AssertIsTrue(sin(x + x).Substitute(x, Int(1)) == sin(Int(2)));
-
-                AssertIsTrue(sin(x + x).Substitute(x, new Double(1.0)) == new Double(0.90929742682568171));
-
-                AssertIsTrue(sin(2 * x).Substitute(x, y) == sin(2 * y));
-
-                // Product.RecursiveSimplify
-
-                AssertIsTrue(1 * x == x);
-
-                AssertIsTrue(x * 1 == x);
-            }
-
-            Console.ReadLine();
-        }
     }
 }
