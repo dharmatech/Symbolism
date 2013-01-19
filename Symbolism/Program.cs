@@ -123,8 +123,10 @@ namespace Symbolism
         public int Precedence()
         {
             if (this is Integer) return 1000;
+            if (this is DoubleFloat) return 1000;
             if (this is Symbol) return 1000;
             if (this is Function) return 1000;
+            if (this is Fraction) return 1000;
             if (this is Product) return 120;
             if (this is Sum) return 110;
             if (this is Power) return 60;
@@ -159,6 +161,12 @@ namespace Symbolism
             if (a is Fraction && b is Fraction) return ((Fraction)a).Equals(b);
             if (a is Power && b is Power) return ((Power)a).Equals(b);
             if (a is Function && b is Function) return ((Function)a).Equals(b);
+
+            if ((((object)a) == null) && (((object)b) == null)) return true;
+
+            if (((object)a) == null) return false;
+
+            if (((object)b) == null) return false;
 
             if (a.GetType() != b.GetType()) return false;
 
@@ -226,8 +234,11 @@ namespace Symbolism
         public Fraction(Integer a, Integer b)
         { numerator = a; denominator = b; }
 
+        //public override string ToString()
+        //{ return "Fraction(" + numerator + ", " + denominator + ")"; }
+
         public override string ToString()
-        { return "Fraction(" + numerator + ", " + denominator + ")"; }
+        { return numerator + "/" + denominator; }
 
         public DoubleFloat ToDouble() { return new DoubleFloat((double)numerator.val / (double)denominator.val); }
         //////////////////////////////////////////////////////////////////////
@@ -563,6 +574,24 @@ namespace Symbolism
             name = "sin";
             args = new List<MathObject>() { param };
             proc = SinProc;
+        }
+    }
+
+    public class Cos : Function
+    {
+        MathObject CosProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Cos(((DoubleFloat)ls[0]).val));
+
+            return new Cos(ls[0]);
+        }
+
+        public Cos(MathObject param)
+        {
+            name = "cos";
+            args = new List<MathObject>() { param };
+            proc = CosProc;
         }
     }
 

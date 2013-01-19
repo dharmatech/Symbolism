@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbolism", "Symbolism\Symb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{9E996759-C2E9-4265-A8CE-16341B26D1CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics", "Physics\Physics.csproj", "{73E0C26D-5333-4575-A3E9-5388E975446E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,6 +21,10 @@ Global
 		{9E996759-C2E9-4265-A8CE-16341B26D1CC}.Debug|x86.Build.0 = Debug|x86
 		{9E996759-C2E9-4265-A8CE-16341B26D1CC}.Release|x86.ActiveCfg = Release|x86
 		{9E996759-C2E9-4265-A8CE-16341B26D1CC}.Release|x86.Build.0 = Release|x86
+		{73E0C26D-5333-4575-A3E9-5388E975446E}.Debug|x86.ActiveCfg = Debug|x86
+		{73E0C26D-5333-4575-A3E9-5388E975446E}.Debug|x86.Build.0 = Debug|x86
+		{73E0C26D-5333-4575-A3E9-5388E975446E}.Release|x86.ActiveCfg = Release|x86
+		{73E0C26D-5333-4575-A3E9-5388E975446E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

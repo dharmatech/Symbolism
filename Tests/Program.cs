@@ -141,6 +141,8 @@ namespace Tests
                 AssertIsTrue(x * 1 == x);
             }
 
+            Console.WriteLine("Testing complete");
+
             Console.ReadLine();
 
         }
