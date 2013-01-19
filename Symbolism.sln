@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics", "Physics\Physics.csproj", "{73E0C26D-5333-4575-A3E9-5388E975446E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE Example 4.3 The Long-Jump", "PSE Example 4.3 The Long-Jump\PSE Example 4.3 The Long-Jump.csproj", "{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,6 +27,10 @@ Global
 		{73E0C26D-5333-4575-A3E9-5388E975446E}.Debug|x86.Build.0 = Debug|x86
 		{73E0C26D-5333-4575-A3E9-5388E975446E}.Release|x86.ActiveCfg = Release|x86
 		{73E0C26D-5333-4575-A3E9-5388E975446E}.Release|x86.Build.0 = Release|x86
+		{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}.Debug|x86.ActiveCfg = Debug|x86
+		{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}.Debug|x86.Build.0 = Debug|x86
+		{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}.Release|x86.ActiveCfg = Release|x86
+		{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
