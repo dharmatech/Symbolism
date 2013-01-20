@@ -47,6 +47,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Physics\Physics.csproj">
+      <Project>{73E0C26D-5333-4575-A3E9-5388E975446E}</Project>
+      <Name>Physics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Symbolism\Symbolism.csproj">
       <Project>{067278C5-2A0F-42DE-838B-855EFB652608}</Project>
       <Name>Symbolism</Name>

@@ -28,11 +28,9 @@ namespace PSE_Example_4._3_The_Long_Jump
             var thA = new Symbol("thA"); // angle at point A
             var vA = new Symbol("vA"); // velocity at point A
 
-            // var g = new DoubleFloat(9.8);
+            var g = new Symbol("g"); // magnitude of gravity
 
-            var g = new Symbol("g");
-
-            var _g = new Point(new Integer(0), -g);
+            var _g = new Point(new Integer(0), -g); // gravity vector
 
             // An Obj representing the object at A:
 

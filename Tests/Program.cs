@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Symbolism;
+using Physics;
 
 namespace Tests
 {
@@ -11,17 +12,17 @@ namespace Tests
     {
         static void Main(string[] args)
         {
+            Action<Equation> AssertIsTrue = (eq) =>
+            {
+                if (!eq) Console.WriteLine(eq.ToString());
+            };
+
             {
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
 
                 Func<int, Integer> Int = (n) => new Integer(n);
-
-                Action<Equation> AssertIsTrue = (eq) =>
-                {
-                    if (!eq) Console.WriteLine(eq.ToString());
-                };
 
                 AssertIsTrue(x + x == 2 * x);
 
@@ -141,10 +142,72 @@ namespace Tests
                 AssertIsTrue(x * 1 == x);
             }
 
+            {
+                // PSE Example 4.3
+
+                var thA = new Symbol("thA"); // angle at point A
+                var vA = new Symbol("vA"); // velocity at point A
+
+                var g = new Symbol("g"); // magnitude of gravity
+
+                var _g = new Point(new Integer(0), -g); // gravity vector
+
+                var objA =
+                    new Obj()
+                    {
+                        position = new Point(0, 0),
+                        velocity = Point.FromAngle(thA, vA),
+                        acceleration = _g,
+                        time = new Integer(0)
+                    };
+
+                var objB =
+                    new Obj()
+                    {
+                        position = new Point(),
+                        velocity = new Point(objA.velocity.x, new Integer(0)),
+                        acceleration = _g
+                    };
+
+                var timeB = Calc.Time(objA, objB);
+                var timeC = timeB * 2;
+
+                objB = objA.AtTime(timeB);
+                var objC = objA.AtTime(timeC);
+
+                //Console.WriteLine("How far does he dump in the horizontal direction?");
+                
+                AssertIsTrue(objC.position.x == 2 * Trig.Cos(thA) * Trig.Sin(thA) * (vA ^ 2) / g);
+                
+                //Console.WriteLine("What is the maximum height reached?");
+                
+                AssertIsTrue(objB.position.y == (Trig.Sin(thA) ^ 2) * (vA ^ 2) / 2 / g);
+
+                // Console.WriteLine("Distance jumped: ");
+
+                AssertIsTrue(
+                    objC.position.x
+                    .Substitute(thA, Trig.ToRadians(20))
+                    .Substitute(g, new DoubleFloat(9.8))
+                    .Substitute(Trig.Pi, new DoubleFloat(3.14159))
+                    .Substitute(vA, new Integer(11))
+                    == 
+                    new DoubleFloat(7.9364536850196412));
+
+                //Console.WriteLine("Maximum height reached: ");
+
+                AssertIsTrue(
+                    objB.position.y
+                    .Substitute(g, new DoubleFloat(9.8))
+                    .Substitute(thA, Trig.ToRadians(20))
+                    .Substitute(Trig.Pi, new DoubleFloat(3.14159))
+                    .Substitute(vA, new Integer(11)) 
+                    == 
+                    new DoubleFloat(0.72215756424454336));
+            }
             Console.WriteLine("Testing complete");
 
             Console.ReadLine();
-
         }
     }
 }

@@ -80,6 +80,9 @@ namespace Symbolism
         #endregion
         //////////////////////////////////////////////////////////////////////
 
+        //public static Equation operator ==(MathObject a, double b)
+        //{ return new Equation(a, new DoubleFloat(b)); }
+
         public static Equation operator ==(MathObject a, MathObject b)
         { return new Equation(a, b); }
 
