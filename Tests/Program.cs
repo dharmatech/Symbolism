@@ -93,8 +93,8 @@ namespace Tests
                 AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == Int(20));
                 AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == Int(10));
 
-                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), new DoubleFloat(2.0)) == new DoubleFloat(2.0));
-                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), new DoubleFloat(2.0)) == new DoubleFloat(1.0));
+                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), new DoubleFloat(2.0)) == 2.0);
+                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), new DoubleFloat(2.0)) == 1.0);
 
                 AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 2, Int(3) / 4) == Int(3) / 4);
                 AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 3, Int(3) / 4) == Int(1) / 2);
@@ -123,7 +123,7 @@ namespace Tests
 
                 Func<MathObject, MathObject> sin = arg => new Sin(arg).Simplify();
 
-                AssertIsTrue(sin(new DoubleFloat(3.14159 / 2)) == new DoubleFloat(0.99999999999911982));
+                AssertIsTrue(sin(new DoubleFloat(3.14159 / 2)) == 0.99999999999911982);
 
                 AssertIsTrue(sin(x + y) + sin(x + y) == 2 * sin(x + y));
 
@@ -131,7 +131,7 @@ namespace Tests
 
                 AssertIsTrue(sin(x + x).Substitute(x, Int(1)) == sin(Int(2)));
 
-                AssertIsTrue(sin(x + x).Substitute(x, new DoubleFloat(1.0)) == new DoubleFloat(0.90929742682568171));
+                AssertIsTrue(sin(x + x).Substitute(x, new DoubleFloat(1.0)) == 0.90929742682568171);
 
                 AssertIsTrue(sin(2 * x).Substitute(x, y) == sin(2 * y));
 
@@ -195,8 +195,8 @@ namespace Tests
                     .Substitute(g, new DoubleFloat(9.8))
                     .Substitute(Trig.Pi, new DoubleFloat(3.14159))
                     .Substitute(vA, new Integer(11))
-                    == 
-                    new DoubleFloat(7.9364536850196412));
+                    ==
+                    7.9364536850196412);
 
                 //Console.WriteLine("Maximum height reached: ");
 
@@ -206,8 +206,8 @@ namespace Tests
                     .Substitute(thA, Trig.ToRadians(20))
                     .Substitute(Trig.Pi, new DoubleFloat(3.14159))
                     .Substitute(vA, new Integer(11)) 
-                    == 
-                    new DoubleFloat(0.72215756424454336));
+                    ==
+                    0.72215756424454336);
             }
             Console.WriteLine("Testing complete");
 

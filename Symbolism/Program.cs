@@ -80,20 +80,17 @@ namespace Symbolism
         #endregion
         //////////////////////////////////////////////////////////////////////
 
-        //public static Equation operator ==(MathObject a, double b)
-        //{ return new Equation(a, new DoubleFloat(b)); }
-
         public static Equation operator ==(MathObject a, MathObject b)
         { return new Equation(a, b); }
 
-        //public static Equation operator !=(MathObject a, MathObject b)
-        //{ return new Equation(a, b); }
-
-        //public static NotEqual operator !=(MathObject a, MathObject b)
-        //{ return new NotEqual(a, b); }
+        public static Equation operator ==(MathObject a, double b)
+        { return new Equation(a, new DoubleFloat(b)); }
 
         public static Equation operator !=(MathObject a, MathObject b)
         { return new Equation(a, b, Equation.Operators.NotEqual); }
+
+        public static Equation operator !=(MathObject a, double b)
+        { return new Equation(a, new DoubleFloat(b), Equation.Operators.NotEqual); }
 
         //////////////////////////////////////////////////////////////////////
         public static MathObject operator +(MathObject a, MathObject b)
