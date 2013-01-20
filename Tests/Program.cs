@@ -140,6 +140,10 @@ namespace Tests
                 AssertIsTrue(1 * x == x);
 
                 AssertIsTrue(x * 1 == x);
+
+                AssertIsTrue(x != y);
+
+                AssertIsTrue(x != new Integer(10));
             }
 
             {

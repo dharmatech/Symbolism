@@ -86,8 +86,14 @@ namespace Symbolism
         public static Equation operator ==(MathObject a, MathObject b)
         { return new Equation(a, b); }
 
+        //public static Equation operator !=(MathObject a, MathObject b)
+        //{ return new Equation(a, b); }
+
+        //public static NotEqual operator !=(MathObject a, MathObject b)
+        //{ return new NotEqual(a, b); }
+
         public static Equation operator !=(MathObject a, MathObject b)
-        { return new Equation(a, b); }
+        { return new Equation(a, b, Equation.Operators.NotEqual); }
 
         //////////////////////////////////////////////////////////////////////
         public static MathObject operator +(MathObject a, MathObject b)
@@ -142,11 +148,18 @@ namespace Symbolism
 
     public class Equation
     {
+        public enum Operators { Equal, NotEqual }
+
         public MathObject a;
         public MathObject b;
 
+        public Operators Operator;
+
         public Equation(MathObject x, MathObject y)
-        { a = x; b = y; }
+        { a = x; b = y; Operator = Operators.Equal; }
+
+        public Equation(MathObject x, MathObject y, Operators op)
+        { a = x; b = y; Operator = op; }
 
         public String ObjectString()
         { return "Equation(" + a + ", " + b + ")"; }
@@ -154,7 +167,7 @@ namespace Symbolism
         public override string ToString()
         { return a + " == " + b; }
 
-        public Boolean ToBoolean()
+        Boolean ToBoolean()
         {
             if (a is Integer && b is Integer) return ((Integer)a).Equals(b);
             if (a is DoubleFloat && b is DoubleFloat) return ((DoubleFloat)a).Equals(b);
@@ -179,8 +192,28 @@ namespace Symbolism
         }
 
         public static implicit operator Boolean(Equation eq)
-        { return (eq.a == eq.b).ToBoolean(); }
+        {
+            if (eq.Operator == Operators.Equal)
+                return (eq.a == eq.b).ToBoolean();
+
+            if (eq.Operator == Operators.NotEqual)
+                return !((eq.a == eq.b).ToBoolean());
+
+            throw new Exception();
+        }
     }
+
+    //public class NotEqual
+    //{
+    //    public MathObject a;
+    //    public MathObject b;
+
+    //    public NotEqual(MathObject x, MathObject y)
+    //    { a = x; b = y; }
+
+    //    public static implicit operator Boolean(NotEqual eq)
+    //    { return !((eq.a == eq.b).ToBoolean()); }
+    //}
 
     public abstract class Number : MathObject { }
 

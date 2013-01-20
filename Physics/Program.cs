@@ -94,18 +94,18 @@ namespace Physics
     {
         public static MathObject Time(Obj a, Obj b)
         {
-            if (!(a.velocity.x == null) &&
-                !(b.velocity.x == null) &&
-                !(a.acceleration.x == null) &&
-                !(a.acceleration.x == new DoubleFloat(0.0)) &&
-                !(a.acceleration.x == new Integer(0)))
+            if (a.velocity.x != null &&
+                b.velocity.x != null &&
+                a.acceleration.x != null &&
+                a.acceleration.x != new DoubleFloat(0.0) &&
+                a.acceleration.x != new Integer(0))
                 return (b.velocity.x - a.velocity.x) / a.acceleration.x;
 
-            if (!(a.velocity.y == null) &&
-                !(b.velocity.y == null) &&
-                !(a.acceleration.y == null) &&
-                !(a.acceleration.y == new DoubleFloat(0.0)) &&
-                !(a.acceleration.y == new Integer(0)))
+            if (a.velocity.y != null &&
+                b.velocity.y != null &&
+                a.acceleration.y != null &&
+                a.acceleration.y != new DoubleFloat(0.0) &&
+                a.acceleration.y != new Integer(0))
                 return (b.velocity.y - a.velocity.y) / a.acceleration.y;
 
             throw new Exception();
