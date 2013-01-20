@@ -86,11 +86,17 @@ namespace Symbolism
         public static Equation operator ==(MathObject a, double b)
         { return new Equation(a, new DoubleFloat(b)); }
 
+        public static Equation operator ==(double a, MathObject b)
+        { return new Equation(new DoubleFloat(a), b); }
+
         public static Equation operator !=(MathObject a, MathObject b)
         { return new Equation(a, b, Equation.Operators.NotEqual); }
 
         public static Equation operator !=(MathObject a, double b)
         { return new Equation(a, new DoubleFloat(b), Equation.Operators.NotEqual); }
+
+        public static Equation operator !=(double a, MathObject b)
+        { return new Equation(new DoubleFloat(a), b, Equation.Operators.NotEqual); }
 
         //////////////////////////////////////////////////////////////////////
         public static MathObject operator +(MathObject a, MathObject b)

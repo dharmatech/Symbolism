@@ -144,6 +144,10 @@ namespace Tests
                 AssertIsTrue(x != y);
 
                 AssertIsTrue(x != new Integer(10));
+
+                // ==(double a, MathObject b)
+
+                AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
             }
 
             {
