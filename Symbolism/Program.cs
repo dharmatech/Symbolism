@@ -42,8 +42,6 @@ namespace Symbolism
         { return new Integer(a) ^ b; }
         #endregion
         //////////////////////////////////////////////////////////////////////
-
-        //////////////////////////////////////////////////////////////////////
         #region overloads for 'double'
 
         public static MathObject operator +(MathObject a, double b)
@@ -79,9 +77,12 @@ namespace Symbolism
 
         #endregion
         //////////////////////////////////////////////////////////////////////
-
         public static Equation operator ==(MathObject a, MathObject b)
         { return new Equation(a, b); }
+
+        public static Equation operator !=(MathObject a, MathObject b)
+        { return new Equation(a, b, Equation.Operators.NotEqual); }
+
 
         public static Equation operator ==(MathObject a, double b)
         { return new Equation(a, new DoubleFloat(b)); }
@@ -89,15 +90,24 @@ namespace Symbolism
         public static Equation operator ==(double a, MathObject b)
         { return new Equation(new DoubleFloat(a), b); }
 
-        public static Equation operator !=(MathObject a, MathObject b)
-        { return new Equation(a, b, Equation.Operators.NotEqual); }
-
         public static Equation operator !=(MathObject a, double b)
         { return new Equation(a, new DoubleFloat(b), Equation.Operators.NotEqual); }
 
         public static Equation operator !=(double a, MathObject b)
         { return new Equation(new DoubleFloat(a), b, Equation.Operators.NotEqual); }
 
+
+        public static Equation operator ==(MathObject a, int b)
+        { return new Equation(a, new Integer(b)); }
+
+        public static Equation operator ==(int a, MathObject b)
+        { return new Equation(new Integer(a), b); }
+
+        public static Equation operator !=(MathObject a, int b)
+        { return new Equation(a, new Integer(b), Equation.Operators.NotEqual); }
+
+        public static Equation operator !=(int a, MathObject b)
+        { return new Equation(new Integer(a), b, Equation.Operators.NotEqual); }
         //////////////////////////////////////////////////////////////////////
         public static MathObject operator +(MathObject a, MathObject b)
         { return new Sum(a, b).Simplify(); }
@@ -131,6 +141,9 @@ namespace Symbolism
 
             return this;
         }
+
+        //public MathObject Substitute(MathObject a, int b)
+        //{ return Substitute(a, new Integer(b)); }
 
         public int Precedence()
         {

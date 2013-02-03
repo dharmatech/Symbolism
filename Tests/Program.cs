@@ -52,9 +52,9 @@ namespace Tests
 
                 AssertIsTrue(((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2) == (x * y * (z ^ 4)));
 
-                AssertIsTrue(x / x == Int(1));
+                AssertIsTrue(x / x == 1);
 
-                AssertIsTrue(x / y * y / x == Int(1));
+                AssertIsTrue(x / y * y / x == 1);
 
                 AssertIsTrue((x ^ 2) * (x ^ 3) == (x ^ 5));
 
@@ -74,14 +74,14 @@ namespace Tests
 
                 // Power.Simplify
 
-                AssertIsTrue((0 ^ x) == Int(0));
-                AssertIsTrue((1 ^ x) == Int(1));
-                AssertIsTrue((x ^ 0) == Int(1));
+                AssertIsTrue((0 ^ x) == 0);
+                AssertIsTrue((1 ^ x) == 1);
+                AssertIsTrue((x ^ 0) == 1);
                 AssertIsTrue((x ^ 1) == x);
 
                 // Product.Simplify
 
-                AssertIsTrue(x * 0 == new Integer(0));
+                AssertIsTrue(x * 0 == 0);
 
                 // Difference
 
@@ -90,8 +90,8 @@ namespace Tests
                 AssertIsTrue(x - y == x + -1 * y);
 
 
-                AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == Int(20));
-                AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == Int(10));
+                AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == 20);
+                AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == 10);
 
                 AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), new DoubleFloat(2.0)) == 2.0);
                 AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), new DoubleFloat(2.0)) == 1.0);
@@ -105,7 +105,7 @@ namespace Tests
                 AssertIsTrue((x ^ y).Substitute(x, Int(10)) == (10 ^ y));
                 AssertIsTrue((x ^ y).Substitute(y, Int(10)) == (x ^ 10));
 
-                AssertIsTrue((x ^ y).Substitute(x ^ y, Int(10)) == Int(10));
+                AssertIsTrue((x ^ y).Substitute(x ^ y, Int(10)) == 10);
 
                 AssertIsTrue((x * y * z).Substitute(x, y) == ((y ^ 2) * z));
                 AssertIsTrue((x * y * z).Substitute(x * y * z, x) == x);
@@ -118,7 +118,7 @@ namespace Tests
                         .Substitute(x, Int(10))
                         .Substitute(y, Int(20))
                         .Substitute(z, Int(3))
-                        == Int(16200)
+                        == 16200
                         );
 
                 Func<MathObject, MathObject> sin = arg => new Sin(arg).Simplify();
@@ -143,7 +143,7 @@ namespace Tests
 
                 AssertIsTrue(x != y);
 
-                AssertIsTrue(x != new Integer(10));
+                AssertIsTrue(x != 10);
 
                 // ==(double a, MathObject b)
 
