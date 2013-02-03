@@ -93,8 +93,8 @@ namespace Tests
                 AssertIsTrue(Int(10).Substitute(Int(10), 20) == 20);
                 AssertIsTrue(Int(10).Substitute(Int(15), 20) == 10);
 
-                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), new DoubleFloat(2.0)) == 2.0);
-                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), new DoubleFloat(2.0)) == 1.0);
+                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), 2.0) == 2.0);
+                AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), 2.0) == 1.0);
 
                 AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 2, Int(3) / 4) == Int(3) / 4);
                 AssertIsTrue((Int(1) / 2).Substitute(Int(1) / 3, Int(3) / 4) == Int(1) / 2);
@@ -131,7 +131,7 @@ namespace Tests
 
                 AssertIsTrue(sin(x + x).Substitute(x, 1) == sin(Int(2)));
 
-                AssertIsTrue(sin(x + x).Substitute(x, new DoubleFloat(1.0)) == 0.90929742682568171);
+                AssertIsTrue(sin(x + x).Substitute(x, 1.0) == 0.90929742682568171);
 
                 AssertIsTrue(sin(2 * x).Substitute(x, y) == sin(2 * y));
 
@@ -196,8 +196,8 @@ namespace Tests
                 AssertIsTrue(
                     objC.position.x
                     .Substitute(thA, Trig.ToRadians(20))
-                    .Substitute(g, new DoubleFloat(9.8))
-                    .Substitute(Trig.Pi, new DoubleFloat(3.14159))
+                    .Substitute(g, 9.8)
+                    .Substitute(Trig.Pi, 3.14159)
                     .Substitute(vA, 11)
                     ==
                     7.9364536850196412);
@@ -206,9 +206,9 @@ namespace Tests
 
                 AssertIsTrue(
                     objB.position.y
-                    .Substitute(g, new DoubleFloat(9.8))
+                    .Substitute(g, 9.8)
                     .Substitute(thA, Trig.ToRadians(20))
-                    .Substitute(Trig.Pi, new DoubleFloat(3.14159))
+                    .Substitute(Trig.Pi, 3.14159)
                     .Substitute(vA, 11) 
                     ==
                     0.72215756424454336);

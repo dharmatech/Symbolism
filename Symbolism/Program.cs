@@ -145,6 +145,9 @@ namespace Symbolism
         public MathObject Substitute(MathObject a, int b)
         { return Substitute(a, new Integer(b)); }
 
+        public MathObject Substitute(MathObject a, double b)
+        { return Substitute(a, new DoubleFloat(b)); }
+
         public int Precedence()
         {
             if (this is Integer) return 1000;
