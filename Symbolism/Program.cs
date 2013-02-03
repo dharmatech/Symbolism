@@ -142,8 +142,8 @@ namespace Symbolism
             return this;
         }
 
-        //public MathObject Substitute(MathObject a, int b)
-        //{ return Substitute(a, new Integer(b)); }
+        public MathObject Substitute(MathObject a, int b)
+        { return Substitute(a, new Integer(b)); }
 
         public int Precedence()
         {

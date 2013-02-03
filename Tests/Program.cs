@@ -90,8 +90,8 @@ namespace Tests
                 AssertIsTrue(x - y == x + -1 * y);
 
 
-                AssertIsTrue(Int(10).Substitute(Int(10), Int(20)) == 20);
-                AssertIsTrue(Int(10).Substitute(Int(15), Int(20)) == 10);
+                AssertIsTrue(Int(10).Substitute(Int(10), 20) == 20);
+                AssertIsTrue(Int(10).Substitute(Int(15), 20) == 10);
 
                 AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.0), new DoubleFloat(2.0)) == 2.0);
                 AssertIsTrue(new DoubleFloat(1.0).Substitute(new DoubleFloat(1.5), new DoubleFloat(2.0)) == 1.0);
@@ -102,10 +102,10 @@ namespace Tests
                 AssertIsTrue(x.Substitute(x, y) == y);
                 AssertIsTrue(x.Substitute(y, y) == x);
 
-                AssertIsTrue((x ^ y).Substitute(x, Int(10)) == (10 ^ y));
-                AssertIsTrue((x ^ y).Substitute(y, Int(10)) == (x ^ 10));
+                AssertIsTrue((x ^ y).Substitute(x, 10) == (10 ^ y));
+                AssertIsTrue((x ^ y).Substitute(y, 10) == (x ^ 10));
 
-                AssertIsTrue((x ^ y).Substitute(x ^ y, Int(10)) == 10);
+                AssertIsTrue((x ^ y).Substitute(x ^ y, 10) == 10);
 
                 AssertIsTrue((x * y * z).Substitute(x, y) == ((y ^ 2) * z));
                 AssertIsTrue((x * y * z).Substitute(x * y * z, x) == x);
@@ -115,9 +115,9 @@ namespace Tests
 
                 AssertIsTrue(
                     ((((x * y) ^ (Int(1) / 2)) * (z ^ 2)) ^ 2)
-                        .Substitute(x, Int(10))
-                        .Substitute(y, Int(20))
-                        .Substitute(z, Int(3))
+                        .Substitute(x, 10)
+                        .Substitute(y, 20)
+                        .Substitute(z, 3)
                         == 16200
                         );
 
@@ -129,7 +129,7 @@ namespace Tests
 
                 AssertIsTrue(sin(x + x) == sin(2 * x));
 
-                AssertIsTrue(sin(x + x).Substitute(x, Int(1)) == sin(Int(2)));
+                AssertIsTrue(sin(x + x).Substitute(x, 1) == sin(Int(2)));
 
                 AssertIsTrue(sin(x + x).Substitute(x, new DoubleFloat(1.0)) == 0.90929742682568171);
 
@@ -198,7 +198,7 @@ namespace Tests
                     .Substitute(thA, Trig.ToRadians(20))
                     .Substitute(g, new DoubleFloat(9.8))
                     .Substitute(Trig.Pi, new DoubleFloat(3.14159))
-                    .Substitute(vA, new Integer(11))
+                    .Substitute(vA, 11)
                     ==
                     7.9364536850196412);
 
@@ -209,7 +209,7 @@ namespace Tests
                     .Substitute(g, new DoubleFloat(9.8))
                     .Substitute(thA, Trig.ToRadians(20))
                     .Substitute(Trig.Pi, new DoubleFloat(3.14159))
-                    .Substitute(vA, new Integer(11)) 
+                    .Substitute(vA, 11) 
                     ==
                     0.72215756424454336);
             }
