@@ -76,9 +76,9 @@ namespace PSE_Example_4._3_The_Long_Jump
             Console.WriteLine(
                 objC.position.x
                 .Substitute(thA, Trig.ToRadians(20))
-                .Substitute(g, new DoubleFloat(9.8))
-                .Substitute(Trig.Pi, new DoubleFloat(3.14159))
-                .Substitute(vA, new Integer(11))
+                .Substitute(g, 9.8)
+                .Substitute(Trig.Pi, 3.14159)
+                .Substitute(vA, 11)
                 );
 
             Console.WriteLine();
@@ -87,10 +87,10 @@ namespace PSE_Example_4._3_The_Long_Jump
 
             Console.WriteLine(
                 objB.position.y
-                .Substitute(g, new DoubleFloat(9.8))
+                .Substitute(g, 9.8)
                 .Substitute(thA, Trig.ToRadians(20))
-                .Substitute(Trig.Pi, new DoubleFloat(3.14159))
-                .Substitute(vA, new Integer(11))
+                .Substitute(Trig.Pi, 3.14159)
+                .Substitute(vA, 11)
                 );
 
             Console.ReadLine();
