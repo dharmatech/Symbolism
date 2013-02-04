@@ -33,11 +33,20 @@ namespace Physics
 
         public Point() { }
 
+        public Point(MathObject x_val, MathObject y_val)
+        { x = x_val; y = y_val; }
+
+        //////////////////////////////////////////////////////////////////////
+        // overloads for 'int'
         public Point(int x_val, int y_val)
         { x = new Integer(x_val); y = new Integer(y_val); }
 
-        public Point(MathObject x_val, MathObject y_val)
-        { x = x_val; y = y_val; }
+        public Point(int x_val, MathObject y_val)
+        { x = new Integer(x_val); y = y_val; }
+
+        public Point(MathObject x_val, int y_val)
+        { x = x_val; y = new Integer(y_val); }
+        //////////////////////////////////////////////////////////////////////
 
         public static Point FromAngle(MathObject angle, MathObject mag)
         { return new Point(Trig.Cos(angle) * mag, Trig.Sin(angle) * mag); }

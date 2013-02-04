@@ -30,7 +30,7 @@ namespace PSE_Example_4._3_The_Long_Jump
 
             var g = new Symbol("g"); // magnitude of gravity
 
-            var _g = new Point(new Integer(0), -g); // gravity vector
+            var _g = new Point(0, -g); // gravity vector
 
             // An Obj representing the object at A:
 
@@ -47,7 +47,7 @@ namespace PSE_Example_4._3_The_Long_Jump
                 new Obj()
                 {
                     position = new Point(),
-                    velocity = new Point(objA.velocity.x, new Integer(0)),
+                    velocity = new Point(objA.velocity.x, 0),
                     acceleration = _g
                 };
 

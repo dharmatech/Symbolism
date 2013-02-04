@@ -148,6 +148,8 @@ namespace Tests
                 // ==(double a, MathObject b)
 
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
+
+                // Console.WriteLine((x + x + x + x) / x);
             }
 
             {
@@ -158,7 +160,7 @@ namespace Tests
 
                 var g = new Symbol("g"); // magnitude of gravity
 
-                var _g = new Point(new Integer(0), -g); // gravity vector
+                var _g = new Point(0, -g); // gravity vector
 
                 var objA =
                     new Obj()
@@ -173,7 +175,7 @@ namespace Tests
                     new Obj()
                     {
                         position = new Point(),
-                        velocity = new Point(objA.velocity.x, new Integer(0)),
+                        velocity = new Point(objA.velocity.x, 0),
                         acceleration = _g
                     };
 
@@ -213,6 +215,9 @@ namespace Tests
                     ==
                     0.72215756424454336);
             }
+
+            
+
             Console.WriteLine("Testing complete");
 
             Console.ReadLine();
