@@ -5,11 +5,18 @@ using System.Text;
 
 using Symbolism;
 using Physics;
+using Utils;
 
 namespace Tests
 {
     class Program
     {
+        static void AssertEqual(DoubleFloat a, DoubleFloat b, double tolerance)
+        {
+            if (Math.Abs(a.val - b.val) > tolerance)
+                Console.WriteLine("{0} and {1} are not equal", a.val, b.val);
+        }
+
         static void Main(string[] args)
         {
             Action<Equation> AssertIsTrue = (eq) =>
@@ -186,11 +193,11 @@ namespace Tests
                 var objC = objA.AtTime(timeC);
 
                 //Console.WriteLine("How far does he dump in the horizontal direction?");
-                
+
                 AssertIsTrue(objC.position.x == 2 * Trig.Cos(thA) * Trig.Sin(thA) * (vA ^ 2) / g);
-                
+
                 //Console.WriteLine("What is the maximum height reached?");
-                
+
                 AssertIsTrue(objB.position.y == (Trig.Sin(thA) ^ 2) * (vA ^ 2) / 2 / g);
 
                 // Console.WriteLine("Distance jumped: ");
@@ -211,12 +218,110 @@ namespace Tests
                     .Substitute(g, 9.8)
                     .Substitute(thA, Trig.ToRadians(20))
                     .Substitute(Trig.Pi, 3.14159)
-                    .Substitute(vA, 11) 
+                    .Substitute(vA, 11)
                     ==
                     0.72215756424454336);
             }
 
-            
+            {
+                // PSE 5E EXAMPLE 4.5
+
+                // A stone is thrown from the top of a building upward at an
+                // angle of 30.0° to the horizontal and with an initial speed of
+                // 20.0 m/s, as shown in Figure 4.12. If the height of the building 
+                // is 45.0 m, (a) how long is it before the stone hits the ground?
+                // (b) What is the speed of the stone just before it strikes the
+                // ground?
+
+                var thA = new Symbol("thA"); // angle at point A
+                var vA = new Symbol("vA"); // velocity at point A
+
+                var g = new Symbol("g"); // magnitude of gravity
+
+                var _g = new Point(0, -g); // gravity vector
+
+                var objA = new Obj()
+                {
+                    position = new Point(0, 0),
+                    velocity = Point.FromAngle(thA, vA),
+                    acceleration = _g,
+                    time = new Integer(0)
+                };
+
+                var objB = new Obj()
+                {
+                    position = new Point(),
+                    velocity = new Point(objA.velocity.x, 0),
+                    acceleration = _g,
+                };
+
+                var timeB = Calc.Time(objA, objB);
+
+                objB = objA.AtTime(timeB);
+
+                var timeC = timeB * 2;
+
+                var objC = objA.AtTime(timeC);
+
+                var yD = new Symbol("yD");
+
+                var objD = new Obj()
+                {
+                    position = new Point(null, yD),
+                    velocity = new Point(objA.velocity.x, null),
+                    acceleration = _g
+                };
+
+                var timeAD = Calc.Time(objA, objD, 1);
+
+                objD = objA.AtTime(timeAD);
+
+                // "How long is it before the stone hits the ground?".Disp();
+
+                // "Symbolic answer:".Disp();
+
+                AssertIsTrue(
+                    timeAD
+                    ==
+                    -1 * (g ^ -1) * (-1 * Trig.Sin(thA) * vA + -1 * (((Trig.Sin(thA) ^ 2) * (vA ^ 2) + -2 * g * yD) ^ (new Integer(1) / 2))));
+
+                // "Numeric answer:".Disp();
+
+                AssertEqual(
+                    (DoubleFloat)
+                    timeAD
+                        .Substitute(g, 9.8)
+                        .Substitute(thA, (30).ToRadians())
+                        .Substitute(Trig.Pi, 3.14159)
+                        .Substitute(vA, 20)
+                        .Substitute(yD, -45),
+                    new DoubleFloat(4.21804787012706),
+                    0.0001);
+
+                // "What is the speed of the stone just before it strikes the ground?".Disp();
+
+                // "Symbolic answer:".Disp();
+
+                AssertIsTrue(
+                    objD.velocity.Norm()
+                    ==
+                    (((Trig.Cos(thA) ^ 2) * (vA ^ 2) + (Trig.Sin(thA) ^ 2) * (vA ^ 2) + -2 * g * yD) ^ (new Integer(1) / 2)));
+
+                // "Numeric answer:".Disp();
+
+                AssertEqual(
+                    (DoubleFloat)
+                    objD.velocity.Norm()
+                        .Substitute(g, 9.8)
+                        .Substitute(thA, (30).ToRadians())
+                        .Substitute(Trig.Pi, 3.14159)
+                        .Substitute(vA, 20)
+                        .Substitute(yD, -45),
+                    new DoubleFloat(35.805027579936315),
+                    0.1);
+            }
+
+
 
             Console.WriteLine("Testing complete");
 

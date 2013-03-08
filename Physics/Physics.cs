@@ -7,6 +7,27 @@ using Symbolism;
 
 namespace Physics
 {
+    public static class Misc
+    {
+        public static MathObject QuadraticEquation(MathObject a, MathObject b, MathObject c, int solution=0)
+        {
+            if (a == new Integer(0) || a == new DoubleFloat(0.0))
+                throw new Exception("a is zero. Equation is not quadratic.");
+
+            var discriminant = b * b - 4 * a * c;
+
+            var half = new Integer(1) / 2;
+
+            if (solution == 0)
+                return (-b + (discriminant ^ half)) / (2 * a);
+
+            if (solution == 1)
+                return (-b - (discriminant ^ half)) / (2 * a);
+
+            throw new Exception();
+        }
+    }
+
     public static class Trig
     {
         public static Symbol Pi = new Symbol("Pi");
@@ -62,6 +83,9 @@ namespace Physics
 
         public static Point operator /(Point a, MathObject b)
         { return new Point(a.x / b, a.y / b); }
+
+        public MathObject Norm()
+        { return (x * x + y * y) ^ (new Integer(1) / 2); }
     }
 
     public class Obj
@@ -98,10 +122,10 @@ namespace Physics
                 };
         }
     }
-
+    
     public static class Calc
     {
-        public static MathObject Time(Obj a, Obj b)
+        public static MathObject Time(Obj a, Obj b, int solution = 0)
         {
             if (a.velocity.x != null &&
                 b.velocity.x != null &&
@@ -116,6 +140,27 @@ namespace Physics
                 a.acceleration.y != new DoubleFloat(0.0) &&
                 a.acceleration.y != new Integer(0))
                 return (b.velocity.y - a.velocity.y) / a.acceleration.y;
+
+            // yf = yi + vyi * t + 1/2 * ay * t^2
+            // 0 = 1/2 * ay * t^2 + vyi * t + yi - yf
+            // apply quadratic equation to find t
+            
+            if (a.position.y != null &&
+                b.position.y != null &&
+                a.velocity.y != null &&
+                a.acceleration.y != null &&
+                a.acceleration.y != new Integer(0) &&
+                a.acceleration.y != new DoubleFloat(0.0))
+            {
+                var half = new Integer(1) / 2;
+
+                return
+                    Misc.QuadraticEquation(
+                        half * a.acceleration.y,
+                        a.velocity.y,
+                        a.position.y - b.position.y,
+                        solution);
+            }
 
             throw new Exception();
         }

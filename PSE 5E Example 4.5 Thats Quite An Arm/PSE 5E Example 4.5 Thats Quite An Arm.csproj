@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9E996759-C2E9-4265-A8CE-16341B26D1CC}</ProjectGuid>
+    <ProjectGuid>{98A9D4E4-2AD1-4CC9-8697-C25097CA7420}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Tests</AssemblyName>
+    <RootNamespace>PSE_5E_Example_4._5_Thats_Quite_An_Arm</RootNamespace>
+    <AssemblyName>PSE 5E Example 4.5 Thats Quite An Arm</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>

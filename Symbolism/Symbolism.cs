@@ -148,6 +148,13 @@ namespace Symbolism
         public MathObject Substitute(MathObject a, double b)
         { return Substitute(a, new DoubleFloat(b)); }
 
+        // Precedence is used for printing purposes.
+        // Thus, the precedence values below do not necessarily reflect 
+        // the C# operator precedence values.
+        // For example, in C#, the precedence of ^ is lower than +.
+        // But for printing purposes, we'd like ^ to have a 
+        // higher precedence than +.
+
         public int Precedence()
         {
             if (this is Integer) return 1000;
@@ -155,10 +162,10 @@ namespace Symbolism
             if (this is Symbol) return 1000;
             if (this is Function) return 1000;
             if (this is Fraction) return 1000;
+            if (this is Power) return 130;
             if (this is Product) return 120;
             if (this is Sum) return 110;
-            if (this is Power) return 60;
-
+            
             Console.WriteLine(this.GetType().Name);
 
             throw new Exception();
@@ -852,7 +859,7 @@ namespace Symbolism
         }
     }
 
-    class Power : MathObject
+    public class Power : MathObject
     {
         public MathObject bas;
         public MathObject exp;
