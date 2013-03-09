@@ -8,6 +8,9 @@ namespace Symbolism
     public abstract class MathObject
     {
         //////////////////////////////////////////////////////////////////////
+        public static implicit operator MathObject(int n)
+        { return new Integer(n); }
+        //////////////////////////////////////////////////////////////////////
         #region overloads for 'int'
 
         public static MathObject operator +(MathObject a, int b)

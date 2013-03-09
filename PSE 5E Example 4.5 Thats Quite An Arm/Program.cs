@@ -32,7 +32,7 @@ namespace PSE_5E_Example_4._5_Thats_Quite_An_Arm
                 position = new Point(0, 0),
                 velocity = Point.FromAngle(thA, vA),
                 acceleration = _g,
-                time = new Integer(0)
+                time = 0
             };
 
             var objB = new Obj()

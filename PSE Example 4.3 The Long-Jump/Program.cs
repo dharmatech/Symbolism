@@ -40,7 +40,7 @@ namespace PSE_Example_4._3_The_Long_Jump
                     position = new Point(0, 0),
                     velocity = Point.FromAngle(thA, vA),
                     acceleration = _g,
-                    time = new Integer(0)
+                    time = 0
                 };
 
             var objB =
