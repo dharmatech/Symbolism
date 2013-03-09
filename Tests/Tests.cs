@@ -319,6 +319,13 @@ namespace Tests
             }
             #endregion
 
+            //{
+            //    var th = (-35).ToRadians();
+
+            //    (2 * Trig.Sin(th) * ((25 / Trig.Cos(th)) ^ 2) / -9.8)
+            //        .Substitute(Trig.Pi, 3.14159)
+            //        .Disp();
+            //}
 
             Console.WriteLine("Testing complete");
 

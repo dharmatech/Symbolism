@@ -121,6 +121,89 @@ namespace Physics
                     position = position + velocity * dt + acceleration * dt * dt / new Integer(2)
                 };
         }
+
+
+        #region ProjectileInclineIntersection derivation
+
+        // xB = xA + vAx t + 1/2 ax t^2 					(9)
+
+        // yB = yA + vAy t + 1/2 ay t^2 					(10)
+
+        // xB - xA = d cos th								(13)
+
+        // yB - yA = d sin th								(14)
+
+        // ax = 0											(11)
+
+        // vAx = vA cos(thA)								(6)
+
+        // vAy = vA sin(thA)								(7)
+
+
+        // (9):	xB = xA + vAx t + 1/2 ax t^2
+
+        //         xB - xA = vAx t + 1/2 ax t^2 			(9.1)
+
+        // (10):	yB = yA + vAy t + 1/2 ay t^2
+
+        //         yB - yA = vAy t + 1/2 ay t^2 			(10.1)
+
+
+        // (13):		xB - xA = d cos th
+
+        // /. (9.1)	vAx t + 1/2 ax t^2 = d cos th
+
+        // /. (11)		vAx t = d cos th
+
+        // t 			t = d cos(th) / vAx 				(13.1)
+
+
+        // (14):		yB - yA = d sin th
+
+        // /. (10.1)	vAy t + 1/2 ay t^2 = d sin th
+
+        // /. (13.1)	vAy [d cos(th) / vAx] + 1/2 ay [d cos(th) / vAx]^2 = d sin th
+
+        //             vAy / vAx d cos(th) + 1/2 ay [d cos(th) / vAx]^2 = d sin th
+
+        //             1/2 ay [d cos(th) / vAx]^2 = d sin th - vAy / vAx d cos(th)
+
+        //             1/2 ay [d cos(th) / vAx]^2 = d [sin(th) - vAy / vAx cos(th)]
+
+        //             1/2 ay d^2 [cos(th) / vAx]^2 = d [sin(th) - vAy / vAx cos(th)]
+
+        //             1/2 ay d [cos(th) / vAx]^2 = [sin(th) - vAy / vAx cos(th)]
+
+        //             d = 2 [sin(th) - vAy / vAx cos(th)] [vAx / cos(th)]^2 / ay 
+
+        // if vAy = 0 then it simplifies to:
+
+        //             d = 2 sin(th) [vAx / cos(th)]^2 / ay 
+
+        #endregion
+
+        public Point ProjectileInclineIntersection(MathObject theta)
+        {
+            if (theta != null &&
+                velocity.x != null &&
+                velocity.y != null &&
+                acceleration.y != null &&
+                acceleration.y != 0 &&
+                acceleration.y != 0.0)
+            {
+                var d =
+                    2 * (Trig.Sin(theta) - velocity.y / velocity.x * Trig.Cos(theta))
+                    * ((velocity.x / Trig.Cos(theta)) ^ 2)
+                    / acceleration.y;
+
+                return
+                    new Point(
+                        position.x + d * Trig.Cos(theta),
+                        position.y + d * Trig.Sin(theta));
+            }
+
+            throw new Exception();
+        }
     }
     
     public static class Calc
