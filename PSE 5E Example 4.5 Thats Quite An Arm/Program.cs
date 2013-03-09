@@ -37,7 +37,6 @@ namespace PSE_5E_Example_4._5_Thats_Quite_An_Arm
 
             var objB = new Obj()
             {
-                position = new Point(),
                 velocity = new Point(objA.velocity.x, 0),
                 acceleration = _g,
             };

@@ -90,9 +90,9 @@ namespace Physics
 
     public class Obj
     {
-        public Point position;
-        public Point velocity;
-        public Point acceleration;
+        public Point position = new Point();
+        public Point velocity = new Point();
+        public Point acceleration = new Point();
 
         public MathObject time;
 

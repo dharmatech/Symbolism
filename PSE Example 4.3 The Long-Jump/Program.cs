@@ -46,7 +46,6 @@ namespace PSE_Example_4._3_The_Long_Jump
             var objB =
                 new Obj()
                 {
-                    position = new Point(),
                     velocity = new Point(objA.velocity.x, 0),
                     acceleration = _g
                 };

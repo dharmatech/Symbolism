@@ -159,9 +159,8 @@ namespace Tests
                 // Console.WriteLine((x + x + x + x) / x);
             }
 
+            #region PSE 5E Example 4.3
             {
-                // PSE Example 4.3
-
                 var thA = new Symbol("thA"); // angle at point A
                 var vA = new Symbol("vA"); // velocity at point A
 
@@ -181,7 +180,6 @@ namespace Tests
                 var objB =
                     new Obj()
                     {
-                        position = new Point(),
                         velocity = new Point(objA.velocity.x, 0),
                         acceleration = _g
                     };
@@ -222,10 +220,10 @@ namespace Tests
                     ==
                     0.72215756424454336);
             }
+            #endregion
 
+            #region PSE 5E EXAMPLE 4.5
             {
-                // PSE 5E EXAMPLE 4.5
-
                 // A stone is thrown from the top of a building upward at an
                 // angle of 30.0° to the horizontal and with an initial speed of
                 // 20.0 m/s, as shown in Figure 4.12. If the height of the building 
@@ -250,7 +248,6 @@ namespace Tests
 
                 var objB = new Obj()
                 {
-                    position = new Point(),
                     velocity = new Point(objA.velocity.x, 0),
                     acceleration = _g,
                 };
@@ -320,7 +317,7 @@ namespace Tests
                     new DoubleFloat(35.805027579936315),
                     0.1);
             }
-
+            #endregion
 
 
             Console.WriteLine("Testing complete");
