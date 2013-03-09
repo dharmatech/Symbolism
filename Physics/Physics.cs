@@ -41,10 +41,10 @@ namespace Physics
         public static MathObject ToDegrees(this int n) { return 180 * new Integer(n) / Pi; }
 
         public static MathObject Sin(MathObject arg)
-        { return new Symbolism.Sin(arg).Simplify(); }
+        { return new Sin(arg).Simplify(); }
 
         public static MathObject Cos(MathObject arg)
-        { return new Symbolism.Cos(arg).Simplify(); }        
+        { return new Cos(arg).Simplify(); }
     }
 
     public class Point

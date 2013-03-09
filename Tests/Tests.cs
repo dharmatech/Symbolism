@@ -11,10 +11,19 @@ namespace Tests
 {
     class Program
     {
-        static void AssertEqual(DoubleFloat a, DoubleFloat b, double tolerance)
+        static void AssertEqual(DoubleFloat a, DoubleFloat b, double tolerance = 0.00000001)
         {
             if (Math.Abs(a.val - b.val) > tolerance)
                 Console.WriteLine("{0} and {1} are not equal", a.val, b.val);
+        }
+
+        static void AssertEqual(MathObject a, Double b, double tolerance = 0.00000001)
+        {
+            var x = (DoubleFloat)a;
+            var y = new DoubleFloat(b);
+
+            if (Math.Abs(x.val - y.val) > tolerance)
+                Console.WriteLine("{0} and {1} are not equal", x.val, y.val);
         }
 
         static void Main(string[] args)
@@ -23,6 +32,9 @@ namespace Tests
             {
                 if (!eq) Console.WriteLine(eq.ToString());
             };
+
+            Func<MathObject, MathObject> sin = obj => Trig.Sin(obj);
+            Func<MathObject, MathObject> cos = obj => Trig.Cos(obj);
 
             {
                 var x = new Symbol("x");
@@ -127,8 +139,6 @@ namespace Tests
                         .Substitute(z, 3)
                         == 16200
                         );
-
-                Func<MathObject, MathObject> sin = arg => new Sin(arg).Simplify();
 
                 AssertIsTrue(sin(new DoubleFloat(3.14159 / 2)) == 0.99999999999911982);
 
@@ -319,13 +329,138 @@ namespace Tests
             }
             #endregion
 
-            //{
-            //    var th = (-35).ToRadians();
+            #region PSE 5E EXAMPLE 4.7
 
-            //    (2 * Trig.Sin(th) * ((25 / Trig.Cos(th)) ^ 2) / -9.8)
-            //        .Substitute(Trig.Pi, 3.14159)
-            //        .Disp();
-            //}
+            {
+                // A ski jumper leaves the ski track moving in the horizontal 
+                // direction with a speed of 25.0 m/s, as shown in Figure 4.14.
+                // The landing incline below him falls off with a slope of 35.0°. 
+                // Where does he land on the incline?
+
+                var thA = new Symbol("thA");    // angle at point A
+
+                var vA = new Symbol("vA");      // velocity at point A
+
+                var g = new Symbol("g");        // magnitude of gravity
+
+                var _g = new Point(0, -g);      // gravity vector
+
+                var th = new Symbol("th");      // angle of incline
+
+                var objA = new Obj()
+                {
+                    position = new Point(0, 0),
+                    velocity = Point.FromAngle(thA, vA),
+                    acceleration = _g,
+                    time = 0
+                };
+
+                Func<MathObject, MathObject> numeric = obj =>
+                    obj
+                        .Substitute(vA, 25)
+                        .Substitute(thA, 0.0)
+                        .Substitute(th, (-35).ToRadians())
+                        .Substitute(Trig.Pi, 3.14159)
+                        .Substitute(g, 9.8);
+
+                var intersection = objA.ProjectileInclineIntersection(th);
+
+                Action nl = () => "".Disp();
+
+                // "Where does he land on the incline?".Disp(); nl();
+
+                // "x position (symbolic):".Disp();
+
+                // intersection.x.Disp(); nl();
+
+                AssertIsTrue(
+                    intersection.x
+                    ==
+                    -2 * (cos(th) ^ -1) * (cos(thA) ^ 2) * (g ^ -1) * (sin(th) + -1 * cos(th) * (cos(thA) ^ -1) * sin(thA)) * (vA ^ 2));
+
+
+                //"y position (symbolic):".Disp();
+
+                //intersection.y.Disp(); nl();
+
+                AssertIsTrue(
+                    intersection.y
+                    ==
+                    -2 * (cos(th) ^ -2) * (cos(thA) ^ 2) / g * sin(th) * (sin(th) + -1 * cos(th) * (cos(thA) ^ -1) * sin(thA)) * (vA ^ 2));
+
+                //"x position (numeric):".Disp();
+
+                //numeric(intersection.x).Disp(); nl();
+
+                AssertEqual(numeric(intersection.x), 89.3120879153208);
+
+                //"y position (numeric):".Disp();
+
+                //numeric(intersection.y).Disp(); nl();
+
+                AssertEqual(numeric(intersection.y), -62.536928534704884);
+
+                var objB = new Obj()
+                {
+                    position = intersection,
+                    acceleration = _g
+                };
+
+                //"Determine how long the jumper is airborne".Disp(); nl();
+
+                //"symbolic:".Disp();
+
+                var timeB = Calc.Time(objA, objB, 1);
+
+                // timeB.Disp(); nl();
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                AssertIsTrue(
+                    timeB
+                    ==
+                    -1 / g * 
+                    (-sin(thA) * vA - 
+                        sqrt(
+                            (sin(thA) ^ 2) * (vA ^ 2) + 4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) * 
+                            (sin(th) - cos(th) / cos(thA) * sin(thA)) * 
+                            (vA ^ 2))));
+                
+                //"numeric:".Disp();
+
+                //numeric(timeB).Disp(); nl();
+
+                AssertEqual(numeric(timeB), 3.5724835166128317);
+
+                objB = objA.AtTime(timeB);
+
+                //"Determine his vertical component of velocity just before he lands".Disp();
+                //nl();
+
+                //"symbolic:".Disp();
+
+                //objB.velocity.y.Disp(); nl();
+
+                AssertIsTrue(
+                    objB.velocity.y
+                    ==
+                    -sqrt(
+                        (sin(thA) ^ 2) * (vA ^ 2) 
+                        + 
+                        4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) * 
+                        (sin(th) - cos(th) * (cos(thA) ^ -1) * sin(thA)) * 
+                        (vA ^ 2)));
+
+                //"numeric:".Disp();
+
+                //numeric(objB.velocity.y).Disp();
+
+                AssertEqual(
+                    numeric(objB.velocity.y),
+                    -35.010338462805755);
+            }
+
+            #endregion
 
             Console.WriteLine("Testing complete");
 
