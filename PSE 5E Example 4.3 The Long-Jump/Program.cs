@@ -56,7 +56,7 @@ namespace PSE_Example_4._3_The_Long_Jump
             objB = objA.AtTime(timeB);
             var objC = objA.AtTime(timeC);
 
-            Console.WriteLine("How far does he dump in the horizontal direction?");
+            Console.WriteLine("How far does he jump in the horizontal direction?");
             Console.WriteLine(objC.position.x);
 
             Console.WriteLine();

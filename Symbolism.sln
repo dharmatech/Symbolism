@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics", "Physics\Physics.csproj", "{73E0C26D-5333-4575-A3E9-5388E975446E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.3 The Long-Jump", "PSE Example 4.3 The Long-Jump\PSE 5E Example 4.3 The Long-Jump.csproj", "{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.3 The Long-Jump", "PSE 5E Example 4.3 The Long-Jump\PSE 5E Example 4.3 The Long-Jump.csproj", "{51C1B8ED-EDB7-443F-BE76-58A881EEFB20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.5 Thats Quite An Arm", "PSE 5E Example 4.5 Thats Quite An Arm\PSE 5E Example 4.5 Thats Quite An Arm.csproj", "{98A9D4E4-2AD1-4CC9-8697-C25097CA7420}"
 EndProject
