@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.7 The End of the Ski Jump", "PSE 5E Example 4.7 The End of the Ski Jump\PSE 5E Example 4.7 The End of the Ski Jump.csproj", "{9749F6B7-833F-4545-A69B-F6ED9DDEBB15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.6 The Stranded Explorers", "PSE 5E Example 4.6 The Stranded Explorers\PSE 5E Example 4.6 The Stranded Explorers.csproj", "{AA74302C-A679-4FDB-A988-8860EF0C4832}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,16 @@ Global
 		{9749F6B7-833F-4545-A69B-F6ED9DDEBB15}.Release|Mixed Platforms.Build.0 = Release|x86
 		{9749F6B7-833F-4545-A69B-F6ED9DDEBB15}.Release|x86.ActiveCfg = Release|x86
 		{9749F6B7-833F-4545-A69B-F6ED9DDEBB15}.Release|x86.Build.0 = Release|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Debug|x86.ActiveCfg = Debug|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Debug|x86.Build.0 = Debug|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Release|Any CPU.ActiveCfg = Release|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Release|Mixed Platforms.Build.0 = Release|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Release|x86.ActiveCfg = Release|x86
+		{AA74302C-A679-4FDB-A988-8860EF0C4832}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

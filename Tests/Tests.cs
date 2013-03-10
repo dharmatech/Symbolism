@@ -210,9 +210,12 @@ namespace Tests
 
                 // Console.WriteLine("Distance jumped: ");
 
+                var deg = 3.14159 / 180.0;
+
                 AssertIsTrue(
                     objC.position.x
-                    .Substitute(thA, Trig.ToRadians(20))
+                    // .Substitute(thA, Trig.ToRadians(20))
+                    .Substitute(thA, 20 * deg)
                     .Substitute(g, 9.8)
                     .Substitute(Trig.Pi, 3.14159)
                     .Substitute(vA, 11)
