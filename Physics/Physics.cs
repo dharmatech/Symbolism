@@ -26,6 +26,9 @@ namespace Physics
 
             throw new Exception();
         }
+
+        public static bool NotNull(params MathObject[] objs)
+        { return Array.TrueForAll(objs, elt => elt != null); }
     }
 
     public static class Trig
@@ -45,6 +48,9 @@ namespace Physics
 
         public static MathObject Cos(MathObject arg)
         { return new Cos(arg).Simplify(); }
+
+        public static MathObject Atan2(MathObject a, MathObject b)
+        { return new Atan2(a, b).Simplify(); }
     }
 
     public class Point
@@ -78,14 +84,26 @@ namespace Physics
         public static Point operator +(Point a, Point b)
         { return new Point(a.x + b.x, a.y + b.y); }
 
+        public static Point operator -(Point a, Point b)
+        { return new Point(a.x - b.x, a.y - b.y); }
+
         public static Point operator *(Point a, MathObject b)
         { return new Point(a.x * b, a.y * b); }
+
+        public static Point operator *(MathObject a, Point b)
+        { return b * a; }
 
         public static Point operator /(Point a, MathObject b)
         { return new Point(a.x / b, a.y / b); }
 
+        public static Point operator /(MathObject a, Point b)
+        { return new Point(a / b.x, a / b.y); }
+        
+
         public MathObject Norm()
         { return (x * x + y * y) ^ (new Integer(1) / 2); }
+
+        public MathObject ToAngle() { return Trig.Atan2(y, x); }
     }
 
     public class Obj
@@ -243,6 +261,32 @@ namespace Physics
                         a.velocity.y,
                         a.position.y - b.position.y,
                         solution);
+            }
+
+            throw new Exception();
+        }
+
+        public static Point InitialVelocity(Obj a, Obj b)
+        {
+            if (a.time != null && b.time != null)
+            {
+                var dt = b.time - a.time;
+
+                if (Misc.NotNull(
+                    a.position.x,
+                    a.position.y,
+                    b.position.x,
+                    b.position.y,
+                    a.acceleration.x,
+                    a.acceleration.y))
+                {
+                    var half = new Integer(1) / 2;
+
+                    return
+                        (b.position - a.position - half * a.acceleration * (dt ^ 2))
+                        /
+                        dt;
+                }
             }
 
             throw new Exception();
