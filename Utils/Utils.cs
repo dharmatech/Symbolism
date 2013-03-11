@@ -13,6 +13,10 @@ namespace Utils
             return obj;
         }
 
-        
+        public static T Disp<T>(this T obj, string format)
+        {
+            Console.WriteLine(string.Format(format, obj));
+            return obj;
+        }
     }
 }
