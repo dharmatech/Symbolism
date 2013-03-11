@@ -660,6 +660,27 @@ namespace Symbolism
         }
     }
 
+    public class Atan2 : Function
+    {
+        MathObject Atan2Proc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat && ls[1] is DoubleFloat)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((DoubleFloat)ls[0]).val,
+                        ((DoubleFloat)ls[1]).val));
+
+            return new Atan2(ls[0], ls[1]);
+        }
+
+        public Atan2(MathObject a, MathObject b)
+        {
+            name = "atan2";
+            args = new List<MathObject>() { a, b };
+            proc = Atan2Proc;
+        }
+    }
+
     public static class ListUtils
     {
         public static bool IsEmpty(this List<MathObject> obj)
