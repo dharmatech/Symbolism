@@ -87,7 +87,7 @@ namespace PSE_5E_Example_4._6_The_Stranded_Explorers
                 .Substitute(g, 9.8)
                 .Disp(); "".Disp();
 
-            "symbolic velocity.y:".Disp();
+            "numeric velocity.y:".Disp();
 
             objB.velocity.y
                 .Substitute(xA, 0)
