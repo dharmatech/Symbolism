@@ -660,6 +660,24 @@ namespace Symbolism
         }
     }
 
+    public class Asin : Function
+    {
+        MathObject AsinProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Asin(((DoubleFloat)ls[0]).val));
+
+            return new Asin(ls[0]);
+        }
+
+        public Asin(MathObject param)
+        {
+            name = "asin";
+            args = new List<MathObject>() { param };
+            proc = AsinProc;
+        }
+    }
+
     public class Atan2 : Function
     {
         MathObject Atan2Proc(params MathObject[] ls)

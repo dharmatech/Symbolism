@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Example 4.6 The Stra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Problem 4.9 Projectile Motion", "PSE 5E Problem 4.9 Projectile Motion\PSE 5E Problem 4.9 Projectile Motion.csproj", "{E867D14B-BCE4-4EF6-93D0-8E3102566E49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Problem 4.11 Snowball Fight", "PSE 5E Problem 4.11 Snowball Fight\PSE 5E Problem 4.11 Snowball Fight.csproj", "{E6DC12CB-976E-418F-A7E4-05F8351E8859}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,16 @@ Global
 		{E867D14B-BCE4-4EF6-93D0-8E3102566E49}.Release|Mixed Platforms.Build.0 = Release|x86
 		{E867D14B-BCE4-4EF6-93D0-8E3102566E49}.Release|x86.ActiveCfg = Release|x86
 		{E867D14B-BCE4-4EF6-93D0-8E3102566E49}.Release|x86.Build.0 = Release|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Debug|x86.ActiveCfg = Debug|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Debug|x86.Build.0 = Debug|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Release|Any CPU.ActiveCfg = Release|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Release|Mixed Platforms.Build.0 = Release|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Release|x86.ActiveCfg = Release|x86
+		{E6DC12CB-976E-418F-A7E4-05F8351E8859}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

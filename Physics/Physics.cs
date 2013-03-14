@@ -49,6 +49,9 @@ namespace Physics
         public static MathObject Cos(MathObject arg)
         { return new Cos(arg).Simplify(); }
 
+        public static MathObject Asin(MathObject arg)
+        { return new Asin(arg).Simplify(); }
+
         public static MathObject Atan2(MathObject a, MathObject b)
         { return new Atan2(a, b).Simplify(); }
     }
@@ -113,6 +116,9 @@ namespace Physics
         public Point acceleration = new Point();
 
         public MathObject time;
+
+        public MathObject angle;
+        public MathObject speed;
 
         public void Print()
         {
@@ -262,6 +268,77 @@ namespace Physics
                         a.position.y - b.position.y,
                         solution);
             }
+
+            throw new Exception();
+        }
+
+        #region InitialAngle notes
+
+        //             xB = xA + vxA t + 1/2 ax t^2        (1)
+
+        //             vxA = vA cos(th)                    (2)
+
+        //             ax = 0                              (4)
+
+        // (1):        xB = xA + vxA t + 1/2 ax t^2
+
+        // /. (2)      xB = xA + vA cos(th) t + 1/2 ax t^2
+
+        // /. (4)      xB = xA + vA cos(th) t              (1.1)
+
+
+        //             yB = yA + vyA t + 1/2 ay t^2        (5)
+
+        //             yB = yA                             (6)
+
+        //             vyA = vA sin(th)                    (8)
+
+        // (5):        yB = yA + vyA t + 1/2 ay t^2
+
+        // /. (8)      yB = yA + vA sin(th) t + 1/2 ay t^2
+
+        // /. (6)      yA = yA + vA sin(th) t + 1/2 ay t^2
+
+        //             0 = vA sin(th) t + 1/2 ay t^2
+
+        //             - vA sin(th) t = 1/2 ay t^2
+
+        //             - vA sin(th) = 1/2 ay t                 (5.1)
+
+
+        // (1.1):      xB = xA + vA cos(th) t
+
+        // t           t = (xB - xA) / vA / cos(th)            (1.2)
+
+
+        // (5.1):      - vA sin(th) = 1/2 ay t
+
+        // /. (1.2)    - vA sin(th) = 1/2 ay (xB - xA) / vA / cos(th)
+
+        //             2 sin(th) cos(th) = - ay (xB - xA) / vA^2
+
+        // double angle formula:
+
+        //             sin(2 th) = - ay (xB - xA) / vA^2                   (5.2)
+
+        // solutions for th:            
+
+        //             th = (- arcsin(- ay (xB - xA) / vA^2) + 2 pi n + pi) / 2   (5.3)
+
+        //             th = (arcsin(- ay (xB - xA) / vA^2) + 2 pi n) / 2          (5.4)
+
+        #endregion
+
+        public static MathObject InitialAngle(Obj a, Obj b, int solution = 0, int n = 0)
+        {
+            if (solution == 0)
+                return
+                    (-Trig.Asin(-a.acceleration.y * (b.position.x - a.position.x) / (a.speed ^ 2)) + 2 * Trig.Pi * n + Trig.Pi)
+                    /
+                    2;
+            else if (solution == 1)
+                return
+                    (Trig.Asin(-a.acceleration.y * (b.position.x - a.position.x) / (a.speed ^ 2)) + 2 * Trig.Pi * n) / 2;
 
             throw new Exception();
         }
