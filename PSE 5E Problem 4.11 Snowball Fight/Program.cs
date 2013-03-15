@@ -86,9 +86,42 @@ namespace PSE_5E_Problem_4._11_Snowball_Fight
 
             var th2 = Calc.InitialAngle(obj2A, obj2B, 1, 0);
 
+            ("At what angle should the second (low-angle) snowball " +
+            "be thrown if it is to land at the same point as the first?").Disp();
+
+            "".Disp();
+
+            "symbolic:".Disp();
+
+            th2.Disp(); "".Disp();
+
+            "numeric:".Disp();
+
+            th2
+                .ToDegrees()
+                .Substitute(yA, 0)
+                .Substitute(th1A, (70).ToRadians())
+                .Substitute(vA, 25)
+                .Substitute(g, 9.8)
+                .Substitute(Trig.Pi, Math.PI)
+                .Disp();
+
+            "".Disp();
+
             obj2A.velocity = Point.FromAngle(th2, vA);
 
             var time2B = Calc.Time(obj2A, obj2B, 1);
+
+            ("How many seconds later should the second snowball be thrown if it " +
+            "is to land at the same time as the first?").Disp();
+
+            "".Disp();
+
+            "symbolic:".Disp();
+
+            (time1B - time2B).Disp(); "".Disp();
+
+            "numeric:".Disp();
 
             (time1B - time2B)
                 .Substitute(yA, 0)
