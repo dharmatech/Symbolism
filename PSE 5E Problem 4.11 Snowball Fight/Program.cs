@@ -52,7 +52,7 @@ namespace PSE_5E_Problem_4._11_Snowball_Fight
 
             var obj1B = new Obj()            // snowball 1 at final point
             {
-                position = new Point(null, 0),
+                position = new Point(null, new DoubleFloat(0.0)),
                 velocity = new Point(obj1A.velocity.x, null),
                 acceleration = _g
             };
@@ -74,17 +74,7 @@ namespace PSE_5E_Problem_4._11_Snowball_Fight
                 acceleration = _g
             };
 
-            //Calc.InitialAngle(obj2A, obj2B, 1, 0)
-            //    .Substitute(yA, 0)
-            //    .Substitute(th1A, (70).ToRadians())
-            //    .Substitute(vA, 25)
-            //    .Substitute(Trig.Pi, 3.14159)
-            //    .Substitute(g, 9.8)
-            //    .ToDegrees()
-            //    .Substitute(Trig.Pi, 3.14159)
-            //    .Disp();
-
-            var th2 = Calc.InitialAngle(obj2A, obj2B, 1, 0);
+            var th2 = Calc.InitialAngle(obj2A, obj2B, 0, 0);
 
             ("At what angle should the second (low-angle) snowball " +
             "be thrown if it is to land at the same point as the first?").Disp();
@@ -124,13 +114,14 @@ namespace PSE_5E_Problem_4._11_Snowball_Fight
             "numeric:".Disp();
 
             (time1B - time2B)
-                .Substitute(yA, 0)
+                .Substitute(yA, 0.0)
                 .Substitute(th1A, (70).ToRadians())
-                .Substitute(vA, 25)
+                .Substitute(vA, 25.0)
                 .Substitute(Trig.Pi, 3.14159)
                 .Substitute(g, 9.8)
+                .Substitute(0, 0.0)
                 .Disp();
-
+            
             Console.ReadLine();
         }
     }

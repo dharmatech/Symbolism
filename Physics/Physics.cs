@@ -9,6 +9,12 @@ namespace Physics
 {
     public static class Misc
     {
+        public static MathObject Sqrt(MathObject a)
+        { return (a ^ (new Integer(1) / 2)); }
+
+        public static MathObject Sq(MathObject a)
+        { return (a ^ 2); }
+
         public static MathObject QuadraticEquation(MathObject a, MathObject b, MathObject c, int solution=0)
         {
             if (a == new Integer(0) || a == new DoubleFloat(0.0))
@@ -53,7 +59,7 @@ namespace Physics
         { return new Asin(arg).Simplify(); }
 
         public static MathObject Atan2(MathObject a, MathObject b)
-        { return new Atan2(a, b).Simplify(); }
+        { return new Symbolism.Atan2(a, b).Simplify(); }
     }
 
     public class Point
@@ -142,7 +148,7 @@ namespace Physics
                     time = t,
                     acceleration = acceleration,
                     velocity = velocity + acceleration * dt,
-                    position = position + velocity * dt + acceleration * dt * dt / new Integer(2)
+                    position = position + velocity * dt + acceleration * dt * dt / 2
                 };
         }
 
@@ -274,71 +280,84 @@ namespace Physics
 
         #region InitialAngle notes
 
-        //             xB = xA + vxA t + 1/2 ax t^2        (1)
+        // (1): 			xf = xi + vi cos(th) t + 1/2 ax t^2
+        //          		xf - xi = vi cos(th) t
+        // t        		t = (xf - xi) / (vi cos(th))       (1.1)
 
-        //             vxA = vA cos(th)                    (2)
+        // (2):     		yf = yi + vi sin(th) t + 1/2 ay t^2
+        //              	yf - yi = vi sin(th) t + 1/2 ay t^2
+        // /. (1.1)			yf - yi = vi sin(th) {(xf - xi) / (vi cos(th))} + 1/2 ay {(xf - xi) / (vi cos(th))}^2
+        //              	yf - yi = sin(th) (xf - xi) / cos(th) + 1/2 ay (xf - xi)^2 / (vi^2 cos^2(th))
+        // * 2 cos^2(th)    2 cos^2(th) (yf - yi) = 2 cos^2(th) sin(th) (xf - xi) / cos(th) + 2 cos^2(th) 1/2 ay (xf - xi)^2 / (vi^2 cos^2(th))
+        //                  2 cos^2(th) (yf - yi) = 2 cos(th) sin(th) (xf - xi) + ay (xf - xi)^2 / vi^2
+        // power-reducing / half angle identity     cos^2(x) = [1 + cos(2x)]/2 :
+        //                  2 [1 + cos(2 th)]/2 yf = 2 cos(th) sin(th) xf + ay xf^2 / vi^2
+        //                  [1 + cos(2 th)] yf = 2 cos(th) sin(th) xf + ay xf^2 / vi^2
+        // double angle formula 2 sin(x) cos(x) = sin(2x) :
+        //                  [1 + cos(2 th)] yf = sin(2 th) xf + ay xf^2 / vi^2
+        //                  yf + yf cos(2 th) = sin(2 th) xf + ay xf^2 / vi^2
+        //                  sin(2 th) xf - yf cos(2 th) = yf - ay xf^2 / vi^2
+        // xf = r cos(phi)
+        // yf = r sin(phi)
+        //                  sin(2 th) r cos(phi) - r sin(phi) cos(2 th) = yf - ay xf^2 / vi^2
+        //                  r [ sin(2 th) cos(phi) - sin(phi) cos(2 th) ] = yf - ay xf^2 / vi^2
+        // sum/difference identity  sin(x) cos(y) - sin(y) cos(x) = sin(x - y) :
+        //                  r sin(2 th - phi) = yf - ay xf^2 / vi^2
+        // r = sqrt(xf^2 + yf^2)
+        //                  sqrt(xf^2 + yf^2) sin(2 th - phi) = yf - ay xf^2 / vi^2
+        // tan(phi) = yf / xf       phi = arctan(yf / xf):
+        //                  sqrt(xf^2 + yf^2) sin(2 th - arctan(yf / xf)) = yf - ay xf^2 / vi^2
+        // sin(2 th - arctan(yf / xf)) = [yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)
+        //
+        // arcsin 1: 2 th - arctan(yf / xf) = arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)}         (arcsin1)
+        //
+        // and
+        //
+        // arcsin 2: 2 th - arctan(yf / xf) = PI - arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)}    (arcsin2)
 
-        //             ax = 0                              (4)
+        // (arcsin1):
+        //
+        // 2 th - arctan(yf / xf) = arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)}
+        // 2 th = arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)} + arctan(yf / xf)
+        // th = {arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)} + arctan(yf / xf)} / 2
 
-        // (1):        xB = xA + vxA t + 1/2 ax t^2
-
-        // /. (2)      xB = xA + vA cos(th) t + 1/2 ax t^2
-
-        // /. (4)      xB = xA + vA cos(th) t              (1.1)
-
-
-        //             yB = yA + vyA t + 1/2 ay t^2        (5)
-
-        //             yB = yA                             (6)
-
-        //             vyA = vA sin(th)                    (8)
-
-        // (5):        yB = yA + vyA t + 1/2 ay t^2
-
-        // /. (8)      yB = yA + vA sin(th) t + 1/2 ay t^2
-
-        // /. (6)      yA = yA + vA sin(th) t + 1/2 ay t^2
-
-        //             0 = vA sin(th) t + 1/2 ay t^2
-
-        //             - vA sin(th) t = 1/2 ay t^2
-
-        //             - vA sin(th) = 1/2 ay t                 (5.1)
-
-
-        // (1.1):      xB = xA + vA cos(th) t
-
-        // t           t = (xB - xA) / vA / cos(th)            (1.2)
-
-
-        // (5.1):      - vA sin(th) = 1/2 ay t
-
-        // /. (1.2)    - vA sin(th) = 1/2 ay (xB - xA) / vA / cos(th)
-
-        //             2 sin(th) cos(th) = - ay (xB - xA) / vA^2
-
-        // double angle formula:
-
-        //             sin(2 th) = - ay (xB - xA) / vA^2                   (5.2)
-
-        // solutions for th:            
-
-        //             th = (- arcsin(- ay (xB - xA) / vA^2) + 2 pi n + pi) / 2   (5.3)
-
-        //             th = (arcsin(- ay (xB - xA) / vA^2) + 2 pi n) / 2          (5.4)
+        // (arcsin2):
+        //
+        // 2 th - arctan(yf / xf) = PI - arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)}
+        // 2 th = PI - arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)} + arctan(yf / xf)
+        // th = [PI - arcsin{[yf - ay xf^2 / vi^2] / sqrt(xf^2 + yf^2)} + arctan(yf / xf)] / 2
 
         #endregion
 
         public static MathObject InitialAngle(Obj a, Obj b, int solution = 0, int n = 0)
         {
-            if (solution == 0)
-                return
-                    (-Trig.Asin(-a.acceleration.y * (b.position.x - a.position.x) / (a.speed ^ 2)) + 2 * Trig.Pi * n + Trig.Pi)
-                    /
-                    2;
-            else if (solution == 1)
-                return
-                    (Trig.Asin(-a.acceleration.y * (b.position.x - a.position.x) / (a.speed ^ 2)) + 2 * Trig.Pi * n) / 2;
+            if (Misc.NotNull(
+                    a.position.x,
+                    b.position.x,
+                    a.position.y,
+                    b.position.y,
+                    a.speed,
+                    a.acceleration.y)
+                &&
+                a.speed != 0 &&
+                a.speed != 0.0)
+            {
+                var xf = b.position.x - a.position.x;
+                var yf = b.position.y - a.position.y;
+                var vi = a.speed;
+                var ay = a.acceleration.y;
+
+                if (solution == 0)
+                    return
+                        (Trig.Asin((yf - ay * (xf ^ 2) / (vi ^ 2)) / Misc.Sqrt((xf ^ 2) + (yf ^ 2))) + Trig.Atan2(yf, xf))
+                        /
+                        2;
+                else if (solution == 1)
+                    return
+                        (Trig.Pi - Trig.Asin((yf - ay * (xf ^ 2) / (vi ^ 2)) / Misc.Sqrt((xf ^ 2) + (yf ^ 2))) + Trig.Atan2(yf, xf))
+                        /
+                        2;
+            }
 
             throw new Exception();
         }

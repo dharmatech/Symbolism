@@ -605,7 +605,7 @@ namespace Symbolism
             str.Append("(");
 
             for (var i = 0; i < args.Count - 1; i++)
-                args.ForEach(arg => str.Append(arg + ", "));
+                str.Append(args[i] + ", ");
 
             str.Append(args[args.Count - 1]);
 
@@ -687,6 +687,24 @@ namespace Symbolism
                     Math.Atan2(
                         ((DoubleFloat)ls[0]).val,
                         ((DoubleFloat)ls[1]).val));
+
+            if (ls[0] is Integer && ls[1] is DoubleFloat)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((Integer)ls[0]).val,
+                        ((DoubleFloat)ls[1]).val));
+
+            if (ls[0] is DoubleFloat && ls[1] is Integer)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((DoubleFloat)ls[0]).val,
+                        ((Integer)ls[1]).val));
+
+            if (ls[0] is Integer && ls[1] is Integer)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((Integer)ls[0]).val,
+                        ((Integer)ls[1]).val));
 
             return new Atan2(ls[0], ls[1]);
         }
