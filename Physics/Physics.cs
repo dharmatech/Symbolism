@@ -117,6 +117,8 @@ namespace Physics
 
     public class Obj
     {
+        public MathObject mass;
+
         public Point position = new Point();
         public Point velocity = new Point();
         public Point acceleration = new Point();
@@ -125,6 +127,18 @@ namespace Physics
 
         public MathObject angle;
         public MathObject speed;
+
+        // public Point[] forces;
+
+        public List<Point> forces;
+
+        public MathObject[] forceMagnitudes;
+
+        public MathObject[] forceAngles;
+
+        public Point totalForce;
+
+        
 
         public void Print()
         {
@@ -231,6 +245,72 @@ namespace Physics
                         position.x + d * Trig.Cos(theta),
                         position.y + d * Trig.Sin(theta));
             }
+
+            throw new Exception();
+        }
+
+        public MathObject TotalForceX()
+        {
+            MathObject Fx = 0;
+
+            forces.ForEach(elt =>
+                {
+                    if (elt.x == null)
+                        throw new Exception();
+                    Fx += elt.x;
+                });
+
+            return Fx;
+        }
+
+        public MathObject TotalForceY()
+        {
+            MathObject Fy = 0;
+
+            forces.ForEach(elt =>
+            {
+                if (elt.y == null)
+                    throw new Exception();
+                Fy += elt.y;
+            });
+
+            return Fy;
+        }
+
+        public Point TotalForce()
+        { return new Point(TotalForceX(), TotalForceY()); }
+
+        public MathObject AccelerationX()
+        {
+            if (mass != null) return TotalForceX() / mass;
+
+            throw new Exception();
+        }
+
+        public MathObject AccelerationY()
+        {
+            if (mass != null) return TotalForceY() / mass;
+
+            throw new Exception();
+        }
+
+        public Point VelocityAtTime(MathObject t)
+        {
+            var dt = t - time;
+
+            if (Misc.NotNull(velocity.x, velocity.y, acceleration.x, acceleration.y))
+                return velocity + acceleration * dt;
+
+            throw new Exception();
+        }
+
+        public MathObject Mass()
+        {
+            if (Misc.NotNull(totalForce.x, acceleration.x))
+                return totalForce.x / acceleration.x;
+
+            if (Misc.NotNull(totalForce.y, acceleration.y))
+                return totalForce.y / acceleration.y;
 
             throw new Exception();
         }
@@ -387,5 +467,50 @@ namespace Physics
 
             throw new Exception();
         }
+
+        //public static MathObject TotalForceX(Obj a)
+        //{
+
+        //}
+
+        //public static MathObject AccelerationX(Obj a)
+        //{
+        //    if (a.forces.All(elt => elt.x != null) && a.mass != null)
+        //    {
+        //        MathObject Fx = 0;
+
+        //        a.forces.ForEach(elt => Fx = Fx + elt.x);
+
+        //        return Fx / a.mass;
+        //    }
+
+        //    throw new Exception();
+        //}
+
+        //public static MathObject AccelerationY(Obj a)
+        //{
+        //    if (a.forces.All(elt => elt.y != null) && a.mass != null)
+        //    {
+        //        MathObject Fy = 0;
+
+        //        a.forces.ForEach(elt => Fy = Fy + elt.y);
+
+        //        return Fy / a.mass;
+        //    }
+
+        //    throw new Exception();
+        //}
+
+        //public static MathObject Angle(Obj a)
+        //{
+        //    a.totalForce.ToAngle()
+
+        //    if (Misc.NotNull(a.totalForce.x, a.totalForce.y))
+        //    {
+        //        Trig.Atan2(a.totalForce.y, a.totalForce.x)
+        //    }
+
+        //    throw new Exception();
+        //}
     }
 }

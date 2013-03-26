@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Problem 4.11 Snowbal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E Problem 4.17 Cannon Avalanche", "PSE 5E Problem 4.17 Cannon Avalanche\PSE 5E Problem 4.17 Cannon Avalanche.csproj", "{5623515A-8FC8-468F-9648-D6934D3D3E45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSE 5E PROBLEM 5.20 Three Forces Find Acceleration and Mass", "PSE 5E PROBLEM 5.20 Three Forces Find Acceleration and Mass\PSE 5E PROBLEM 5.20 Three Forces Find Acceleration and Mass.csproj", "{F07ABCCA-AADC-4562-8E83-A17746EC75B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,16 @@ Global
 		{5623515A-8FC8-468F-9648-D6934D3D3E45}.Release|Mixed Platforms.Build.0 = Release|x86
 		{5623515A-8FC8-468F-9648-D6934D3D3E45}.Release|x86.ActiveCfg = Release|x86
 		{5623515A-8FC8-468F-9648-D6934D3D3E45}.Release|x86.Build.0 = Release|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Debug|x86.ActiveCfg = Debug|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Debug|x86.Build.0 = Debug|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Release|Any CPU.ActiveCfg = Release|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Release|Mixed Platforms.Build.0 = Release|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Release|x86.ActiveCfg = Release|x86
+		{F07ABCCA-AADC-4562-8E83-A17746EC75B6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
