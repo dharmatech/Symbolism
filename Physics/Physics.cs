@@ -67,6 +67,9 @@ namespace Physics
         public MathObject x;
         public MathObject y;
 
+        public MathObject angle;
+        public MathObject magnitude;
+
         public Point() { }
 
         public Point(MathObject x_val, MathObject y_val)
@@ -115,6 +118,12 @@ namespace Physics
         public MathObject ToAngle() { return Trig.Atan2(y, x); }
     }
 
+    //public class Polar
+    //{
+    //    public MathObject angle;
+    //    public MathObject magnitude;
+    //}
+
     public class Obj
     {
         public MathObject mass;
@@ -130,11 +139,11 @@ namespace Physics
 
         // public Point[] forces;
 
-        public List<Point> forces;
+        public List<Point> forces = new List<Point>();
 
-        public MathObject[] forceMagnitudes;
+        // public List<MathObject> forceMagnitudes;
 
-        public MathObject[] forceAngles;
+        // public List<MathObject> forceAngles;
 
         public Point totalForce;
 
@@ -251,16 +260,28 @@ namespace Physics
 
         public MathObject TotalForceX()
         {
-            MathObject Fx = 0;
+            if (forces.All(force => force.angle != null)
+                &&
+                forces.All(force => force.magnitude != null))
+            {
 
-            forces.ForEach(elt =>
-                {
-                    if (elt.x == null)
-                        throw new Exception();
-                    Fx += elt.x;
-                });
+            }
 
-            return Fx;
+            if (forces.All(force => force.x != null))
+            {
+                MathObject Fx = 0;
+
+                forces.ForEach(elt =>
+                    {
+                        if (elt.x == null)
+                            throw new Exception();
+                        Fx += elt.x;
+                    });
+
+                return Fx;
+            }
+
+            throw new Exception();
         }
 
         public MathObject TotalForceY()
@@ -293,6 +314,9 @@ namespace Physics
 
             throw new Exception();
         }
+
+        public Point Acceleration()
+        { return new Point(AccelerationX(), AccelerationY()); }
 
         public Point VelocityAtTime(MathObject t)
         {
