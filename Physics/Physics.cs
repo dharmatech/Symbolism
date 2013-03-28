@@ -338,6 +338,21 @@ namespace Physics
 
             throw new Exception();
         }
+
+        public MathObject ForceMagnitude(Point f)
+        {
+            var otherForces = new List<Point>(forces);
+
+            otherForces.Remove(f);
+
+            var val = mass * acceleration.y;
+
+            otherForces.ForEach(force => val = val - force.magnitude * Trig.Sin(force.angle));
+
+            val = val / Trig.Sin(f.angle);
+
+            return val;
+        }
     }
     
     public static class Calc
