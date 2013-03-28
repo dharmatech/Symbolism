@@ -341,17 +341,52 @@ namespace Physics
 
         public MathObject ForceMagnitude(Point f)
         {
-            var otherForces = new List<Point>(forces);
+            // 2 unknown force magnitudes
+            // 0 unknown force angles
 
-            otherForces.Remove(f);
+            if (forces.Count(elt => elt.magnitude == null) == 2
+                &&
+                forces.Count(elt => elt.angle == null) == 0)
+            {
+                var otherUnknownForce = forces.Find(elt => elt != f && elt.magnitude == null);
 
-            var val = mass * acceleration.y;
+                var knownForces = new List<Point>(forces);
 
-            otherForces.ForEach(force => val = val - force.magnitude * Trig.Sin(force.angle));
+                knownForces.Remove(f);
+                knownForces.Remove(otherUnknownForce);
 
-            val = val / Trig.Sin(f.angle);
+                var th1 = f.angle;
+                var th2 = otherUnknownForce.angle;
 
-            return val;
+                var result = -acceleration.y * mass * Trig.Cos(th2) + acceleration.x * mass * Trig.Sin(th2);
+
+                knownForces.ForEach(elt =>
+                    {
+                        result = result - elt.magnitude * Trig.Cos(elt.angle) * Trig.Sin(th2);
+                        result = result + elt.magnitude * Trig.Sin(elt.angle) * Trig.Cos(th2);
+                    });
+
+                result = result / (Trig.Cos(th1) * Trig.Sin(th2) - Trig.Sin(th1) * Trig.Cos(th2));
+
+                return result;
+            }
+
+            if (Trig.Sin(f.angle) != 0 && Trig.Sin(f.angle) != 0.0)
+            {
+                var otherForces = new List<Point>(forces);
+
+                otherForces.Remove(f);
+
+                var val = mass * acceleration.y;
+
+                otherForces.ForEach(force => val = val - force.magnitude * Trig.Sin(force.angle));
+
+                val = val / Trig.Sin(f.angle);
+
+                return val;
+            }
+
+            throw new Exception();
         }
     }
     
