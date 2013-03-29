@@ -19,8 +19,13 @@ namespace PSE_5E_PROBLEM_5._24_BAG_OF_CEMENT
             // the system is in equilibrium, find the tensions
             // T1, T2, and T3 in the wires.
 
-            var F1 = new Symbol("F1");
-            var F2 = new Symbol("F2");
+            // From problem 5.25:
+
+            // If the system is in equilibrium, show that 
+            // the tension in the left-hand wire is
+            // 
+            // T1 = Fg cos(th2) / sin(th1 + th2)
+
             var F3 = new Symbol("F3");
 
             var th1 = new Symbol("th1");
