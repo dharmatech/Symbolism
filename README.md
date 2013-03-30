@@ -6,6 +6,8 @@ The automatic simplification algorithm comes from the book "Computer Algebra and
 
 [GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
 
+The projects "PSE 5E ..." are examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
+
 References:
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
