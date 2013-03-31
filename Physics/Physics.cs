@@ -264,21 +264,21 @@ namespace Physics
                 &&
                 forces.All(force => force.magnitude != null))
             {
+                MathObject SumFx = 0;
 
+                forces.ForEach(elt => 
+                    SumFx += elt.magnitude * Trig.Cos(elt.angle));
+
+                return SumFx;
             }
 
             if (forces.All(force => force.x != null))
             {
-                MathObject Fx = 0;
+                MathObject SumFx = 0;
 
-                forces.ForEach(elt =>
-                    {
-                        if (elt.x == null)
-                            throw new Exception();
-                        Fx += elt.x;
-                    });
+                forces.ForEach(elt => SumFx += elt.x);
 
-                return Fx;
+                return SumFx;
             }
 
             throw new Exception();
@@ -371,7 +371,18 @@ namespace Physics
                 return result;
             }
 
-            if (Trig.Sin(f.angle) != 0 && Trig.Sin(f.angle) != 0.0)
+            // F1 = (m ay - F2 sin(th2) - F3 sin(th3) ...) / sin(th1)
+
+            if (f.angle != null
+                &&
+                Trig.Sin(f.angle) != 0 
+                && 
+                Trig.Sin(f.angle) != 0.0
+                &&
+                forces.Count(elt => elt.magnitude == null) == 1
+                &&
+                forces.Count(elt => elt.angle == null) == 0
+                )
             {
                 var otherForces = new List<Point>(forces);
 
@@ -382,6 +393,32 @@ namespace Physics
                 otherForces.ForEach(force => val = val - force.magnitude * Trig.Sin(force.angle));
 
                 val = val / Trig.Sin(f.angle);
+
+                return val;
+            }
+
+            // F1 = (m ax - F2 cos(th2) - F3 cos(th3) ...) / cos(th1)
+
+            if (f.angle != null
+                &&
+                Trig.Cos(f.angle) != 0
+                &&
+                Trig.Cos(f.angle) != 0.0
+                &&
+                forces.Count(elt => elt.magnitude == null) == 1
+                &&
+                forces.Count(elt => elt.angle == null) == 0
+                )
+            {
+                var otherForces = new List<Point>(forces);
+
+                otherForces.Remove(f);
+
+                var val = mass * acceleration.x;
+
+                otherForces.ForEach(force => val = val - force.magnitude * Trig.Cos(force.angle));
+                
+                val = val / Trig.Cos(f.angle);
 
                 return val;
             }
