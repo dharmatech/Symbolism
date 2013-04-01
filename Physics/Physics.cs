@@ -579,6 +579,53 @@ namespace Physics
             throw new Exception();
         }
 
+        public static MathObject ForceMagnitude(Obj a, Obj b, Point _F1A, Point _F1B)
+        {
+            if (a.forces.Count(elt => elt.magnitude == null) == 2 &&
+                a.forces.Count(elt => elt.angle == null) == 0 &&
+                b.forces.Count(elt => elt.magnitude == null) == 2 &&
+                b.forces.Count(elt => elt.angle == null) == 0)
+            {
+                var _F2A = a.forces.Find(elt => elt != _F1A && elt.magnitude == null);
+                var _F2B = b.forces.Find(elt => elt != _F1B && elt.magnitude == null);
+
+                var th1A = _F1A.angle;
+                var th1B = _F1B.angle;
+
+                var th2A = _F2A.angle;
+                var th2B = _F2B.angle;
+
+                var knownForcesA = new List<Point>(a.forces);
+
+                knownForcesA.Remove(_F1A);
+                knownForcesA.Remove(_F2A);
+
+                var knownForcesB = new List<Point>(b.forces);
+
+                knownForcesB.Remove(_F1B);
+                knownForcesB.Remove(_F2B);
+
+                var result = -b.acceleration.x * b.mass * Trig.Cos(th2A);
+
+                result += a.acceleration.x * a.mass * Trig.Cos(th2B);
+
+                knownForcesA.ForEach(_F3A =>
+                    result -= _F3A.magnitude * Trig.Cos(_F3A.angle) * Trig.Cos(th2B));
+
+                knownForcesB.ForEach(_F3B =>
+                    result += _F3B.magnitude * Trig.Cos(_F3B.angle) * Trig.Cos(th2A));
+
+                if ((-Trig.Cos(th1B) * Trig.Cos(th2A) + Trig.Cos(th1A) * Trig.Cos(th2B)) != 0)
+                {
+                    result /= (-Trig.Cos(th1B) * Trig.Cos(th2A) + Trig.Cos(th1A) * Trig.Cos(th2B));
+
+                    return result;
+                }
+            }
+
+            throw new Exception();
+        }
+
         //public static MathObject TotalForceX(Obj a)
         //{
 
