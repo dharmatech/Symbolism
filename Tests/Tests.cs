@@ -810,7 +810,7 @@ namespace Tests
             {
                 // A bag of cement of weight 325 N hangs from three
                 // wires as shown in Figure P5.24. Two of the wires make
-                // angles th1 = 60.0° and th2 = 25.0° with the horizontal. If
+                // angles th1 = 60.0° and th2 = 25.0° with the horizontal. If
                 // the system is in equilibrium, find the tensions
                 // T1, T2, and T3 in the wires.
 
@@ -1040,12 +1040,12 @@ namespace Tests
                 // A simple accelerometer is constructed by suspending a
                 // mass m from a string of length L that is tied to the top
                 // of a cart. As the cart is accelerated the string-mass 
-                // system makes a constant angle th with the vertical. 
+                // system makes a constant angle th with the vertical. 
                 // (a) Assuming that the string mass is negligible compared 
                 // with m, derive an expression for the cart’s acceleration
-                // in terms of and show that it is independent of
+                // in terms of and show that it is independent of
                 // the mass mand the length L. 
-                // (b) Determine the acceleration of the cart when th = 23.0°.
+                // (b) Determine the acceleration of the cart when th = 23.0°.
 
                 var F1 = new Symbol("F1"); // force of string
                 var F2 = new Symbol("F2"); // force of gravity
@@ -1070,7 +1070,7 @@ namespace Tests
                 _F1.magnitude = obj.ForceMagnitude(_F1);
 
                 //("Derive an expression for the cart’s acceleration in terms " +
-                //"of and show that it is independent of the mass mand the length L:").Disp();
+                //"of and show that it is independent of the mass mand the length L:").Disp();
 
                 //"".Disp();
 
