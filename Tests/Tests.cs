@@ -1045,7 +1045,7 @@ namespace Tests
                 // with m, derive an expression for the cart’s acceleration
                 // in terms of and show that it is independent of
                 // the mass mand the length L. 
-                // (b) Determine the acceleration of the cart when th = 23.0°.
+                // (b) Determine the acceleration of the cart when th = 23.0°.
 
                 var F1 = new Symbol("F1"); // force of string
                 var F2 = new Symbol("F2"); // force of gravity
