@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E6DC12CB-976E-418F-A7E4-05F8351E8859}</ProjectGuid>
+    <ProjectGuid>{9749F6B7-833F-4545-A69B-F6ED9DDEBB15}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PSE_5E_Problem_4._11_Snowball_Fight</RootNamespace>
-    <AssemblyName>PSE 5E Problem 4.11 Snowball Fight</AssemblyName>
+    <RootNamespace>PSE_5E_Example_4._7_The_End_of_the_Ski_Jump</RootNamespace>
+    <AssemblyName>PSE 5E Example 4.7 The End of the Ski Jump</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -47,15 +47,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Physics\Physics.csproj">
+    <ProjectReference Include="..\..\Physics\Physics.csproj">
       <Project>{73E0C26D-5333-4575-A3E9-5388E975446E}</Project>
       <Name>Physics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Symbolism\Symbolism.csproj">
+    <ProjectReference Include="..\..\Symbolism\Symbolism.csproj">
       <Project>{067278C5-2A0F-42DE-838B-855EFB652608}</Project>
       <Name>Symbolism</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utils\Utils.csproj">
+    <ProjectReference Include="..\..\Utils\Utils.csproj">
       <Project>{A3F0F5DB-7EB2-488F-B79C-F667C4E5AB02}</Project>
       <Name>Utils</Name>
     </ProjectReference>

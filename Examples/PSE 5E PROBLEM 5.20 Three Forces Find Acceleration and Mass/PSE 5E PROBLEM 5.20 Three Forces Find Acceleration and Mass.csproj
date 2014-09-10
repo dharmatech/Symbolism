@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{98A9D4E4-2AD1-4CC9-8697-C25097CA7420}</ProjectGuid>
+    <ProjectGuid>{F07ABCCA-AADC-4562-8E83-A17746EC75B6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PSE_5E_Example_4._5_Thats_Quite_An_Arm</RootNamespace>
-    <AssemblyName>PSE 5E Example 4.5 Thats Quite An Arm</AssemblyName>
+    <RootNamespace>PSE_5E_PROBLEM_5._20_Three_Forces_Find_Acceleration_and_Mass</RootNamespace>
+    <AssemblyName>PSE 5E PROBLEM 5.20 Three Forces Find Acceleration and Mass</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -47,15 +47,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Physics\Physics.csproj">
+    <ProjectReference Include="..\..\Physics\Physics.csproj">
       <Project>{73E0C26D-5333-4575-A3E9-5388E975446E}</Project>
       <Name>Physics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Symbolism\Symbolism.csproj">
+    <ProjectReference Include="..\..\Symbolism\Symbolism.csproj">
       <Project>{067278C5-2A0F-42DE-838B-855EFB652608}</Project>
       <Name>Symbolism</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utils\Utils.csproj">
+    <ProjectReference Include="..\..\Utils\Utils.csproj">
       <Project>{A3F0F5DB-7EB2-488F-B79C-F667C4E5AB02}</Project>
       <Name>Utils</Name>
     </ProjectReference>
