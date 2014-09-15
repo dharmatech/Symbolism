@@ -40,6 +40,8 @@ namespace Tests
                 Console.WriteLine("{0} and {1} are not equal", x.val, y.val);
         }
 
+        static void Assert(bool val, string str) { if (!val) Console.WriteLine(str); }
+
         static void Main(string[] args)
         {
             Action<Equation> AssertIsTrue = (eq) =>
@@ -181,6 +183,23 @@ namespace Tests
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
 
                 // Console.WriteLine((x + x + x + x) / x);
+
+                #region FreeOf
+
+                var a = new Symbol("a");
+                var b = new Symbol("b");
+                var c = new Symbol("c");
+                var d = new Symbol("d");
+
+                Assert((a + b).FreeOf(b)               == false, "(a + b).FreeOf(b)");
+                Assert((a + b).FreeOf(c)               == true,  "(a + b).FreeOf(c)");
+                Assert(((a + b) * c).FreeOf(a + b)     == false, "((a + b) * c).FreeOf(a + b)");
+                Assert((sin(x) + 2 * x).FreeOf(sin(x)) == false, "(sin(x) + 2 * x).FreeOf(sin(x))");
+                Assert(((a + b + c) * d).FreeOf(a + b) == true,  "((a + b + c) * d).FreeOf(a + b)");
+                Assert(((y + 2 * x - y) / x).FreeOf(x) == true,  "((y + 2 * x - y) / x).FreeOf(x)");
+                Assert(((x * y) ^ 2).FreeOf(x * y)     == true,  "((x * y) ^ 2).FreeOf(x * y)");
+
+                #endregion
             }
 
             #region PSE 5E Example 4.3

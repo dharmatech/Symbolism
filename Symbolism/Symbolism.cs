@@ -144,6 +144,21 @@ namespace Symbolism
         public static MathObject operator -(MathObject a)
         { return new Difference(a).Simplify(); }
 
+        public bool Has(MathObject a)
+        {
+            if (this == a) return true;
+
+            if (this is Power) return (((Power)this).bas.Has(a) || ((Power)this).exp.Has(a));
+
+            if (this is Product)  return ((Product) this).elts.Any(elt => elt.Has(a));
+            if (this is Sum)      return ((Sum)     this).elts.Any(elt => elt.Has(a));
+            if (this is Function) return ((Function)this).args.Any(elt => elt.Has(a));
+
+            return false;
+        }
+
+        public bool FreeOf(MathObject a) { return !Has(a); }
+
         public MathObject Substitute(MathObject a, MathObject b)
         {
             if (this == a) return b;
