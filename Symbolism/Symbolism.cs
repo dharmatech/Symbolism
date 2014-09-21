@@ -187,6 +187,29 @@ namespace Symbolism
         // But for printing purposes, we'd like ^ to have a 
         // higher precedence than +.
 
+        public int DegreeMonomialGpe(List<MathObject> v)
+        {
+            if (v.All(FreeOf)) return 0;
+
+            if (v.Contains(this)) return 1;
+            
+            if (this is Power && ((Power)this).exp is Integer && ((Integer)((Power)this).exp).val > 1)
+                return ((Integer)((Power)this).exp).val;
+
+            if (this is Product) 
+                return ((Product)this).elts.Select(elt => elt.DegreeMonomialGpe(v)).Sum();
+
+            return 0;
+        }
+
+        public int DegreeGpe(List<MathObject> v)
+        {
+            if (this is Sum)
+                return ((Sum)this).elts.Select(elt => elt.DegreeMonomialGpe(v)).Max();
+
+            return DegreeMonomialGpe(v);
+        }
+
         public int Precedence()
         {
             if (this is Integer) return 1000;
@@ -597,7 +620,11 @@ namespace Symbolism
         public override int GetHashCode() { return name.GetHashCode(); }
 
         public override bool Equals(Object obj)
-        { return name == (obj as Symbol).name; }
+        {
+            if (obj is Symbol) return name == (obj as Symbol).name;
+
+            return false;
+        }
     }
 
     public class Function : MathObject
@@ -1092,7 +1119,11 @@ namespace Symbolism
         public override int GetHashCode() { return elts.GetHashCode(); }
 
         public override bool Equals(object obj)
-        { return ListUtils.equal(elts, ((Product)obj).elts); }
+        {
+            if (obj is Product) return ListUtils.equal(elts, ((Product)obj).elts);
+
+            return false;
+        }
         //////////////////////////////////////////////////////////////////////
 
         static List<MathObject> MergeProducts(List<MathObject> pElts, List<MathObject> qElts)

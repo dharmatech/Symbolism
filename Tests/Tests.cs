@@ -191,13 +191,37 @@ namespace Tests
                 var c = new Symbol("c");
                 var d = new Symbol("d");
 
-                Assert((a + b).FreeOf(b)               == false, "(a + b).FreeOf(b)");
-                Assert((a + b).FreeOf(c)               == true,  "(a + b).FreeOf(c)");
-                Assert(((a + b) * c).FreeOf(a + b)     == false, "((a + b) * c).FreeOf(a + b)");
+                Assert((a + b).FreeOf(b) == false, "(a + b).FreeOf(b)");
+                Assert((a + b).FreeOf(c) == true, "(a + b).FreeOf(c)");
+                Assert(((a + b) * c).FreeOf(a + b) == false, "((a + b) * c).FreeOf(a + b)");
                 Assert((sin(x) + 2 * x).FreeOf(sin(x)) == false, "(sin(x) + 2 * x).FreeOf(sin(x))");
-                Assert(((a + b + c) * d).FreeOf(a + b) == true,  "((a + b + c) * d).FreeOf(a + b)");
-                Assert(((y + 2 * x - y) / x).FreeOf(x) == true,  "((y + 2 * x - y) / x).FreeOf(x)");
-                Assert(((x * y) ^ 2).FreeOf(x * y)     == true,  "((x * y) ^ 2).FreeOf(x * y)");
+                Assert(((a + b + c) * d).FreeOf(a + b) == true, "((a + b + c) * d).FreeOf(a + b)");
+                Assert(((y + 2 * x - y) / x).FreeOf(x) == true, "((y + 2 * x - y) / x).FreeOf(x)");
+                Assert(((x * y) ^ 2).FreeOf(x * y) == true, "((x * y) ^ 2).FreeOf(x * y)");
+
+                #endregion
+
+                #region DegreeGpe
+
+                {
+                    var w = new Symbol("w");
+
+                    Assert(
+                        ((3 * w * x ^ 2) * (y ^ 3) * (z ^ 4)).DegreeGpe(new List<MathObject>() { x, z }) == 6,
+                        "((3 * w * x ^ 2) * (y ^ 3) * (z ^ 4)).DegreeGpe(new List<MathObject>() { x, z })");
+
+                    Assert(
+                        ((a * x ^ 2) + b * x + c).DegreeGpe(new List<MathObject>() { x }) == 2,
+                        "((a * x ^ 2) + b * x + c).DegreeGpe(new List<MathObject>() { x })");
+
+                    Assert(
+                        (a * (sin(x) ^ 2) + b * sin(x) + c).DegreeGpe(new List<MathObject>() { sin(x) }) == 2,
+                        "(a * (sin(x) ^ 2) + b * sin(x) + c).DegreeGpe(new List<MathObject>() { sin(x) })");
+
+                    Assert(
+                        (2 * (x ^ 2) * y * (z ^ 3) + w * x * (z ^ 6)).DegreeGpe(new List<MathObject>() { x, z }) == 7,
+                        "(2 * (x ^ 2) * y * (z ^ 3) + w * x * (z ^ 6)).DegreeGpe(new List<MathObject>() { x, z })");
+                }
 
                 #endregion
             }
