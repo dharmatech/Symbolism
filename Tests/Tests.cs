@@ -21,6 +21,8 @@ using Symbolism;
 using Physics;
 using Utils;
 
+using Symbolism.CoefficientGpe;
+
 namespace Tests
 {
     class Program
@@ -224,6 +226,21 @@ namespace Tests
                 }
 
                 #endregion
+
+                #region CoefficientGpe
+
+                AssertIsTrue((a * (x ^ 2) + b * x + c).CoefficientGpe(x, 2) == a);
+
+                AssertIsTrue((3 * x * (y ^ 2) + 5 * (x ^ 2) * y + 7 * x + 9).CoefficientGpe(x, 1) == 3 * (y ^ 2) + 7);
+
+                AssertIsTrue((3 * x * (y ^ 2) + 5 * (x ^ 2) * y + 7 * x + 9).CoefficientGpe(x, 3) == 0);
+
+                Assert(
+                    (3 * sin(x) * (x ^ 2) + 2 * x + 4).CoefficientGpe(x, 2) == null,
+                    "(3 * sin(x) * (x ^ 2) + 2 * x + 4).CoefficientGpe(x, 2) == null");
+
+                #endregion
+
             }
 
             #region PSE 5E Example 4.3
