@@ -22,6 +22,7 @@ using Physics;
 using Utils;
 
 using Symbolism.CoefficientGpe;
+using Symbolism.AlgebraicExpand;
 
 namespace Tests
 {
@@ -238,6 +239,42 @@ namespace Tests
                 Assert(
                     (3 * sin(x) * (x ^ 2) + 2 * x + 4).CoefficientGpe(x, 2) == null,
                     "(3 * sin(x) * (x ^ 2) + 2 * x + 4).CoefficientGpe(x, 2) == null");
+
+                #endregion
+
+                #region AlgebraicExpand
+
+                AssertIsTrue(
+                    ((x + 2) * (x + 3) * (x + 4)).AlgebraicExpand()
+                    ==
+                    24 + 26 * x + 9 * (x ^ 2) + (x ^ 3));
+
+                AssertIsTrue(
+                    ((x + y + z) ^ 3).AlgebraicExpand()
+                    ==
+                    (x ^ 3) + (y ^ 3) + (z ^ 3) +
+                    3 * (x ^ 2) * y + 
+                    3 * (y ^ 2) * x + 
+                    3 * (x ^ 2) * z + 
+                    3 * (y ^ 2) * z + 
+                    3 * (z ^ 2) * x + 
+                    3 * (z ^ 2) * y +
+                    6 * x * y * z);
+
+                AssertIsTrue(
+                    (((x + 1) ^ 2) + ((y + 1) ^ 2)).AlgebraicExpand()
+                    ==
+                    2 + 2 * x + (x ^ 2) + 2 * y + (y ^ 2));
+
+                AssertIsTrue(
+                    ((((x + 2) ^ 2) + 3) ^ 2).AlgebraicExpand()
+                    ==
+                    49 + 56 * x + 30 * (x ^ 2) + 8 * (x ^ 3) + (x ^ 4));
+
+                AssertIsTrue(
+                    sin(x * (y + z)).AlgebraicExpand()
+                    ==
+                    sin(x * y + x * z));
 
                 #endregion
 

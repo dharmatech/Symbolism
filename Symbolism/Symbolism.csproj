@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlgebraicExpand.cs" />
     <Compile Include="CoefficientGpe.cs" />
     <Compile Include="ExpandPower.cs" />
     <Compile Include="ExpandProduct.cs" />
