@@ -59,7 +59,7 @@ namespace Tests
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
-
+                
                 Func<int, Integer> Int = (n) => new Integer(n);
 
                 AssertIsTrue(x + x == 2 * x);
@@ -186,6 +186,12 @@ namespace Tests
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
 
                 // Console.WriteLine((x + x + x + x) / x);
+
+                #region Sum
+
+                Assert((x + y).Equals(x * y) == false, "(x + y).Equals(x * y)");
+
+                #endregion
 
                 #region FreeOf
 

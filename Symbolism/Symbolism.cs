@@ -1283,7 +1283,11 @@ namespace Symbolism
         { return elts.GetHashCode(); }
 
         public override bool Equals(object obj)
-        { return ListUtils.equal(elts, ((Sum)obj).elts); }
+        {
+            if (obj is Sum) return ListUtils.equal(elts, ((Sum)obj).elts);
+
+            return false;
+        }
         //////////////////////////////////////////////////////////////////////
 
         static List<MathObject> MergeSums(List<MathObject> pElts, List<MathObject> qElts)
