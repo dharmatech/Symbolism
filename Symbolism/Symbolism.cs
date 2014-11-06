@@ -1126,7 +1126,7 @@ namespace Symbolism
         { return bas.Substitute(a, b) ^ exp.Substitute(a, b); }
     }
 
-    class Product : MathObject
+    public class Product : MathObject
     {
         public List<MathObject> elts;
 
