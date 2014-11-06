@@ -248,6 +248,19 @@ namespace Symbolism
         public override string ToString()
         { return a + " == " + b; }
 
+        public override bool Equals(object obj)
+        {
+            // if (obj is Equation == false) return false;
+
+            if (
+                obj is Equation &&
+                a.Equals((obj as Equation).a) &&
+                b.Equals((obj as Equation).b))
+                return true;
+
+            return false;
+        }
+
         Boolean ToBoolean()
         {
             if (a is Integer && b is Integer) return ((Integer)a).Equals(b);
