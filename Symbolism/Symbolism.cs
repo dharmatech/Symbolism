@@ -713,6 +713,29 @@ namespace Symbolism
         }
     }
 
+    public class Or : Function
+    {
+        MathObject OrProc(params MathObject[] ls)
+        {
+            if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
+
+            if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);
+
+            var obj = new Or();
+
+            obj.args = new List<MathObject>(ls);
+
+            return obj;
+        }
+
+        public Or(params MathObject[] ls)
+        {
+            name = "Or";
+            args = new List<MathObject>(ls);
+            proc = OrProc;
+        }
+    }
+
     public class Sin : Function
     {
         MathObject SinProc(params MathObject[] ls)
