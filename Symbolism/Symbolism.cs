@@ -1327,7 +1327,7 @@ namespace Symbolism
 
     }
 
-    class Sum : MathObject
+    public class Sum : MathObject
     {
         public List<MathObject> elts;
 
