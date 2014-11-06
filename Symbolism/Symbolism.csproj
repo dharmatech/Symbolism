@@ -50,6 +50,7 @@
     <Compile Include="CoefficientGpe.cs" />
     <Compile Include="ExpandPower.cs" />
     <Compile Include="ExpandProduct.cs" />
+    <Compile Include="IsolateVariable.cs" />
     <Compile Include="Symbolism.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -23,6 +23,7 @@ using Utils;
 
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
+using Symbolism.IsolateVariable;
 
 namespace Tests
 {
@@ -281,6 +282,12 @@ namespace Tests
                     sin(x * (y + z)).AlgebraicExpand()
                     ==
                     sin(x * y + x * z));
+
+                #endregion
+
+                #region IsolateVariable
+
+                Assert((0 == x - y).IsolateVariable(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
                 #endregion
 
