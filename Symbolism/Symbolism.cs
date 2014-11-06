@@ -227,7 +227,7 @@ namespace Symbolism
         }
     }
 
-    public class Equation
+    public class Equation : MathObject
     {
         public enum Operators { Equal, NotEqual }
 
