@@ -297,6 +297,26 @@ namespace Symbolism
         }
     }
 
+    public class Bool : MathObject
+    {
+        public bool val;
+
+        public Bool(bool b) { val = b; }
+
+        public override string ToString()
+        { return val.ToString(); }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Bool) return val = (obj as Bool).val;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        { return val.GetHashCode(); }
+    }
+
     //public class NotEqual
     //{
     //    public MathObject a;
