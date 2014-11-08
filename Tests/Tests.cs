@@ -57,6 +57,11 @@ namespace Tests
             Func<MathObject, MathObject> cos = obj => Trig.Cos(obj);
 
             {
+                var a = new Symbol("a");
+                var b = new Symbol("b");
+                var c = new Symbol("c");
+                var d = new Symbol("d");
+
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
@@ -111,12 +116,16 @@ namespace Tests
 
                 AssertIsTrue(3.4 * x * 1.2 * y == 4.08 * x * y);
 
-                // Power.Simplify
+                AssertIsTrue((a == b) == (a == b));
+
+                #region Power.Simplify
 
                 AssertIsTrue((0 ^ x) == 0);
                 AssertIsTrue((1 ^ x) == 1);
                 AssertIsTrue((x ^ 0) == 1);
                 AssertIsTrue((x ^ 1) == x);
+
+                #endregion
 
                 // Product.Simplify
 
@@ -128,6 +137,7 @@ namespace Tests
 
                 AssertIsTrue(x - y == x + -1 * y);
 
+                #region Substitute
 
                 AssertIsTrue(Int(10).Substitute(Int(10), 20) == 20);
                 AssertIsTrue(Int(10).Substitute(Int(15), 20) == 10);
@@ -159,6 +169,8 @@ namespace Tests
                         .Substitute(z, 3)
                         == 16200
                         );
+
+                #endregion
 
                 AssertIsTrue(sin(new DoubleFloat(3.14159 / 2)) == 0.99999999999911982);
 
@@ -195,11 +207,6 @@ namespace Tests
                 #endregion
 
                 #region FreeOf
-
-                var a = new Symbol("a");
-                var b = new Symbol("b");
-                var c = new Symbol("c");
-                var d = new Symbol("d");
 
                 Assert((a + b).FreeOf(b) == false, "(a + b).FreeOf(b)");
                 Assert((a + b).FreeOf(c) == true, "(a + b).FreeOf(c)");
@@ -289,6 +296,20 @@ namespace Tests
 
                 Assert((0 == x - y).IsolateVariable(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                Assert(
+                    (a * (x ^ 2) + b * x + c == 0)
+                        .IsolateVariable(x)
+                        .Equals(
+                            new Or(
+                                x == (-b + sqrt((b ^ 2) - 4 * a * c)) / (2 * a),
+                                x == (-b - sqrt((b ^ 2) - 4 * a * c)) / (2 * a)
+                            )
+                        )
+                    , "(a * (x ^ 2) + b * x + c == 0).IsolateVariable(x)"
+                );
+                
                 #endregion
 
             }

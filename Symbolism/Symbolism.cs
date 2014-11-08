@@ -263,6 +263,9 @@ namespace Symbolism
 
         Boolean ToBoolean()
         {
+
+            if (a is Equation && b is Equation) return (a as Equation).Equals(b);
+
             if (a is Integer && b is Integer) return ((Integer)a).Equals(b);
             if (a is DoubleFloat && b is DoubleFloat) return ((DoubleFloat)a).Equals(b);
             if (a is Symbol && b is Symbol) return ((Symbol)a).Equals(b);
