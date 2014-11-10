@@ -148,6 +148,8 @@ namespace Symbolism
         {
             if (this == a) return true;
 
+            if (this is Equation) return (this as Equation).a.Has(a) || (this as Equation).b.Has(a);
+
             if (this is Power) return (((Power)this).bas.Has(a) || ((Power)this).exp.Has(a));
 
             if (this is Product)  return ((Product) this).elts.Any(elt => elt.Has(a));
@@ -162,6 +164,8 @@ namespace Symbolism
         public MathObject Substitute(MathObject a, MathObject b)
         {
             if (this == a) return b;
+
+            if (this is Equation) return (this as Equation).Substitute(a, b);
 
             if (this is Power) return ((Power)this).Substitute(a, b);
 
@@ -297,6 +301,11 @@ namespace Symbolism
                 return !((eq.a == eq.b).ToBoolean());
 
             throw new Exception();
+        }
+
+        public MathObject Substitute(MathObject x, MathObject y)
+        {
+            return a.Substitute(x, y) == b.Substitute(x, y);
         }
     }
 

@@ -14,6 +14,13 @@ namespace Symbolism
         {
             public static MathObject AlgebraicExpand(this MathObject u)
             {
+                if (u is Equation)
+                {
+                    var eq = u as Equation;
+
+                    return eq.a.AlgebraicExpand() == eq.b.AlgebraicExpand();
+                }
+
                 if (u is Sum)
                 {
                     return new Sum()

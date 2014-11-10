@@ -24,6 +24,7 @@ using Utils;
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 using Symbolism.IsolateVariable;
+using Symbolism.EliminateVariable;
 
 namespace Tests
 {
@@ -290,6 +291,12 @@ namespace Tests
                     ==
                     sin(x * y + x * z));
 
+
+                AssertIsTrue(
+                    (a * (b + c) == x * (y + z)).AlgebraicExpand()
+                    ==
+                    (a * b + a * c == x * y + x * z));
+
                 #endregion
 
                 #region IsolateVariable
@@ -310,6 +317,133 @@ namespace Tests
                     , "(a * (x ^ 2) + b * x + c == 0).IsolateVariable(x)"
                 );
                 
+                #endregion
+
+                #region EliminateVariable
+
+                #region PSE Example 2.6
+
+                {
+                    var sAC = new Symbol("sAC");
+                    var vA = new Symbol("vA");
+                    var vC = new Symbol("vC");
+                    // var a = new Symbol("a");
+                    var tAC = new Symbol("tAC");
+
+                    var sAB = new Symbol("sAB");
+                    // var vA = new Symbol("vA");
+                    var vB = new Symbol("vB");
+                    // var a = new Symbol("a");
+                    var tAB = new Symbol("tAB");
+
+
+
+                    var eqs = new List<Equation>()
+                    {
+                        tAB == tAC / 2,
+
+                        vC == vA + a * tAC,
+                        sAC == (vA + vC) * tAC / 2,
+
+                        vB == vA + a * tAB,
+                        sAB == (vA + vB) * tAB / 2,
+
+                        // tAB == tAC / 2
+                    };
+
+                    // sAC
+                    // vA = 10
+                    // vC = 30
+                    // a
+                    // tAC = 10
+
+                    // sAB
+                    // vA = 10
+                    // vB
+                    // a
+                    // tAB = tAC / 2
+
+                    {
+
+                        var result = eqs
+                            .EliminateVariable(tAB)
+                            .EliminateVariable(sAC)
+                            .EliminateVariable(vB)
+                            .EliminateVariable(sAB)[0]
+                            .IsolateVariable(a);
+
+                        AssertIsTrue(result == (a == (vC - vA) / tAC));
+
+                        AssertIsTrue(
+                            result
+                                .Substitute(vA, 10)
+                                .Substitute(vC, 30)
+                                .Substitute(tAC, 10)
+                            ==
+                            (a == 2));
+                    }
+
+                    AssertIsTrue(
+                        eqs
+                            .EliminateVariable(vB)
+                            .EliminateVariable(a)
+                            .EliminateVariable(tAB)[1]
+
+                            .Substitute(vA, 10)
+                            .Substitute(vC, 30)
+                            .Substitute(tAC, 10)
+                        ==
+                        (sAB == 75));
+                }
+
+                #endregion
+    
+                #region PSE Example 2.8
+                {
+                    var x1A = new Symbol("x1A");
+                    var x1B = new Symbol("x1B");
+                    var vx1A = new Symbol("vx1A");
+                    var vx1B = new Symbol("vx1B");
+                    var a1 = new Symbol("a1");
+                    var t1 = new Symbol("t1");
+
+                    var x2A = new Symbol("x2A");
+                    var x2B = new Symbol("x2B");
+                    var vx2A = new Symbol("vx2A");
+                    var vx2B = new Symbol("vx2B");
+                    var a2 = new Symbol("a2");
+                    var t2 = new Symbol("t2");
+
+                    var eqs =
+                        new List<Equation>()
+                        {
+                            vx1B == vx1A + a1 * t1,
+                            x1B - x1A == t1 * (vx1A + vx1B) / 2,
+                            x1B == x2B,
+                            x2B - x2A == t2 * (vx2A + vx2B) / 2,
+                            t1 == t2 - 1
+                        };
+
+                    var eq = eqs
+                        .EliminateVariable(t2)
+                        .EliminateVariable(x1B)
+                        .EliminateVariable(x2B)
+                        .EliminateVariable(vx1B)[0];
+
+                    AssertEqual(
+                        ((eq.IsolateVariable(t1) as Or).args[1] as Equation).b
+                            .Substitute(x1A, 0)
+                            .Substitute(vx1A, 0)
+                            .Substitute(a1, 3)
+
+                            .Substitute(x2A, 0)
+                            .Substitute(vx2A, 45)
+                            .Substitute(vx2B, 45.0),
+                        31.0, 0.1);
+
+                }
+                #endregion
+
                 #endregion
 
             }
