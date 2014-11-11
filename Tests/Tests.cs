@@ -28,6 +28,16 @@ using Symbolism.EliminateVariable;
 
 namespace Tests
 {
+    public static class Extensions
+    {
+        public static MathObject AssertEqTo(this MathObject a, MathObject b)
+        {
+            if (!(a == b)) Console.WriteLine((a == b).ToString());
+
+            return a;
+        }
+    }
+
     class Program
     {
         static void AssertEqual(DoubleFloat a, DoubleFloat b, double tolerance = 0.00000001)
@@ -46,6 +56,15 @@ namespace Tests
         }
 
         static void Assert(bool val, string str) { if (!val) Console.WriteLine(str); }
+
+        static List<Equation> Kinematic(Symbol s, Symbol u, Symbol v, Symbol a, Symbol t)
+        {
+            return new List<Equation>()
+            {
+                v == u + a * t,
+                s == (u + v) * t / 2
+            };
+        }
 
         static void Main(string[] args)
         {
@@ -397,7 +416,7 @@ namespace Tests
                 }
 
                 #endregion
-    
+                
                 #region PSE Example 2.8
                 {
                     var x1A = new Symbol("x1A");
@@ -447,6 +466,44 @@ namespace Tests
                 #endregion
 
             }
+
+            #region EliminateVariable
+
+            #region PSE Example 2.7
+            {
+                // s = 
+                // u = 63
+                // v =  0
+                // a =
+                // t =  2
+
+                var s = new Symbol("s");
+                var u = new Symbol("u");
+                var v = new Symbol("v");
+                var a = new Symbol("a");
+                var t = new Symbol("t");
+
+                var eqs = Kinematic(s, u, v, a, t);
+
+                eqs
+                    .EliminateVariable(s)[0]
+                    .IsolateVariable(a)
+                    .AssertEqTo(a == (v - u) / t)
+                    .Substitute(u, 63)
+                    .Substitute(v, 0)
+                    .Substitute(t, 2.0)
+                    .AssertEqTo(a == -31.5);
+
+                eqs
+                    .EliminateVariable(a)[0]
+                    .Substitute(u, 63)
+                    .Substitute(v, 0)
+                    .Substitute(t, 2.0)
+                    .AssertEqTo(s == 63.0);
+            }
+            #endregion
+
+            #endregion
 
             #region PSE 5E Example 4.3
             {
