@@ -36,6 +36,21 @@ namespace Tests
 
             return a;
         }
+
+        public static MathObject AssertEqToDouble(this MathObject a, MathObject b, double tolerance = 0.000001)
+        {
+            if (
+                Math.Abs(
+                    ((a as Equation).b as DoubleFloat).val
+                    -
+                    ((b as Equation).b as DoubleFloat).val)
+                > tolerance)
+            {
+                Console.WriteLine("{0} and {1} are not equal", a, b);
+            }
+
+            return a;
+        }
     }
 
     class Program
@@ -417,52 +432,6 @@ namespace Tests
 
                 #endregion
                 
-                #region PSE Example 2.8
-                {
-                    var x1A = new Symbol("x1A");
-                    var x1B = new Symbol("x1B");
-                    var vx1A = new Symbol("vx1A");
-                    var vx1B = new Symbol("vx1B");
-                    var a1 = new Symbol("a1");
-                    var t1 = new Symbol("t1");
-
-                    var x2A = new Symbol("x2A");
-                    var x2B = new Symbol("x2B");
-                    var vx2A = new Symbol("vx2A");
-                    var vx2B = new Symbol("vx2B");
-                    var a2 = new Symbol("a2");
-                    var t2 = new Symbol("t2");
-
-                    var eqs =
-                        new List<Equation>()
-                        {
-                            vx1B == vx1A + a1 * t1,
-                            x1B - x1A == t1 * (vx1A + vx1B) / 2,
-                            x1B == x2B,
-                            x2B - x2A == t2 * (vx2A + vx2B) / 2,
-                            t1 == t2 - 1
-                        };
-
-                    var eq = eqs
-                        .EliminateVariable(t2)
-                        .EliminateVariable(x1B)
-                        .EliminateVariable(x2B)
-                        .EliminateVariable(vx1B)[0];
-
-                    AssertEqual(
-                        ((eq.IsolateVariable(t1) as Or).args[1] as Equation).b
-                            .Substitute(x1A, 0)
-                            .Substitute(vx1A, 0)
-                            .Substitute(a1, 3)
-
-                            .Substitute(x2A, 0)
-                            .Substitute(vx2A, 45)
-                            .Substitute(vx2B, 45.0),
-                        31.0, 0.1);
-
-                }
-                #endregion
-
                 #endregion
 
             }
@@ -500,6 +469,62 @@ namespace Tests
                     .Substitute(v, 0)
                     .Substitute(t, 2.0)
                     .AssertEqTo(s == 63.0);
+            }
+            #endregion
+
+            #region PSE Example 2.8
+            {
+                // car
+                //
+                // s1 =  
+                // u1 = 45
+                // v1 = 45
+                // a1 =  0
+                // t1 = 
+
+                // officer
+                //
+                // s2 =  
+                // u2 =  0
+                // v2 = 
+                // a2 =  3
+                // t2
+
+                var s1 = new Symbol("s1");
+                var u1 = new Symbol("u1");
+                var v1 = new Symbol("v1");
+                var a1 = new Symbol("a1");
+                var t1 = new Symbol("t1");
+
+                var s2 = new Symbol("s2");
+                var u2 = new Symbol("u2");
+                var v2 = new Symbol("v2");
+                var a2 = new Symbol("a2");
+                var t2 = new Symbol("t2");
+
+                var eqs = new List<Equation>() 
+                {
+                    u1 == v1,
+                    s1 == s2,
+                    t2 == t1 - 1
+                };
+
+                eqs.AddRange(Kinematic(s1, u1, v1, a1, t1));
+                eqs.AddRange(Kinematic(s2, u2, v2, a2, t2));
+
+                var expr = eqs
+                    .EliminateVariable(s2)
+                    .EliminateVariable(t1)
+                    .EliminateVariable(a1)
+                    .EliminateVariable(s1)
+                    .EliminateVariable(v2)
+                    .EliminateVariable(u1)[0]
+                    .IsolateVariable(t2)
+                    .Substitute(v1, 45.0)
+                    .Substitute(u2, 0)
+                    .Substitute(a2, 3);
+
+                (expr as Or).args[1].AssertEqToDouble(t2 == 30.97, 0.1);
             }
             #endregion
 
@@ -1520,7 +1545,15 @@ namespace Tests
 
             Console.WriteLine("Testing complete");
 
+            
+
             Console.ReadLine();
+        }
+
+        static string GetName<T>(T item) where T : class
+        {
+            var properties = typeof(T).GetProperties();
+            return properties[0].Name;
         }
     }
 }
