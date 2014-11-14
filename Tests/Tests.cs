@@ -513,12 +513,7 @@ namespace Tests
                 eqs.AddRange(Kinematic(s2, u2, v2, a2, t2));
 
                 var expr = eqs
-                    .EliminateVariable(s2)
-                    .EliminateVariable(t1)
-                    .EliminateVariable(a1)
-                    .EliminateVariable(s1)
-                    .EliminateVariable(v2)
-                    .EliminateVariable(u1)[0]
+                    .EliminateVariables(s2, t1, a1, s1, v2, u1)[0]
                     .IsolateVariable(t2)
                     .Substitute(v1, 45.0)
                     .Substitute(u2, 0)

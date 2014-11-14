@@ -58,5 +58,15 @@ namespace Symbolism.EliminateVariable
 
             throw new Exception();
         }
+   
+        public static List<Equation> EliminateVariables(this List<Equation> eqs, params Symbol[] syms)
+        {
+            var result = eqs;
+
+            foreach (var sym in syms) 
+                result = result.EliminateVariable(sym);
+
+            return result;
+        }
     }
 }
