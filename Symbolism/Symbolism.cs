@@ -178,6 +178,12 @@ namespace Symbolism
             return this;
         }
 
+        public MathObject SubstituteEq(Equation eq)
+        { return Substitute(eq.a, eq.b); }
+
+        public MathObject SubstituteEqLs(List<Equation> eqs)
+        { return eqs.Aggregate(this, (a, eq) => a.SubstituteEq(eq)); }
+
         public MathObject Substitute(MathObject a, int b)
         { return Substitute(a, new Integer(b)); }
 

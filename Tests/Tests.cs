@@ -454,20 +454,19 @@ namespace Tests
 
                 var eqs = Kinematic(s, u, v, a, t);
 
+                var vals = new List<Equation>()
+                { u == 63, v == 0, t == 2.0 };
+
                 eqs
                     .EliminateVariable(s)[0]
                     .IsolateVariable(a)
                     .AssertEqTo(a == (v - u) / t)
-                    .Substitute(u, 63)
-                    .Substitute(v, 0)
-                    .Substitute(t, 2.0)
+                    .SubstituteEqLs(vals)
                     .AssertEqTo(a == -31.5);
 
                 eqs
                     .EliminateVariable(a)[0]
-                    .Substitute(u, 63)
-                    .Substitute(v, 0)
-                    .Substitute(t, 2.0)
+                    .SubstituteEqLs(vals)
                     .AssertEqTo(s == 63.0);
             }
             #endregion
