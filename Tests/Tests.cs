@@ -103,6 +103,8 @@ namespace Tests
                 
                 Func<int, Integer> Int = (n) => new Integer(n);
 
+                #region Simplify
+
                 AssertIsTrue(x + x == 2 * x);
 
                 AssertIsTrue(x + x == 2 * x);
@@ -152,6 +154,8 @@ namespace Tests
                 AssertIsTrue(3.4 * x * 1.2 * y == 4.08 * x * y);
 
                 AssertIsTrue((a == b) == (a == b));
+
+                #endregion
 
                 #region Power.Simplify
 
@@ -234,6 +238,24 @@ namespace Tests
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
 
                 // Console.WriteLine((x + x + x + x) / x);
+
+                #region And
+
+                new And(10, 20, 30).Simplify().AssertEqTo(new And(10, 20, 30));
+
+                new And(10, new Bool(false), 20).Simplify().AssertEqTo(new Bool(false));
+                
+                #endregion
+
+                #region Or
+
+                new Or(10, 20, new Bool(false)).Simplify().AssertEqTo(new Or(10, 20, new Bool(false)));
+
+                new Or(new Bool(false), new Bool(false)).Simplify().AssertEqTo(new Bool(false));
+
+                new Or(10, new Bool(true), 20, new Bool(false)).Simplify().AssertEqTo(new Bool(true));
+
+                #endregion
 
                 #region Sum
 
@@ -1539,6 +1561,13 @@ namespace Tests
 
             Console.WriteLine("Testing complete");
 
+            
+
+            
+
+            
+
+            
             
 
             Console.ReadLine();

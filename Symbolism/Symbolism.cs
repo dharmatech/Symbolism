@@ -274,6 +274,8 @@ namespace Symbolism
         Boolean ToBoolean()
         {
 
+            if (a is Bool && b is Bool) return (a as Bool).Equals(b);
+
             if (a is Equation && b is Equation) return (a as Equation).Equals(b);
 
             if (a is Integer && b is Integer) return ((Integer)a).Equals(b);
@@ -326,7 +328,7 @@ namespace Symbolism
 
         public override bool Equals(object obj)
         {
-            if (obj is Bool) return val = (obj as Bool).val;
+            if (obj is Bool) return val == (obj as Bool).val;
 
             return false;
         }
@@ -731,6 +733,24 @@ namespace Symbolism
         }
     }
 
+    public class And : Function
+    {
+        MathObject AndProc(MathObject[] ls)
+        {
+            if (ls.Any(elt => (elt is Bool) && (elt as Bool).val == false))
+                return new Bool(false);
+
+            return new And() { args = new List<MathObject>(ls) };
+        }
+
+        public And(params MathObject[] ls)
+        {
+            name = "And";
+            args = new List<MathObject>(ls);
+            proc = AndProc;
+        }
+    }
+
     public class Or : Function
     {
         MathObject OrProc(params MathObject[] ls)
@@ -739,11 +759,7 @@ namespace Symbolism
 
             if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);
 
-            var obj = new Or();
-
-            obj.args = new List<MathObject>(ls);
-
-            return obj;
+            return new Or() { args = new List<MathObject>(ls) };
         }
 
         public Or(params MathObject[] ls)
