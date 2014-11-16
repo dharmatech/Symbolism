@@ -11,13 +11,9 @@ namespace Symbolism.EliminateVariable
     {
         public static List<Equation> EliminateVariable(this List<Equation> eqs, Symbol sym)
         {
-            // var eq = eqs.First(elt => Contains(elt.a, sym) || Contains(elt.b, sym));
-
             var eq = eqs.First(elt => elt.a.Has(sym) || elt.b.Has(sym));
 
             var rest = eqs.Except(new List<Equation>() { eq });
-
-            // var eq_sym = IsolateVariable(eq, sym);
 
             var result = eq.IsolateVariable(sym);
 
@@ -25,16 +21,7 @@ namespace Symbolism.EliminateVariable
             {
                 var eq_sym = result as Equation;
 
-                return
-                    rest
-                        .Select(
-                            elt =>
-                                new Equation(
-                                    elt.a.Substitute(sym, eq_sym.b),
-                                    elt.b.Substitute(sym, eq_sym.b)))
-                        .ToList();
-
-                // return rest.Select(elt => elt.Substitute(sym, eq_sym.b)).ToList();
+                return rest.Select(elt => elt.Substitute(sym, eq_sym.b) as Equation).ToList();
             }
 
             if (result is Or)
