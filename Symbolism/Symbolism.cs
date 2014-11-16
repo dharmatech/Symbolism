@@ -24,6 +24,9 @@ namespace Symbolism
         //////////////////////////////////////////////////////////////////////
         public static implicit operator MathObject(int n)
         { return new Integer(n); }
+
+        public static implicit operator MathObject(bool val)
+        { return new Bool(val); }
         //////////////////////////////////////////////////////////////////////
         #region overloads for 'int'
 

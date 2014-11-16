@@ -242,18 +242,18 @@ namespace Tests
                 #region And
 
                 new And(10, 20, 30).Simplify().AssertEqTo(new And(10, 20, 30));
-
-                new And(10, new Bool(false), 20).Simplify().AssertEqTo(new Bool(false));
+                
+                new And(10, false, 20).Simplify().AssertEqTo(false);
                 
                 #endregion
 
                 #region Or
 
-                new Or(10, 20, new Bool(false)).Simplify().AssertEqTo(new Or(10, 20, new Bool(false)));
+                new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20, false));
+                
+                new Or(false, false).Simplify().AssertEqTo(false);
 
-                new Or(new Bool(false), new Bool(false)).Simplify().AssertEqTo(new Bool(false));
-
-                new Or(10, new Bool(true), 20, new Bool(false)).Simplify().AssertEqTo(new Bool(true));
+                new Or(10, true, 20, false).Simplify().AssertEqTo(true);
 
                 #endregion
 
