@@ -241,6 +241,12 @@ namespace Tests
 
                 #region And
 
+                new And(10).Simplify().AssertEqTo(10);
+
+                new And(true).Simplify().AssertEqTo(true);
+
+                new And(false).Simplify().AssertEqTo(false);
+
                 new And(10, 20, 30).Simplify().AssertEqTo(new And(10, 20, 30));
                 
                 new And(10, false, 20).Simplify().AssertEqTo(false);
@@ -248,6 +254,12 @@ namespace Tests
                 #endregion
 
                 #region Or
+
+                new Or(10).Simplify().AssertEqTo(10);
+
+                new Or(true).Simplify().AssertEqTo(true);
+
+                new Or(false).Simplify().AssertEqTo(false);
 
                 new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20, false));
                 

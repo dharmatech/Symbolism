@@ -740,6 +740,8 @@ namespace Symbolism
     {
         MathObject AndProc(MathObject[] ls)
         {
+            if (ls.Count() == 1) return ls.First();
+            
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val == false))
                 return new Bool(false);
 
@@ -758,6 +760,8 @@ namespace Symbolism
     {
         MathObject OrProc(params MathObject[] ls)
         {
+            if (ls.Count() == 1) return ls.First();
+
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
 
             if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);
