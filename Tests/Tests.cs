@@ -51,6 +51,25 @@ namespace Tests
 
             return a;
         }
+
+        public static MathObject DispLong(this MathObject obj, int indent = 0)
+        {
+            if (obj is Or || obj is And)
+            {
+                Console.WriteLine(new String(' ', indent) + (obj as Function).name + "(");
+
+                foreach (var elt in (obj as Function).args) elt.DispLong(indent + 2);
+                
+                Console.WriteLine(new String(' ', indent) + ")");
+            }
+
+            else
+            {
+                Console.WriteLine(new String(' ', indent) + obj);
+            }
+
+            return obj;
+        }
     }
 
     class Program
@@ -102,6 +121,20 @@ namespace Tests
                 var z = new Symbol("z");
                 
                 Func<int, Integer> Int = (n) => new Integer(n);
+
+                {
+                    DoubleFloat.tolerance = 0.000000001;
+                    
+                    Assert(new DoubleFloat(1.2).Equals(new DoubleFloat(1.2)), "new DoubleFloat(1.2).Equals(new DoubleFloat(1.2))");
+
+                    Assert(new DoubleFloat(1.20000001).Equals(new DoubleFloat(1.20000002)) == false, "new DoubleFloat(1.20000001).Equals(new DoubleFloat(1.20000002)) == false");
+
+                    Assert(new DoubleFloat(1.2000000000001).Equals(new DoubleFloat(1.200000000002)), "new DoubleFloat(1.2000000000001).Equals(new DoubleFloat(1.200000000002))");
+
+                    Assert(new DoubleFloat(1.2).Equals(new DoubleFloat(1.23)) == false, "new DoubleFloat(1.2).Equals(new DoubleFloat(1.23)) == false");
+
+                    DoubleFloat.tolerance = null;
+                }
 
                 #region Simplify
 
@@ -369,13 +402,13 @@ namespace Tests
 
                 #region IsolateVariable
 
-                Assert((0 == x - y).IsolateVariable(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
+                Assert((0 == x - y).IsolateVariableEq(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
                 Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
 
                 Assert(
                     (a * (x ^ 2) + b * x + c == 0)
-                        .IsolateVariable(x)
+                        .IsolateVariableEq(x)
                         .Equals(
                             new Or(
                                 x == (-b + sqrt((b ^ 2) - 4 * a * c)) / (2 * a),
@@ -438,7 +471,7 @@ namespace Tests
                             .EliminateVariable(sAC)
                             .EliminateVariable(vB)
                             .EliminateVariable(sAB)[0]
-                            .IsolateVariable(a);
+                            .IsolateVariableEq(a);
 
                         AssertIsTrue(result == (a == (vC - vA) / tAC));
 
@@ -472,6 +505,66 @@ namespace Tests
 
             #region EliminateVariable
 
+            {
+                var x = new Symbol("x");
+                var y = new Symbol("y");
+                var z = new Symbol("z");
+
+                var eqs = new And()
+                {
+                    args = 
+                    {
+                        (x ^ 2) - 4 == 0,
+                        y + x == 0,
+                        x + z == 10
+                    }
+                }
+                .Simplify();
+
+                var half = new Integer(1) / 2;
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ half;
+
+                ((x ^ 2) - 4 == 0)
+                    .IsolateVariableEq(x)
+                    .AssertEqTo(new Or(x == half * sqrt(16), x == -half * sqrt(16)));
+
+                eqs.EliminateVar(x)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                half * sqrt(16) + y == 0,
+                                half * sqrt(16) + z == 10
+                            ),
+                            new And(
+                                -half * sqrt(16) + y == 0,
+                                -half * sqrt(16) + z == 10
+                            )
+                        )
+                    );
+            }
+
+            {
+                var a = new Symbol("a");
+                var x = new Symbol("x");
+                var y = new Symbol("y");
+                var z = new Symbol("z");
+
+                new Or(
+                    new And(x == y, x == z, x == a),
+                    new And(x == -y, x == z, x == a)
+                    )
+                    .EliminateVar(x)
+                    .AssertEqTo(
+                        new Or(
+                            new And(y == z, y == a),
+                            new And(-y == z, -y == a)
+                        )
+                    )
+                    .EliminateVar(y)
+                    .AssertEqTo(new Or(z == a, z == a));
+            }
+
             #region PSE Example 2.7
             {
                 // s = 
@@ -493,7 +586,7 @@ namespace Tests
 
                 eqs
                     .EliminateVariable(s)[0]
-                    .IsolateVariable(a)
+                    .IsolateVariableEq(a)
                     .AssertEqTo(a == (v - u) / t)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(a == -31.5);
@@ -547,13 +640,139 @@ namespace Tests
 
                 var expr = eqs
                     .EliminateVariables(s2, t1, a1, s1, v2, u1)[0]
-                    .IsolateVariable(t2)
+                    .IsolateVariableEq(t2)
                     .Substitute(v1, 45.0)
                     .Substitute(u2, 0)
                     .Substitute(a2, 3);
 
                 (expr as Or).args[1].AssertEqToDouble(t2 == 30.97, 0.1);
             }
+            #endregion
+
+            #region PSE Example 2.12
+
+            {
+                // yA = 50    
+                // yB 
+                // yC = 50
+                // yD 
+
+                // vA = 20
+                // vB =  0
+                // vC
+                // vD
+
+                // a = -9.8
+
+                // tA = 0
+                // tB
+                // tC
+                // tD = 5
+
+
+                var yA = new Symbol("yA");
+                var yB = new Symbol("yB");
+                var yC = new Symbol("yC");
+                var yD = new Symbol("yD");
+
+                var tA = new Symbol("tA");
+                var tB = new Symbol("tB");
+                var tC = new Symbol("tC");
+                var tD = new Symbol("tD");
+
+                var sAB = new Symbol("sAB");
+                var sBC = new Symbol("sBC");
+                var sCD = new Symbol("sCD");
+
+                var vA = new Symbol("vA");
+                var vB = new Symbol("vB");
+                var vC = new Symbol("vC");
+                var vD = new Symbol("vD");
+
+                var a = new Symbol("a");
+
+                var tAB = new Symbol("tAB");
+                var tBC = new Symbol("tBC");
+                var tCD = new Symbol("tCD");
+
+                var eqs = new And(
+
+                    sAB == yB - yA,
+                    sBC == yC - yB,
+                    sCD == yD - yC,
+
+                    tAB == tB - tA,
+                    tBC == tC - tB,
+                    tCD == tD - tC);
+
+                eqs.args.AddRange(Kinematic(sAB, vA, vB, a, tAB));
+                eqs.args.AddRange(Kinematic(sBC, vB, vC, a, tBC));
+                eqs.args.AddRange(Kinematic(sCD, vC, vD, a, tCD));
+
+                var vals = new List<Equation>()
+                {
+                    yA == 50,
+                    yC == 50,
+                    vA == 20,
+                    vB == 0,
+                    a == -9.8,
+                    tA == 0,
+                    tD == 5
+                };
+
+                // velocity and position at t = 5.00 s
+
+                DoubleFloat.tolerance = 0.000000001;
+
+                // eqs.DispLong(); "".Disp();
+
+                eqs
+                    .EliminateVar(sAB)
+                    .EliminateVar(sBC)
+                    .EliminateVar(sCD)
+
+                    .EliminateVar(tAB)
+                    .EliminateVar(tBC)
+                    .EliminateVar(tCD)
+
+                    .EliminateVar(tB)
+                    .EliminateVar(tC)
+
+                    .EliminateVar(vC)
+
+                    .EliminateVar(yB)
+                    .EliminateVar(yD)
+
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(new Or(vD == -29.000000000000004, vD == -29.000000000000007));
+
+                eqs
+                    .EliminateVar(sAB)
+                    .EliminateVar(sBC)
+                    .EliminateVar(sCD)
+
+                    .EliminateVar(tAB)
+                    .EliminateVar(tBC)
+                    .EliminateVar(tCD)
+
+                    .EliminateVar(tB)
+                    .EliminateVar(tC)
+
+                    .EliminateVar(vC)
+
+                    .EliminateVar(yB)
+                    
+                    .EliminateVar(vD)
+
+                    .IsolateVariable(yD)
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(new Or(yD == 27.499999999, yD == 27.499999999));
+
+                DoubleFloat.tolerance = null;
+            }
+
             #endregion
 
             #endregion
@@ -1574,21 +1793,7 @@ namespace Tests
             Console.WriteLine("Testing complete");
 
             
-
-            
-
-            
-
-            
-            
-
             Console.ReadLine();
-        }
-
-        static string GetName<T>(T item) where T : class
-        {
-            var properties = typeof(T).GetProperties();
-            return properties[0].Name;
         }
     }
 }

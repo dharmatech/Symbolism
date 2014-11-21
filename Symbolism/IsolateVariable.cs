@@ -10,9 +10,9 @@ namespace Symbolism.IsolateVariable
 {
     public static class Extensions
     {
-        public static MathObject IsolateVariable(this Equation eq, Symbol sym)
+        public static MathObject IsolateVariableEq(this Equation eq, Symbol sym)
         {
-            if (eq.b.Has(sym)) return IsolateVariable(new Equation(eq.a - eq.b, 0), sym);
+            if (eq.b.Has(sym)) return IsolateVariableEq(new Equation(eq.a - eq.b, 0), sym);
 
             if (eq.a == sym) return eq;
 
@@ -44,10 +44,16 @@ namespace Symbolism.IsolateVariable
                 //        eq.b - new Sum() { elts = items }.Simplify()),
                 //    sym);
 
-                var new_a = eq.a; items.ForEach(elt => new_a = new_a - elt);
+
+                //var new_a = eq.a; items.ForEach(elt => new_a = new_a - elt);
+                //var new_b = eq.b; items.ForEach(elt => new_b = new_b - elt);
+
+                var new_a = new Sum() { elts = (eq.a as Sum).elts.Where(elt => items.Contains(elt) == false).ToList() }.Simplify();
                 var new_b = eq.b; items.ForEach(elt => new_b = new_b - elt);
 
-                return IsolateVariable(new Equation(new_a, new_b), sym);
+                // (new_a as Sum).Where(elt => items.Contains(elt) == false)
+
+                return IsolateVariableEq(new Equation(new_a, new_b), sym);
 
                 //return IsolateVariable(
                 //    new Equation(
@@ -60,12 +66,26 @@ namespace Symbolism.IsolateVariable
             {
                 var items = ((Product)eq.a).elts.FindAll(elt => elt.FreeOf(sym));
 
-                return IsolateVariable(
+                return IsolateVariableEq(
                     new Equation(
                         eq.a / new Product() { elts = items }.Simplify(),
                         eq.b / new Product() { elts = items }.Simplify()),
                     sym);
             }
+
+            throw new Exception();
+        }
+
+        public static MathObject IsolateVariableOr(this Or obj, Symbol sym)
+        {
+            return new Or() { args = obj.args.ConvertAll(elt => (elt as Equation).IsolateVariableEq(sym)) }.Simplify();
+        }
+
+        public static MathObject IsolateVariable(this MathObject obj, Symbol sym)
+        {
+            if (obj is Or) return (obj as Or).IsolateVariableOr(sym);
+
+            if (obj is Equation) return (obj as Equation).IsolateVariableEq(sym);
 
             throw new Exception();
         }
