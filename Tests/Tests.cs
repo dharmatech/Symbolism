@@ -100,6 +100,15 @@ namespace Tests
             };
         }
 
+        static List<Equation> Kinematic(Symbol sA, Symbol sB, Symbol vA, Symbol vB, Symbol a, Symbol tA, Symbol tB)
+        {
+            return new List<Equation>()
+            {
+                vB == vA + a * (tB - tA),
+                sB - sA == (vA + vB) * (tB - tA) / 2
+            };
+        }
+
         static void Main(string[] args)
         {
             Action<Equation> AssertIsTrue = (eq) =>
@@ -621,24 +630,6 @@ namespace Tests
             #region PSE Example 2.12
 
             {
-                // yA = 50    
-                // yB 
-                // yC = 50
-                // yD 
-
-                // vA = 20
-                // vB =  0
-                // vC
-                // vD
-
-                // a = -9.8
-
-                // tA = 0
-                // tB
-                // tC
-                // tD = 5
-
-
                 var yA = new Symbol("yA");
                 var yB = new Symbol("yB");
                 var yC = new Symbol("yC");
@@ -649,10 +640,6 @@ namespace Tests
                 var tC = new Symbol("tC");
                 var tD = new Symbol("tD");
 
-                var sAB = new Symbol("sAB");
-                var sBC = new Symbol("sBC");
-                var sCD = new Symbol("sCD");
-
                 var vA = new Symbol("vA");
                 var vB = new Symbol("vB");
                 var vC = new Symbol("vC");
@@ -660,24 +647,12 @@ namespace Tests
 
                 var a = new Symbol("a");
 
-                var tAB = new Symbol("tAB");
-                var tBC = new Symbol("tBC");
-                var tCD = new Symbol("tCD");
+                var eqs = new And();
 
-                var eqs = new And(
-
-                    sAB == yB - yA,
-                    sBC == yC - yB,
-                    sCD == yD - yC,
-
-                    tAB == tB - tA,
-                    tBC == tC - tB,
-                    tCD == tD - tC);
-
-                eqs.args.AddRange(Kinematic(sAB, vA, vB, a, tAB));
-                eqs.args.AddRange(Kinematic(sBC, vB, vC, a, tBC));
-                eqs.args.AddRange(Kinematic(sCD, vC, vD, a, tCD));
-
+                eqs.args.AddRange(Kinematic(yA, yB, vA, vB, a, tA, tB));
+                eqs.args.AddRange(Kinematic(yB, yC, vB, vC, a, tB, tC));
+                eqs.args.AddRange(Kinematic(yC, yD, vC, vD, a, tC, tD));
+                
                 var vals = new List<Equation>()
                 {
                     yA == 50,
@@ -693,50 +668,15 @@ namespace Tests
 
                 DoubleFloat.tolerance = 0.000000001;
 
-                // eqs.DispLong(); "".Disp();
-
                 eqs
-                    .EliminateVar(sAB)
-                    .EliminateVar(sBC)
-                    .EliminateVar(sCD)
-
-                    .EliminateVar(tAB)
-                    .EliminateVar(tBC)
-                    .EliminateVar(tCD)
-
-                    .EliminateVar(tB)
-                    .EliminateVar(tC)
-
-                    .EliminateVar(vC)
-
-                    .EliminateVar(yB)
-                    .EliminateVar(yD)
-
+                    .EliminateVars(tB, tC, vC, yB, yD)
                     .SubstituteEqLs(vals)
-
                     .AssertEqTo(new Or(vD == -29.000000000000004, vD == -29.000000000000007));
 
                 eqs
-                    .EliminateVar(sAB)
-                    .EliminateVar(sBC)
-                    .EliminateVar(sCD)
-
-                    .EliminateVar(tAB)
-                    .EliminateVar(tBC)
-                    .EliminateVar(tCD)
-
-                    .EliminateVar(tB)
-                    .EliminateVar(tC)
-
-                    .EliminateVar(vC)
-
-                    .EliminateVar(yB)
-                    
-                    .EliminateVar(vD)
-
+                    .EliminateVars(tB, tC, vC, yB, vD)
                     .IsolateVariable(yD)
                     .SubstituteEqLs(vals)
-
                     .AssertEqTo(new Or(yD == 27.499999999, yD == 27.499999999));
 
                 DoubleFloat.tolerance = null;
