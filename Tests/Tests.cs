@@ -579,20 +579,23 @@ namespace Tests
                 var a = new Symbol("a");
                 var t = new Symbol("t");
 
-                var eqs = Kinematic(s, u, v, a, t);
+                var eqs = new And();
+
+                eqs.args.AddRange(Kinematic(s, u, v, a, t));
 
                 var vals = new List<Equation>()
                 { u == 63, v == 0, t == 2.0 };
 
                 eqs
-                    .EliminateVariable(s)[0]
-                    .IsolateVariableEq(a)
+                    .EliminateVar(s)
+                    .AssertEqTo(v == a * t + u)
+                    .IsolateVariable(a)
                     .AssertEqTo(a == (v - u) / t)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(a == -31.5);
 
                 eqs
-                    .EliminateVariable(a)[0]
+                    .EliminateVar(a)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(s == 63.0);
             }
