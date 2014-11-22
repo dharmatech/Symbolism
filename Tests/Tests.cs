@@ -631,24 +631,26 @@ namespace Tests
                 var a2 = new Symbol("a2");
                 var t2 = new Symbol("t2");
 
-                var eqs = new List<Equation>() 
-                {
+                var eqs = new And(
                     u1 == v1,
                     s1 == s2,
-                    t2 == t1 - 1
+                    t2 == t1 - 1 );
+
+                eqs.args.AddRange(Kinematic(s1, u1, v1, a1, t1));
+                eqs.args.AddRange(Kinematic(s2, u2, v2, a2, t2));
+
+                var vals = new List<Equation>() 
+                {
+                    v1 == 45.0,
+                    u2 == 0,
+                    a2 == 3
                 };
 
-                eqs.AddRange(Kinematic(s1, u1, v1, a1, t1));
-                eqs.AddRange(Kinematic(s2, u2, v2, a2, t2));
-
-                var expr = eqs
-                    .EliminateVariables(s2, t1, a1, s1, v2, u1)[0]
-                    .IsolateVariableEq(t2)
-                    .Substitute(v1, 45.0)
-                    .Substitute(u2, 0)
-                    .Substitute(a2, 3);
-
-                (expr as Or).args[1].AssertEqToDouble(t2 == 30.97, 0.1);
+                eqs
+                    .EliminateVars(s2, t1, a1, s1, v2, u1)
+                    .IsolateVariable(t2)
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(new Or(t2 == -0.96871942267131317, t2 == 30.968719422671313));
             }
             #endregion
 
