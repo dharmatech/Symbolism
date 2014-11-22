@@ -420,92 +420,13 @@ namespace Tests
                 
                 #endregion
 
-                #region EliminateVariable
-
-                #region PSE Example 2.6
-
-                {
-                    var sAC = new Symbol("sAC");
-                    var vA = new Symbol("vA");
-                    var vC = new Symbol("vC");
-                    // var a = new Symbol("a");
-                    var tAC = new Symbol("tAC");
-
-                    var sAB = new Symbol("sAB");
-                    // var vA = new Symbol("vA");
-                    var vB = new Symbol("vB");
-                    // var a = new Symbol("a");
-                    var tAB = new Symbol("tAB");
-
-
-
-                    var eqs = new List<Equation>()
-                    {
-                        tAB == tAC / 2,
-
-                        vC == vA + a * tAC,
-                        sAC == (vA + vC) * tAC / 2,
-
-                        vB == vA + a * tAB,
-                        sAB == (vA + vB) * tAB / 2,
-
-                        // tAB == tAC / 2
-                    };
-
-                    // sAC
-                    // vA = 10
-                    // vC = 30
-                    // a
-                    // tAC = 10
-
-                    // sAB
-                    // vA = 10
-                    // vB
-                    // a
-                    // tAB = tAC / 2
-
-                    {
-
-                        var result = eqs
-                            .EliminateVariable(tAB)
-                            .EliminateVariable(sAC)
-                            .EliminateVariable(vB)
-                            .EliminateVariable(sAB)[0]
-                            .IsolateVariableEq(a);
-
-                        AssertIsTrue(result == (a == (vC - vA) / tAC));
-
-                        AssertIsTrue(
-                            result
-                                .Substitute(vA, 10)
-                                .Substitute(vC, 30)
-                                .Substitute(tAC, 10)
-                            ==
-                            (a == 2));
-                    }
-
-                    AssertIsTrue(
-                        eqs
-                            .EliminateVariable(vB)
-                            .EliminateVariable(a)
-                            .EliminateVariable(tAB)[1]
-
-                            .Substitute(vA, 10)
-                            .Substitute(vC, 30)
-                            .Substitute(tAC, 10)
-                        ==
-                        (sAB == 75));
-                }
-
-                #endregion
-                
-                #endregion
-
             }
 
             #region EliminateVariable
 
+            #region
             {
+                
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
@@ -542,8 +463,12 @@ namespace Tests
                             )
                         )
                     );
-            }
 
+
+            }    
+            #endregion
+
+            #region
             {
                 var a = new Symbol("a");
                 var x = new Symbol("x");
@@ -564,7 +489,46 @@ namespace Tests
                     .EliminateVar(y)
                     .AssertEqTo(new Or(z == a, z == a));
             }
+            #endregion
 
+            #region PSE Example 2.6
+
+            {
+                var sAC = new Symbol("sAC");
+                var sAB = new Symbol("sAB");
+
+                var vA = new Symbol("vA");
+                var vB = new Symbol("vB");
+                var vC = new Symbol("vC");
+
+                var a = new Symbol("a");
+
+                var tAC = new Symbol("tAC");
+                var tAB = new Symbol("tAB");
+
+                var eqs = new And(tAB == tAC / 2);
+
+                eqs.args.AddRange(Kinematic(sAC, vA, vC, a, tAC));
+                eqs.args.AddRange(Kinematic(sAB, vA, vB, a, tAB));
+
+                var vals = new List<Equation>() { vA == 10, vC == 30, tAC == 10 };
+
+                eqs
+                    .EliminateVars(tAB, sAC, vB, sAB)
+                    .IsolateVariable(a)
+                    .AssertEqTo(a == (vC - vA) / tAC)
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(a == 2);
+
+                eqs
+                    .EliminateVars(vB, a, tAB, sAC)
+                    .AssertEqTo(sAB == tAC / 4 * (2 * vA + (vC - vA) / 2))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(sAB == 75);
+            }
+
+            #endregion
+            
             #region PSE Example 2.7
             {
                 // s = 
