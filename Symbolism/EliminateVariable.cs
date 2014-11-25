@@ -16,7 +16,7 @@ namespace Symbolism.EliminateVariable
 
         // EliminateVars
 
-        public static MathObject EliminateVarEqLs(this List<Equation> eqs, Symbol sym)
+        public static MathObject EliminateVariablesEqLs(this List<Equation> eqs, Symbol sym)
         {
             var eq = eqs.First(elt => elt.Has(sym));
 
@@ -52,18 +52,18 @@ namespace Symbolism.EliminateVariable
             throw new Exception();
         }
 
-        public static MathObject EliminateVar(this MathObject expr, Symbol sym)
+        public static MathObject EliminateVariables(this MathObject expr, Symbol sym)
         {
             if (expr is And)
             {
                 var eqs = (expr as And).args.Select(elt => elt as Equation);
 
-                return EliminateVarEqLs(eqs.ToList(), sym);
+                return EliminateVariablesEqLs(eqs.ToList(), sym);
             }
 
             if (expr is Or)
             {
-                return new Or() { args = (expr as Or).args.Select(and_expr => and_expr.EliminateVar(sym)).ToList() };
+                return new Or() { args = (expr as Or).args.Select(and_expr => and_expr.EliminateVariables(sym)).ToList() };
 
                 // expr.Map(and_expr => and_expr.EliminateVar(sym))
             }
@@ -71,56 +71,7 @@ namespace Symbolism.EliminateVariable
             throw new Exception();
         }
 
-        public static MathObject EliminateVars(this MathObject expr, params Symbol[] syms)
-        { return syms.Aggregate(expr, (result, sym) => result.EliminateVar(sym)); }
-
-
-        public static List<Equation> EliminateVariable(this List<Equation> eqs, Symbol sym)
-        {
-            var eq = eqs.First(elt => elt.a.Has(sym) || elt.b.Has(sym));
-
-            var rest = eqs.Except(new List<Equation>() { eq });
-
-            var result = eq.IsolateVariableEq(sym);
-
-            if (result is Equation)
-            {
-                var eq_sym = result as Equation;
-
-                return rest.Select(elt => elt.Substitute(sym, eq_sym.b) as Equation).ToList();
-            }
-
-            if (result is Or)
-            {
-                // return new Or();
-
-                //return new Or() 
-                //{ 
-                //    args = 
-                //        (result as Or).args.Select(eq_elt => {
-
-                //        var eq_sym = (eq_elt as Equation);
-
-                //        return rest.Select(elt => new Equation(
-                //            elt.a.Substitute(sym, eq_sym.a),
-                //            elt.b.Substitute(sym, eq_sym.b)))
-                //        .ToList();
-                //        })
-                //};
-            }
-
-            throw new Exception();
-        }
-
-
-        public static List<Equation> EliminateVariables(this List<Equation> eqs, params Symbol[] syms)
-        {
-            var result = eqs;
-
-            foreach (var sym in syms)
-                result = result.EliminateVariable(sym);
-
-            return result;
-        }
+        public static MathObject EliminateVariables(this MathObject expr, params Symbol[] syms)
+        { return syms.Aggregate(expr, (result, sym) => result.EliminateVariables(sym)); }
     }
 }

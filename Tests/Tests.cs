@@ -459,7 +459,7 @@ namespace Tests
                     .IsolateVariableEq(x)
                     .AssertEqTo(new Or(x == half * sqrt(16), x == -half * sqrt(16)));
 
-                eqs.EliminateVar(x)
+                eqs.EliminateVariables(x)
                     .AssertEqTo(
                         new Or(
                             new And(
@@ -488,14 +488,14 @@ namespace Tests
                     new And(x == y, x == z, x == a),
                     new And(x == -y, x == z, x == a)
                     )
-                    .EliminateVar(x)
+                    .EliminateVariables(x)
                     .AssertEqTo(
                         new Or(
                             new And(y == z, y == a),
                             new And(-y == z, -y == a)
                         )
                     )
-                    .EliminateVar(y)
+                    .EliminateVariables(y)
                     .AssertEqTo(new Or(z == a, z == a));
             }
             #endregion
@@ -523,14 +523,14 @@ namespace Tests
                 var vals = new List<Equation>() { vA == 10, vC == 30, tAC == 10 };
 
                 eqs
-                    .EliminateVars(tAB, sAC, vB, sAB)
+                    .EliminateVariables(tAB, sAC, vB, sAB)
                     .IsolateVariable(a)
                     .AssertEqTo(a == (vC - vA) / tAC)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(a == 2);
 
                 eqs
-                    .EliminateVars(vB, a, tAB, sAC)
+                    .EliminateVariables(vB, a, tAB, sAC)
                     .AssertEqTo(sAB == tAC / 4 * (2 * vA + (vC - vA) / 2))
                     .SubstituteEqLs(vals)
                     .AssertEqTo(sAB == 75);
@@ -560,7 +560,7 @@ namespace Tests
                 { u == 63, v == 0, t == 2.0 };
 
                 eqs
-                    .EliminateVar(s)
+                    .EliminateVariables(s)
                     .AssertEqTo(v == a * t + u)
                     .IsolateVariable(a)
                     .AssertEqTo(a == (v - u) / t)
@@ -568,7 +568,7 @@ namespace Tests
                     .AssertEqTo(a == -31.5);
 
                 eqs
-                    .EliminateVar(a)
+                    .EliminateVariables(a)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(s == 63.0);
             }
@@ -620,7 +620,7 @@ namespace Tests
                 };
 
                 eqs
-                    .EliminateVars(s2, t1, a1, s1, v2, u1)
+                    .EliminateVariables(s2, t1, a1, s1, v2, u1)
                     .IsolateVariable(t2)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(t2 == -0.96871942267131317, t2 == 30.968719422671313));
@@ -669,12 +669,12 @@ namespace Tests
                 DoubleFloat.tolerance = 0.000000001;
 
                 eqs
-                    .EliminateVars(tB, tC, vC, yB, yD)
+                    .EliminateVariables(tB, tC, vC, yB, yD)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(vD == -29.000000000000004, vD == -29.000000000000007));
 
                 eqs
-                    .EliminateVars(tB, tC, vC, yB, vD)
+                    .EliminateVariables(tB, tC, vC, yB, vD)
                     .IsolateVariable(yD)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(yD == 27.499999999, yD == 27.499999999));
