@@ -459,7 +459,7 @@ namespace Tests
                     .IsolateVariableEq(x)
                     .AssertEqTo(new Or(x == half * sqrt(16), x == -half * sqrt(16)));
 
-                eqs.EliminateVariables(x)
+                eqs.EliminateVariable(x)
                     .AssertEqTo(
                         new Or(
                             new And(
@@ -488,14 +488,14 @@ namespace Tests
                     new And(x == y, x == z, x == a),
                     new And(x == -y, x == z, x == a)
                     )
-                    .EliminateVariables(x)
+                    .EliminateVariable(x)
                     .AssertEqTo(
                         new Or(
                             new And(y == z, y == a),
                             new And(-y == z, -y == a)
                         )
                     )
-                    .EliminateVariables(y)
+                    .EliminateVariable(y)
                     .AssertEqTo(new Or(z == a, z == a));
             }
             #endregion
@@ -560,7 +560,7 @@ namespace Tests
                 { u == 63, v == 0, t == 2.0 };
 
                 eqs
-                    .EliminateVariables(s)
+                    .EliminateVariable(s)
                     .AssertEqTo(v == a * t + u)
                     .IsolateVariable(a)
                     .AssertEqTo(a == (v - u) / t)
@@ -568,7 +568,7 @@ namespace Tests
                     .AssertEqTo(a == -31.5);
 
                 eqs
-                    .EliminateVariables(a)
+                    .EliminateVariable(a)
                     .SubstituteEqLs(vals)
                     .AssertEqTo(s == 63.0);
             }

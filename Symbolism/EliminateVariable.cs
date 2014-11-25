@@ -16,7 +16,7 @@ namespace Symbolism.EliminateVariable
 
         // EliminateVars
 
-        public static MathObject EliminateVariablesEqLs(this List<Equation> eqs, Symbol sym)
+        public static MathObject EliminateVariableEqLs(this List<Equation> eqs, Symbol sym)
         {
             var eq = eqs.First(elt => elt.Has(sym));
 
@@ -52,18 +52,18 @@ namespace Symbolism.EliminateVariable
             throw new Exception();
         }
 
-        public static MathObject EliminateVariables(this MathObject expr, Symbol sym)
+        public static MathObject EliminateVariable(this MathObject expr, Symbol sym)
         {
             if (expr is And)
             {
                 var eqs = (expr as And).args.Select(elt => elt as Equation);
 
-                return EliminateVariablesEqLs(eqs.ToList(), sym);
+                return EliminateVariableEqLs(eqs.ToList(), sym);
             }
 
             if (expr is Or)
             {
-                return new Or() { args = (expr as Or).args.Select(and_expr => and_expr.EliminateVariables(sym)).ToList() };
+                return new Or() { args = (expr as Or).args.Select(and_expr => and_expr.EliminateVariable(sym)).ToList() };
 
                 // expr.Map(and_expr => and_expr.EliminateVar(sym))
             }
@@ -72,6 +72,6 @@ namespace Symbolism.EliminateVariable
         }
 
         public static MathObject EliminateVariables(this MathObject expr, params Symbol[] syms)
-        { return syms.Aggregate(expr, (result, sym) => result.EliminateVariables(sym)); }
+        { return syms.Aggregate(expr, (result, sym) => result.EliminateVariable(sym)); }
     }
 }
