@@ -281,6 +281,14 @@ namespace Tests
 
                 // Console.WriteLine((x + x + x + x) / x);
 
+                #region Equation.ToString
+
+                Assert((x == y).ToString() == "x == y", "x == y");
+
+                Assert((x != y).ToString() == "x != y", "x != y");
+
+                #endregion
+
                 #region And
 
                 new And(10).Simplify().AssertEqTo(10);

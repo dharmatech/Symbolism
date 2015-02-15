@@ -259,7 +259,11 @@ namespace Symbolism
         { return "Equation(" + a + ", " + b + ")"; }
 
         public override string ToString()
-        { return a + " == " + b; }
+        { 
+            if (Operator == Operators.Equal) return a + " == " + b;
+            if (Operator == Operators.NotEqual) return a + " != " + b;
+            throw new Exception();
+        }
 
         public override bool Equals(object obj)
         {
