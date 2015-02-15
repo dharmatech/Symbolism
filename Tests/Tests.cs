@@ -297,6 +297,12 @@ namespace Tests
 
                 #endregion
 
+                #region Function.ToString
+
+                Assert(new And().ToString() == "And()", "And()");
+
+                #endregion
+
                 #region And
 
                 new And(10).Simplify().AssertEqTo(10);

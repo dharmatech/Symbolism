@@ -742,7 +742,7 @@ namespace Symbolism
             for (var i = 0; i < args.Count - 1; i++)
                 str.Append(args[i] + ", ");
 
-            str.Append(args[args.Count - 1]);
+            if (args.Count - 1 >= 0) str.Append(args[args.Count - 1]);
 
             str.Append(")");
 
