@@ -8,6 +8,8 @@ The automatic simplification algorithm comes from the book "Computer Algebra and
 
 The projects "PSE 5E ..." are examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
 
+[Here's a walk-through of solving a physics problem](https://gist.github.com/dharmatech/d6d499f14c808b159689).
+
 References:
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
