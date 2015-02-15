@@ -318,7 +318,10 @@ namespace Symbolism
 
         public MathObject Substitute(MathObject x, MathObject y)
         {
-            return a.Substitute(x, y) == b.Substitute(x, y);
+            if (Operator == Operators.Equal) return a.Substitute(x, y) == b.Substitute(x, y);
+            if (Operator == Operators.NotEqual) return a.Substitute(x, y) != b.Substitute(x, y);
+
+            throw new Exception();
         }
     }
 

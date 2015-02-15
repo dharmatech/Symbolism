@@ -251,6 +251,14 @@ namespace Tests
                         == 16200
                         );
 
+                #region Equation.Substitute
+
+                AssertIsTrue((x == y).Substitute(y, z) == (x == z));
+
+                AssertIsTrue((x != y).Substitute(y, z) == (x != z));
+
+                #endregion
+
                 #endregion
 
                 AssertIsTrue(sin(new DoubleFloat(3.14159 / 2)) == 0.99999999999911982);
