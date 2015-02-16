@@ -305,6 +305,8 @@ namespace Tests
 
                 #region And
 
+                new And().Simplify().AssertEqTo(true);
+
                 new And(10).Simplify().AssertEqTo(10);
 
                 new And(true).Simplify().AssertEqTo(true);

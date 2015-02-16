@@ -763,6 +763,8 @@ namespace Symbolism
     {
         MathObject AndProc(MathObject[] ls)
         {
+            if (ls.Count() == 0) return true;
+
             if (ls.Count() == 1) return ls.First();
             
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val == false))
