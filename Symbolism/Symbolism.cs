@@ -790,6 +790,12 @@ namespace Symbolism
         {
             if (ls.Count() == 1) return ls.First();
 
+            // 10 || false || 20   ->   10 || 20
+
+            if (ls.Any(elt => elt == false))
+                return new Or() 
+                { args = ls.Where(elt => elt != false).ToList() }.Simplify();
+
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
 
             if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);

@@ -329,11 +329,13 @@ namespace Tests
 
                 new Or(false).Simplify().AssertEqTo(false);
 
-                new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20, false));
+                new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20));
                 
                 new Or(false, false).Simplify().AssertEqTo(false);
 
                 new Or(10, true, 20, false).Simplify().AssertEqTo(true);
+
+                new Or(10, false, 20).Simplify().AssertEqTo(new Or(10, 20));
 
                 #endregion
 
