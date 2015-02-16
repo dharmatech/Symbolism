@@ -767,8 +767,11 @@ namespace Symbolism
 
             if (ls.Count() == 1) return ls.First();
             
-            if (ls.Any(elt => (elt is Bool) && (elt as Bool).val == false))
-                return new Bool(false);
+            if (ls.Any(elt => elt == false)) return false;
+
+            if (ls.Any(elt => elt == true))
+                return new And() 
+                { args = new List<MathObject>(ls.Where(elt => elt != true)) }.Simplify();
 
             return new And() { args = new List<MathObject>(ls) };
         }
