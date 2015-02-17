@@ -454,6 +454,20 @@ namespace Tests
                         )
                     , "(a * (x ^ 2) + b * x + c == 0).IsolateVariable(x)"
                 );
+
+
+                {
+                    // a x^2 + b x + c == 0
+                    // a x^2 + c == - b x
+                    // (a x^2 + c) / x == - b
+
+                    ((a * (x ^ 2) + c) / x == -b)
+                        .IsolateVariable(x)
+                        .AssertEqTo(
+                            new Or(
+                                x == (-b + sqrt((b ^ 2) - 4 * a * c)) / (2 * a),
+                                x == (-b - sqrt((b ^ 2) - 4 * a * c)) / (2 * a)));
+                }
                 
                 #endregion
 

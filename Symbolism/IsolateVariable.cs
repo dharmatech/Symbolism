@@ -16,6 +16,31 @@ namespace Symbolism.IsolateVariable
 
             if (eq.a == sym) return eq;
 
+            // (a x^2 + c) / x == - b
+
+            if (eq.a is Product &&
+                (eq.a as Product).elts.Any(
+                    elt =>
+                        elt is Power &&
+                        (elt as Power).bas == sym &&
+                        (elt as Power).exp == -1))
+                return IsolateVariableEq(eq.a * sym == eq.b * sym, sym);
+
+            //if (eq.a is Product &&
+            //    (eq.a as Product).elts.Any(
+            //        elt =>
+            //            elt is Power &&
+            //            (elt as Power).bas == sym &&
+            //            (elt as Power).exp is Integer &&
+            //            ((elt as Power).exp as Integer).val < 0))
+            //    return IsolateVariableEq(eq.a * sym == eq.b * sym, sym);
+
+
+            // if (eq.a.Denominator() is Product &&
+            //     (eq.a.Denominator() as Product).Any(elt => elt.Base() == sym)
+            // 
+            // 
+
             if (eq.a.AlgebraicExpand().DegreeGpe(new List<MathObject>() { sym }) == 2)
             {
                 var a = eq.a.AlgebraicExpand().CoefficientGpe(sym, 2);
