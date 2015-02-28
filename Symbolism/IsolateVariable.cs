@@ -12,6 +12,8 @@ namespace Symbolism.IsolateVariable
     {
         public static MathObject IsolateVariableEq(this Equation eq, Symbol sym)
         {
+            if (eq.FreeOf(sym)) return eq;
+
             if (eq.b.Has(sym)) return IsolateVariableEq(new Equation(eq.a - eq.b, 0), sym);
 
             if (eq.a == sym) return eq;
