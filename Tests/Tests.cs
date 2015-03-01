@@ -451,6 +451,10 @@ namespace Tests
                     .IsolateVariable(b)
                     .AssertEqTo(new And(x == y, b == a));
 
+                new Or(new And(y == x, z == x), new And(b == x, c == x))
+                    .IsolateVariable(x)
+                    .AssertEqTo(new Or(new And(x == y, x == z), new And(x == b, x == c)));
+
                 Assert((0 == x - y).IsolateVariableEq(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
                 Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);

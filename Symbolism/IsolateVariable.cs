@@ -114,26 +114,11 @@ namespace Symbolism.IsolateVariable
             throw new Exception();
         }
 
-        public static MathObject IsolateVariableOr(this Or obj, Symbol sym)
-        {
-            return new Or() { args = obj.args.ConvertAll(elt => (elt as Equation).IsolateVariableEq(sym)) }.Simplify();
-        }
-
         public static MathObject IsolateVariable(this MathObject obj, Symbol sym)
         {
-            if (obj is Or) return (obj as Or).IsolateVariableOr(sym);
+            if (obj is Or) return new Or() { args = (obj as Or).args.Select(elt => elt.IsolateVariable(sym)).ToList() }.Simplify();
 
-            if (obj is And)
-                return new And()
-                {
-                    args = (obj as And).args.Select(elt => elt.IsolateVariable(sym)).ToList()
-                }.Simplify();
-
-            // (obj as And).Map(elt => elt.IsolateVariable(sym))
-
-            // (obj as And).Map(IsolateVariable(sym))
-
-            // (obj as And).args.Select(_ => _.IsolateVariable(sym))
+            if (obj is And) return new And() { args = (obj as And).args.Select(elt => elt.IsolateVariable(sym)).ToList() }.Simplify();
 
             if (obj is Equation) return (obj as Equation).IsolateVariableEq(sym);
 
