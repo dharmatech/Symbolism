@@ -123,6 +123,18 @@ namespace Symbolism.IsolateVariable
         {
             if (obj is Or) return (obj as Or).IsolateVariableOr(sym);
 
+            if (obj is And)
+                return new And()
+                {
+                    args = (obj as And).args.Select(elt => elt.IsolateVariable(sym)).ToList()
+                }.Simplify();
+
+            // (obj as And).Map(elt => elt.IsolateVariable(sym))
+
+            // (obj as And).Map(IsolateVariable(sym))
+
+            // (obj as And).args.Select(_ => _.IsolateVariable(sym))
+
             if (obj is Equation) return (obj as Equation).IsolateVariableEq(sym);
 
             throw new Exception();
