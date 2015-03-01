@@ -441,6 +441,12 @@ namespace Tests
 
                 (x + y + z == 0).IsolateVariable(a).AssertEqTo(x + y + z == 0);
 
+                // (x * a + x * b == 0).IsolateVariable(x).Disp();
+
+                (x * (a + b) - x * a - x * b + x == c)
+                    .IsolateVariable(x)
+                    .AssertEqTo(x == c);
+
                 Assert((0 == x - y).IsolateVariableEq(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
                 Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);

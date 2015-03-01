@@ -68,8 +68,9 @@ namespace Symbolism.IsolateVariable
             }
 
 
+            // (x + y == z).IsolateVariable(x)
 
-            if (eq.a is Sum)
+            if (eq.a is Sum && (eq.a as Sum).elts.Any(elt => elt.FreeOf(sym)))
             {
                 var items = ((Sum)eq.a).elts.FindAll(elt => elt.FreeOf(sym));
 
@@ -96,6 +97,8 @@ namespace Symbolism.IsolateVariable
                 //        eq.b - new Sum() { elts = items }.Simplify()),
                 //    sym);
             }
+
+            if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
 
             if (eq.a is Product)
             {
