@@ -303,6 +303,18 @@ namespace Tests
 
                 #endregion
 
+                #region Equation.Simplify
+
+                (new Integer(0) == new Integer(0)).Simplify().AssertEqTo(true);
+
+                (new Integer(0) == new Integer(1)).Simplify().AssertEqTo(false);
+
+                (new Integer(0) != new Integer(1)).Simplify().AssertEqTo(true);
+
+                (new Integer(0) != new Integer(0)).Simplify().AssertEqTo(false);
+
+                #endregion
+
                 #region And
 
                 new And().Simplify().AssertEqTo(true);

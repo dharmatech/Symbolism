@@ -323,6 +323,13 @@ namespace Symbolism
 
             throw new Exception();
         }
+
+        public MathObject Simplify()
+        {
+            if (a is Number && b is Number) return (bool)this;
+
+            return this;
+        }
     }
 
     public class Bool : MathObject
