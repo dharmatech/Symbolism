@@ -257,6 +257,14 @@ namespace Tests
 
                 AssertIsTrue((x != y).Substitute(y, z) == (x != z));
 
+                (x == 0).Substitute(x, 0).AssertEqTo(true);
+
+                (x == 0).Substitute(x, 1).AssertEqTo(false);
+
+                (x != 0).Substitute(x, 0).AssertEqTo(false);
+
+                (x != 0).Substitute(x, 1).AssertEqTo(true);
+
                 #endregion
 
                 #endregion
