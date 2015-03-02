@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Symbolism.AlgebraicExpand;
+
 using Symbolism.IsolateVariable;
 
 namespace Symbolism.EliminateVariable
@@ -18,7 +20,12 @@ namespace Symbolism.EliminateVariable
 
         public static MathObject EliminateVariableEqLs(this List<Equation> eqs, Symbol sym)
         {
-            var eq = eqs.First(elt => elt.Has(sym));
+            if (eqs.Any(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym)) == false)
+                return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
+
+            // var eq = eqs.First(elt => elt.Has(sym));
+
+            var eq = eqs.First(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym));
 
             var rest = eqs.Except(new List<Equation>() { eq });
 
@@ -33,6 +40,18 @@ namespace Symbolism.EliminateVariable
                 // return new And() { args = rest.Select(rest_eq => rest_eq.SubstituteEq(eq_sym)).ToList() };
 
                 // rest.Map(rest_eq => rest_eq.Substitute(eq_sym)
+            }
+
+            // Or(
+            //     And(eq0, eq1, eq2, ...)
+            //     And(eq3, eq4, eq5, ...)
+            // )
+
+            if (result is Or && (result as Or).args.All(elt => elt is And))
+            {
+                (result as Or).args.ForEach(elt => (elt as And).args.AddRange(rest));
+
+                return new Or() { args = (result as Or).args.Select(elt => EliminateVariable(elt, sym)).ToList() };
             }
 
             if (result is Or)

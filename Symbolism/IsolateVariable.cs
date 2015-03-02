@@ -57,14 +57,27 @@ namespace Symbolism.IsolateVariable
                 var b = eq.a.AlgebraicExpand().CoefficientGpe(sym, 1);
                 var c = eq.a.AlgebraicExpand().CoefficientGpe(sym, 0);
 
-                //return
-                //    sym == (-b - (((b ^ 2) - 4 * a * c) ^ (new Integer(1) / 2))) / (2 * a);
+                return new Or(
 
-                return
-                    new Or(
+                    new And(
                         sym == (-b + (((b ^ 2) - 4 * a * c) ^ (new Integer(1) / 2))) / (2 * a),
-                        sym == (-b - (((b ^ 2) - 4 * a * c) ^ (new Integer(1) / 2))) / (2 * a)
-                        ).Simplify();
+                        (a != 0).Simplify()
+                        ).Simplify(),
+
+                    new And(
+                        sym == (-b - (((b ^ 2) - 4 * a * c) ^ (new Integer(1) / 2))) / (2 * a),
+                        (a != 0).Simplify()
+                        ).Simplify(),
+
+                    new And(sym == -c / b, a == 0, (b != 0).Simplify()).Simplify(),
+
+                    new And(
+                        (a == 0).Simplify(),
+                        (b == 0).Simplify(),
+                        (c == 0).Simplify()
+                        ).Simplify()
+
+                ).Simplify();
             }
 
 

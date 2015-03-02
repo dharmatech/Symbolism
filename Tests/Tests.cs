@@ -479,36 +479,75 @@ namespace Tests
 
                 Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
 
-                Assert(
-                    (a * (x ^ 2) + b * x + c == 0)
-                        .IsolateVariableEq(x)
-                        .Equals(
-                            new Or(
-                                x == (-b + sqrt((b ^ 2) - 4 * a * c)) / (2 * a),
-                                x == (-b - sqrt((b ^ 2) - 4 * a * c)) / (2 * a)
-                            )
+                (a * (x ^ 2) + b * x + c == 0)
+                    .IsolateVariable(x)
+                    .AssertEqTo(
+
+                        new Or(
+
+                            new And(
+                                x == (-b + sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(
+                                x == (-b - sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(x == -c / b, a == 0, b != 0),
+
+                            new And(a == 0, b == 0, c == 0)
                         )
-                    , "(a * (x ^ 2) + b * x + c == 0).IsolateVariable(x)"
+                    );
+
+                (a * (x ^ 2) + c == 0)
+                    .IsolateVariable(x)
+                    .AssertEqTo(
+
+                        new Or(
+                            new And(
+                                x == sqrt(-4 * a * c) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(
+                                x == -sqrt(-4 * a * c) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(a == 0, c == 0)
+                        )
+                    );
+
+                // a x^2 + b x + c == 0
+                // a x^2 + c == - b x
+                // (a x^2 + c) / x == - b
+
+                ((a * (x ^ 2) + c) / x == -b)
+                    .IsolateVariable(x)
+                    .AssertEqTo(
+
+                    new Or(
+
+                            new And(
+                                x == (-b + sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(
+                                x == (-b - sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
+                                a != 0
+                            ),
+
+                            new And(x == -c / b, a == 0, b != 0),
+
+                            new And(a == 0, b == 0, c == 0)
+                        )
                 );
-
-
-                {
-                    // a x^2 + b x + c == 0
-                    // a x^2 + c == - b x
-                    // (a x^2 + c) / x == - b
-
-                    ((a * (x ^ 2) + c) / x == -b)
-                        .IsolateVariable(x)
-                        .AssertEqTo(
-                            new Or(
-                                x == (-b + sqrt((b ^ 2) - 4 * a * c)) / (2 * a),
-                                x == (-b - sqrt((b ^ 2) - 4 * a * c)) / (2 * a)));
-                }
-
-                {
-                    (sqrt(x + y) == z).IsolateVariable(x).AssertEqTo(x == (z ^ 2) - y);
-                }
-                
+     
+                (sqrt(x + y) == z).IsolateVariable(x).AssertEqTo(x == (z ^ 2) - y);
+               
                 #endregion
 
             }
