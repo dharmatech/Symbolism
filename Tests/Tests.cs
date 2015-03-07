@@ -128,12 +128,12 @@ namespace Tests
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
-                
+
                 Func<int, Integer> Int = (n) => new Integer(n);
 
                 {
                     DoubleFloat.tolerance = 0.000000001;
-                    
+
                     Assert(new DoubleFloat(1.2).Equals(new DoubleFloat(1.2)), "new DoubleFloat(1.2).Equals(new DoubleFloat(1.2))");
 
                     Assert(new DoubleFloat(1.20000001).Equals(new DoubleFloat(1.20000002)) == false, "new DoubleFloat(1.20000001).Equals(new DoubleFloat(1.20000002)) == false");
@@ -334,11 +334,11 @@ namespace Tests
                 new And(false).Simplify().AssertEqTo(false);
 
                 new And(10, 20, 30).Simplify().AssertEqTo(new And(10, 20, 30));
-                
+
                 new And(10, false, 20).Simplify().AssertEqTo(false);
 
                 new And(10, true, 20).Simplify().AssertEqTo(new And(10, 20));
-    
+
                 #endregion
 
                 #region Or
@@ -350,7 +350,7 @@ namespace Tests
                 new Or(false).Simplify().AssertEqTo(false);
 
                 new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20));
-                
+
                 new Or(false, false).Simplify().AssertEqTo(false);
 
                 new Or(10, true, 20, false).Simplify().AssertEqTo(true);
@@ -426,11 +426,11 @@ namespace Tests
                     ((x + y + z) ^ 3).AlgebraicExpand()
                     ==
                     (x ^ 3) + (y ^ 3) + (z ^ 3) +
-                    3 * (x ^ 2) * y + 
-                    3 * (y ^ 2) * x + 
-                    3 * (x ^ 2) * z + 
-                    3 * (y ^ 2) * z + 
-                    3 * (z ^ 2) * x + 
+                    3 * (x ^ 2) * y +
+                    3 * (y ^ 2) * x +
+                    3 * (x ^ 2) * z +
+                    3 * (y ^ 2) * z +
+                    3 * (z ^ 2) * x +
                     3 * (z ^ 2) * y +
                     6 * x * y * z);
 
@@ -545,9 +545,9 @@ namespace Tests
                             new And(a == 0, b == 0, c == 0)
                         )
                 );
-     
+
                 (sqrt(x + y) == z).IsolateVariable(x).AssertEqTo(x == (z ^ 2) - y);
-               
+
                 #endregion
 
             }
@@ -556,7 +556,7 @@ namespace Tests
 
             #region
             {
-                
+
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
@@ -595,7 +595,7 @@ namespace Tests
                     );
 
 
-            }    
+            }
             #endregion
 
             #region
@@ -658,7 +658,7 @@ namespace Tests
             }
 
             #endregion
-            
+
             #region PSE Example 2.7
             {
                 // s = 
@@ -677,7 +677,7 @@ namespace Tests
 
                 eqs.args.AddRange(Kinematic(s, u, v, a, t));
 
-                var vals = new List<Equation>()
+                var vals = new List<Equation>() 
                 { u == 63, v == 0, t == 2.0 };
 
                 eqs
@@ -773,7 +773,7 @@ namespace Tests
                 eqs.args.AddRange(Kinematic(yA, yB, vA, vB, a, tA, tB));
                 eqs.args.AddRange(Kinematic(yB, yC, vB, vC, a, tB, tC));
                 eqs.args.AddRange(Kinematic(yC, yD, vC, vD, a, tC, tD));
-                
+
                 var vals = new List<Equation>()
                 {
                     yA == 50,
@@ -801,6 +801,78 @@ namespace Tests
                     .AssertEqTo(new Or(yD == 27.499999999, yD == 27.499999999));
 
                 DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
+            #region PSE Example 4.3
+
+            {
+                var xA = new Symbol("xA");
+                var xB = new Symbol("xB");
+                var xC = new Symbol("xC");
+
+                var yA = new Symbol("yA");
+                var yB = new Symbol("yB");
+                var yC = new Symbol("yC");
+
+                var vxA = new Symbol("vxA");
+                var vxB = new Symbol("vxB");
+                var vxC = new Symbol("vxC");
+
+                var vyA = new Symbol("vyA");
+                var vyB = new Symbol("vyB");
+                var vyC = new Symbol("vyC");
+
+                var tAB = new Symbol("tAB");
+                var tAC = new Symbol("tAC");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+                var eqs = new And(
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    tAC == 2 * tAB,
+
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+
+                    vxC == vxA + ax * tAB,
+                    vyC == vyA + ay * tAB,
+
+                    xC == xA + vxA * tAC + ax * (tAC ^ 2) / 2,
+                    yC == yA + vyA * tAC + ay * (tAC ^ 2) / 2
+
+                    );
+
+                var zeros = new List<Equation>() { xA == 0, yA == 0, ax == 0, vyB == 0 };
+
+                var vals = new List<Equation>() { thA == (20).ToRadians(), vA == 11.0, ay == -9.8, Trig.Pi == Math.PI };
+
+                eqs
+                    .EliminateVariables(xB, yC, vxB, vxC, vyC, yB, tAC, vxA, vyA, tAB)
+                    .SubstituteEqLs(zeros)
+                    .AssertEqTo(xC == -2 * cos(thA) * sin(thA) * (vA ^ 2) / ay)
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(xC == 7.9364592624562507);
+
+                eqs
+                    .EliminateVariables(xB, yC, vxB, vxC, vyC, xC, vxA, tAC, vyA, tAB)
+                    .SubstituteEqLs(zeros)
+                    .AssertEqTo(yB == -(sin(thA) ^ 2) * (vA ^ 2) / (2 * ay))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(yB == 0.72215873425009314);
             }
 
             #endregion
@@ -1189,13 +1261,13 @@ namespace Tests
                 AssertIsTrue(
                     timeB
                     ==
-                    -1 / g * 
-                    (-sin(thA) * vA - 
+                    -1 / g *
+                    (-sin(thA) * vA -
                         sqrt(
-                            (sin(thA) ^ 2) * (vA ^ 2) + 4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) * 
-                            (sin(th) - cos(th) / cos(thA) * sin(thA)) * 
+                            (sin(thA) ^ 2) * (vA ^ 2) + 4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) *
+                            (sin(th) - cos(th) / cos(thA) * sin(thA)) *
                             (vA ^ 2))));
-                
+
                 //"numeric:".Disp();
 
                 //numeric(timeB).Disp(); nl();
@@ -1215,10 +1287,10 @@ namespace Tests
                     objB.velocity.y
                     ==
                     -sqrt(
-                        (sin(thA) ^ 2) * (vA ^ 2) 
-                        + 
-                        4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) * 
-                        (sin(th) - cos(th) * (cos(thA) ^ -1) * sin(thA)) * 
+                        (sin(thA) ^ 2) * (vA ^ 2)
+                        +
+                        4 * (cos(th) ^ -2) * (cos(thA) ^ 2) * sin(th) *
+                        (sin(th) - cos(th) * (cos(thA) ^ -1) * sin(thA)) *
                         (vA ^ 2)));
 
                 //"numeric:".Disp();
@@ -1822,7 +1894,7 @@ namespace Tests
 
             Console.WriteLine("Testing complete");
 
-            
+
             Console.ReadLine();
         }
     }
