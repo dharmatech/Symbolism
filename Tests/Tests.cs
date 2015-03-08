@@ -548,6 +548,14 @@ namespace Tests
 
                 (sqrt(x + y) == z).IsolateVariable(x).AssertEqTo(x == (z ^ 2) - y);
 
+                (a * b + a == c)
+                    .IsolateVariable(a)
+                    .AssertEqTo(a == c / (b + 1));
+
+                (a * b + a * c == d)
+                    .IsolateVariable(a)
+                    .AssertEqTo(a == d / (b + c));
+
                 #endregion
 
             }

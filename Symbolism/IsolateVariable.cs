@@ -111,6 +111,21 @@ namespace Symbolism.IsolateVariable
                 //    sym);
             }
 
+            // a b + a c == d
+
+            // a + a c == d
+
+            if (eq.a is Sum && (eq.a as Sum).elts.All(elt => elt.DegreeGpe(new List<MathObject>() { sym }) == 1))
+            {
+                //return 
+                //    (new Sum() { elts = (eq.a as Sum).elts.Select(elt => elt / sym).ToList() }.Simplify() == eq.b / sym)
+                //    .IsolateVariable(sym);
+
+                return
+                    (sym * new Sum() { elts = (eq.a as Sum).elts.Select(elt => elt / sym).ToList() }.Simplify() == eq.b)
+                    .IsolateVariable(sym);
+            }
+
             if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
 
             if (eq.a is Product)
