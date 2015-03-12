@@ -162,6 +162,22 @@ namespace Symbolism
             return false;
         }
 
+
+        public bool Has(Func<MathObject, bool> proc)
+        {
+            if (proc(this)) return true;
+
+            if (this is Equation) return (this as Equation).a.Has(proc) || (this as Equation).b.Has(proc);
+
+            if (this is Power) return (this as Power).bas.Has(proc) || (this as Power).exp.Has(proc);
+
+            if (this is Product)  return (this as  Product).elts.Any(elt => elt.Has(proc));
+            if (this is Sum)      return (this as      Sum).elts.Any(elt => elt.Has(proc));
+            if (this is Function) return (this as Function).args.Any(elt => elt.Has(proc));
+
+            return false;
+        }
+
         public bool FreeOf(MathObject a) { return !Has(a); }
 
         public MathObject Substitute(MathObject a, MathObject b)

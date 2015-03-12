@@ -365,6 +365,28 @@ namespace Tests
 
                 #endregion
 
+                #region Has
+
+                Assert(a.Has(elt => elt == a), "a.Has(elt => elt == a)");
+
+                Assert(a.Has(elt => elt == b) == false, "a.Has(elt => elt == b) == false");
+
+                Assert((a == b).Has(elt => elt == a), "Has - 3");
+
+                Assert((a == b).Has(elt => elt == c) == false, "Has - 4");
+
+                Assert(((a + b) ^ c).Has(elt => elt == a + b), "Has - 5");
+
+                Assert(((a + b) ^ c).Has(elt => (elt is Power) && (elt as Power).exp == c), "Has - 6");
+
+                Assert((x * (a + b + c)).Has(elt => (elt is Sum) && (elt as Sum).Has(b)), "Has - 7");
+
+                Assert((x * (a + b + c)).Has(elt => (elt is Sum) && (elt as Sum).elts.Any(obj => obj == b)), "Has - 8");
+
+                Assert((x * (a + b + c)).Has(elt => (elt is Product) && (elt as Product).elts.Any(obj => obj == b)) == false, "Has - 9");
+
+                #endregion
+
                 #region FreeOf
 
                 Assert((a + b).FreeOf(b) == false, "(a + b).FreeOf(b)");
