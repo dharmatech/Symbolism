@@ -51,6 +51,11 @@ namespace Symbolism.IsolateVariable
             if (eq.a is Power && (eq.a as Power).exp == new Integer(1) / 2)
                 return IsolateVariableEq((eq.a ^ 2) == (eq.b ^ 2), sym);
 
+            // 1 / sqrt(x) == y
+
+            if (eq.a is Power && (eq.a as Power).exp == -new Integer(1) / 2)
+                return (eq.a / eq.a == eq.b / eq.a).IsolateVariable(sym);
+
             if (eq.a.AlgebraicExpand().DegreeGpe(new List<MathObject>() { sym }) == 2)
             {
                 var a = eq.a.AlgebraicExpand().CoefficientGpe(sym, 2);

@@ -578,6 +578,10 @@ namespace Tests
                     .IsolateVariable(a)
                     .AssertEqTo(a == d / (b + c));
 
+                (1 / sqrt(x) == y)
+                    .IsolateVariable(x)
+                    .AssertEqTo(x == (y ^ -2));
+
                 #endregion
 
             }
