@@ -131,6 +131,16 @@ namespace Symbolism.IsolateVariable
                     .IsolateVariable(sym);
             }
 
+            // -sqrt(x) + z * x == y
+
+            if (eq.a is Sum && eq.a.Has(sym ^ (new Integer(1) / 2))) return eq;
+
+            // sqrt(a + x) - z * x == -y
+
+            if (eq.a is Sum && eq.a.Has(elt => elt is Power && (elt as Power).exp == new Integer(1) / 2 && (elt as Power).bas.Has(sym)))
+                return eq;
+
+
             if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
 
             if (eq.a is Product)
