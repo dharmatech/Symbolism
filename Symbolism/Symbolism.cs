@@ -782,6 +782,25 @@ namespace Symbolism
         }
     }
 
+    public static class FunctionExtensions
+    {
+        public static T Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
+        {
+            return new T() { args = obj.args.Select(proc).ToList() };
+        }
+
+        //public static T Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
+        //{
+        //    return new T() { args = obj.args.Select(elt => proc(elt)).ToList() }.Simplify() as T;
+        //}
+
+        //public static T Map<T,U>(this T obj, Func<MathObject, U> proc) where T : Function, new() where U : MathObject
+        //{
+        //    return new T() { args = obj.args.Select(elt => proc(elt) as MathObject).ToList() };
+        //}
+    }
+
+
     public class And : Function
     {
         MathObject AndProc(MathObject[] ls)
@@ -805,6 +824,8 @@ namespace Symbolism
             args = new List<MathObject>(ls);
             proc = AndProc;
         }
+
+        public And() { name = "And"; args = new List<MathObject>(); proc = AndProc; }
     }
 
     public class Or : Function

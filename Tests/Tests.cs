@@ -359,6 +359,14 @@ namespace Tests
 
                 #endregion
 
+                #region Function.Map
+
+                new And(1, 2, 3, 4, 5, 6).Map(elt => elt * 2)
+                    .AssertEqTo(new And(2, 4, 6, 8, 10, 12))
+                    .Disp();
+
+                #endregion Function.Map
+
                 #region Sum
 
                 Assert((x + y).Equals(x * y) == false, "(x + y).Equals(x * y)");
