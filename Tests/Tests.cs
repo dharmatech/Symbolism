@@ -295,8 +295,8 @@ namespace Tests
 
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
 
-                // Console.WriteLine((x + x + x + x) / x);
-
+                AssertIsTrue((a == b) != (a != b));
+                
                 #region Equation.ToString
 
                 Assert((x == y).ToString() == "x == y", "x == y");
@@ -362,8 +362,7 @@ namespace Tests
                 #region Function.Map
 
                 new And(1, 2, 3, 4, 5, 6).Map(elt => elt * 2)
-                    .AssertEqTo(new And(2, 4, 6, 8, 10, 12))
-                    .Disp();
+                    .AssertEqTo(new And(2, 4, 6, 8, 10, 12));
 
                 #endregion Function.Map
 

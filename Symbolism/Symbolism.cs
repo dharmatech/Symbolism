@@ -283,13 +283,11 @@ namespace Symbolism
 
         public override bool Equals(object obj)
         {
-            if (
+            return
                 obj is Equation &&
                 a.Equals((obj as Equation).a) &&
-                b.Equals((obj as Equation).b))
-                return true;
-
-            return false;
+                b.Equals((obj as Equation).b) &&
+                Operator == (obj as Equation).Operator;
         }
 
         Boolean ToBoolean()
