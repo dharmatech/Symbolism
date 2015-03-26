@@ -813,6 +813,20 @@ namespace Symbolism
                 return new And() 
                 { args = new List<MathObject>(ls.Where(elt => elt != true)) }.Simplify();
 
+            if (ls.Any(elt => elt is And))
+            {
+                var and = new And();
+
+                foreach (var elt in ls)
+                {
+                    if (elt is And) and.args.AddRange((elt as And).args);
+
+                    else and.args.Add(elt);
+                }
+
+                return and.Simplify();
+            }
+
             return new And() { args = new List<MathObject>(ls) };
         }
 

@@ -339,6 +339,10 @@ namespace Tests
 
                 new And(10, true, 20).Simplify().AssertEqTo(new And(10, 20));
 
+                new And(10, new And(20, 30), 40)
+                    .Simplify()
+                    .AssertEqTo(new And(10, 20, 30, 40));
+
                 #endregion
 
                 #region Or
