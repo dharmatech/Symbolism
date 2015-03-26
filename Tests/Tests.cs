@@ -23,6 +23,7 @@ using Utils;
 
 using Symbolism.LogicalExpand;
 using Symbolism.SimplifyEquation;
+using Symbolism.SimplifyLogical;
 
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
@@ -479,6 +480,14 @@ namespace Tests
 
                 #endregion
 
+                #region SimplifyLogical
+
+                new And(a, b, c, a)
+                    .SimplifyLogical()
+                    .AssertEqTo(new And(a, b, c));
+
+                #endregion SimplifyLogical
+   
                 #region DegreeGpe
 
                 {
