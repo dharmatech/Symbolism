@@ -21,6 +21,8 @@ using Symbolism;
 using Physics;
 using Utils;
 
+using Symbolism.LogicalExpand;
+
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 using Symbolism.IsolateVariable;
@@ -361,6 +363,10 @@ namespace Tests
 
                 new Or(10, false, 20).Simplify().AssertEqTo(new Or(10, 20));
 
+                new Or(10, new Or(20, 30), 40)
+                    .Simplify()
+                    .AssertEqTo(new Or(10, 20, 30, 40));
+
                 #endregion
 
                 #region Function.Map
@@ -416,6 +422,47 @@ namespace Tests
                 Assert(((a + b + c) * d).FreeOf(a + b) == true, "((a + b + c) * d).FreeOf(a + b)");
                 Assert(((y + 2 * x - y) / x).FreeOf(x) == true, "((y + 2 * x - y) / x).FreeOf(x)");
                 Assert(((x * y) ^ 2).FreeOf(x * y) == true, "((x * y) ^ 2).FreeOf(x * y)");
+
+                #endregion
+
+                #region LogicalExpand
+
+                new And(new Or(a, b), c)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        new Or(
+                            new And(a, c),
+                            new And(b, c)));
+
+                new And(a, new Or(b, c))
+                    .LogicalExpand()
+                    .AssertEqTo(new Or(new And(a, b), new And(a, c)));
+
+                new And(a, new Or(b, c), d)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        new Or(
+                            new And(a, b, d),
+                            new And(a, c, d)));
+
+                new And(new Or(a == b, b == c), x == y)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        new Or(
+                            new And(a == b, x == y),
+                            new And(b == c, x == y)));
+
+                new And(
+                    new Or(a == b, b == c),
+                    new Or(c == d, d == a),
+                    x == y)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        new Or(
+                            new And(a == b, c == d, x == y),
+                            new And(a == b, d == a, x == y),
+                            new And(b == c, c == d, x == y),
+                            new And(b == c, d == a, x == y)));
 
                 #endregion
 
@@ -617,6 +664,8 @@ namespace Tests
                 #endregion
 
             }
+
+            
 
             #region EliminateVariable
 

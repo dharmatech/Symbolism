@@ -845,6 +845,19 @@ namespace Symbolism
 
             if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);
 
+            if (ls.Any(elt => elt is Or))
+            {
+                var or = new Or();
+
+                foreach (var elt in ls)
+                {
+                    if (elt is Or) or.args.AddRange((elt as Or).args);
+                    else or.args.Add(elt);
+                }
+
+                return or.Simplify();
+            }
+
             return new Or() { args = new List<MathObject>(ls) };
         }
 
