@@ -22,6 +22,7 @@ using Physics;
 using Utils;
 
 using Symbolism.LogicalExpand;
+using Symbolism.SimplifyEquation;
 
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
@@ -463,6 +464,18 @@ namespace Tests
                             new And(a == b, d == a, x == y),
                             new And(b == c, c == d, x == y),
                             new And(b == c, d == a, x == y)));
+
+                #endregion
+
+                #region SimplifyEquation
+
+                (2 * x == 0)
+                    .SimplifyEquation()
+                    .AssertEqTo(x == 0);
+
+                (2 * x != 0)
+                    .SimplifyEquation()
+                    .AssertEqTo(x != 0);
 
                 #endregion
 
