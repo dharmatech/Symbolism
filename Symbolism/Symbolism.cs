@@ -782,22 +782,11 @@ namespace Symbolism
 
     public static class FunctionExtensions
     {
-        public static T Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
+        public static MathObject Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
         {
-            return new T() { args = obj.args.Select(proc).ToList() };
+            return new T() { args = obj.args.Select(proc).ToList() }.Simplify();
         }
-
-        //public static T Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
-        //{
-        //    return new T() { args = obj.args.Select(elt => proc(elt)).ToList() }.Simplify() as T;
-        //}
-
-        //public static T Map<T,U>(this T obj, Func<MathObject, U> proc) where T : Function, new() where U : MathObject
-        //{
-        //    return new T() { args = obj.args.Select(elt => proc(elt) as MathObject).ToList() };
-        //}
     }
-
 
     public class And : Function
     {
@@ -865,6 +854,8 @@ namespace Symbolism
             args = new List<MathObject>(ls);
             proc = OrProc;
         }
+
+        public Or() { name = "Or"; args = new List<MathObject>(); proc = OrProc; }
     }
 
     public class Sin : Function

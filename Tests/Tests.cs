@@ -368,6 +368,15 @@ namespace Tests
                 new And(1, 2, 3, 4, 5, 6).Map(elt => elt * 2)
                     .AssertEqTo(new And(2, 4, 6, 8, 10, 12));
 
+                new And(1, 2, 3, 4, 5, 6).Map(elt => (elt is Integer) && (elt as Integer).val % 2 == 0 ? elt : false)
+                    .AssertEqTo(false);
+
+                new Or(1, 2, 3).Map(elt => elt * 2)
+                    .AssertEqTo(new Or(2, 4, 6));
+
+                new Or(1, 2, 3, 4, 5, 6).Map(elt => (elt is Integer) && (elt as Integer).val % 2 == 0 ? elt : false)
+                    .AssertEqTo(new Or(2, 4, 6));
+
                 #endregion Function.Map
 
                 #region Sum
