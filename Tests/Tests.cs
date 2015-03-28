@@ -683,6 +683,10 @@ namespace Tests
                     .IsolateVariable(x)
                     .AssertEqTo(sqrt(a + x) - z * x == -y);
 
+                (sqrt(2 + x) * sqrt(3 + x) == y) 
+                    .IsolateVariable(x)
+                    .AssertEqTo(sqrt(2 + x) * sqrt(3 + x) == y);
+
                 #endregion
 
             }

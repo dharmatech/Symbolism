@@ -143,6 +143,10 @@ namespace Symbolism.IsolateVariable
 
             if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
 
+            // sqrt(2 + x) * sqrt(3 + x) == y
+
+            if (eq.a is Product && (eq.a as Product).elts.All(elt => elt.Has(sym))) return eq;
+
             if (eq.a is Product)
             {
                 var items = ((Product)eq.a).elts.FindAll(elt => elt.FreeOf(sym));
