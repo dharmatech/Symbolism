@@ -762,6 +762,17 @@ namespace Tests
             }
             #endregion
 
+            {
+                var x = new Symbol("x");
+                var y = new Symbol("y");
+                var z = new Symbol("z");
+
+                new And(y != z, y == x, y == 10)
+                    .EliminateVariable(y)
+                    .AssertEqTo(new And(x != z, x == 10));
+            }
+
+
             #region PSE Example 2.6
 
             {

@@ -25,7 +25,18 @@ namespace Symbolism.EliminateVariable
 
             // var eq = eqs.First(elt => elt.Has(sym));
 
-            var eq = eqs.First(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym));
+
+
+
+
+
+
+            // var eq = eqs.First(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym));
+
+            var eq = eqs.First(elt =>
+                elt.Operator == Equation.Operators.Equal &&
+                elt.Has(sym) &&
+                elt.AlgebraicExpand().Has(sym));
 
             var rest = eqs.Except(new List<Equation>() { eq });
 
