@@ -13,12 +13,17 @@ namespace Symbolism.SimplifyEquation
                 (expr as Equation).a is Product &&
                 ((expr as Equation).a as Product).elts.Any(elt => elt is Number) &&
                 ((expr as Equation).b == 0))
-            {
                 return new Equation(
                     new Product() { elts = ((expr as Equation).a as Product).elts.Where(elt => !(elt is Number)).ToList() }.Simplify(),
                     0,
                     (expr as Equation).Operator).Simplify();
-            }
+            
+            if (expr is Equation &&
+                (expr as Equation).b == 0 &&
+                (expr as Equation).a is Power &&
+                ((expr as Equation).a as Power).exp is Integer &&
+                (((expr as Equation).a as Power).exp as Integer).val > 0)
+                return ((expr as Equation).a as Power).bas == 0;
 
             if (expr is And) return (expr as And).Map(elt => elt.SimplifyEquation());
 

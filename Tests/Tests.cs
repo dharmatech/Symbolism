@@ -478,6 +478,10 @@ namespace Tests
                     .SimplifyEquation()
                     .AssertEqTo(x != 0);
 
+                ((x ^ 2) == 0)
+                    .SimplifyEquation()
+                    .AssertEqTo(x == 0);
+
                 #endregion
 
                 #region SimplifyLogical
