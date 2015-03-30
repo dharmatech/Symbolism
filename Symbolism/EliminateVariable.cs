@@ -4,13 +4,59 @@ using System.Linq;
 using System.Text;
 
 using Symbolism.AlgebraicExpand;
-
 using Symbolism.IsolateVariable;
+using Symbolism.SimplifyEquation;
 
 namespace Symbolism.EliminateVariable
 {
     public static class Extensions
     {
+        public static MathObject CheckVariableEqLs(this List<Equation> eqs, Symbol sym)
+        {
+            if (eqs.EliminateVariableEqLs(sym) == false) return false;
+
+            return new And() { args = eqs.Select(eq => eq as MathObject).ToList() };
+        }
+
+        public static MathObject CheckVariable(this MathObject expr, Symbol sym)
+        {
+            // 1 / x == 0
+            // 1 / x^2 == 0
+
+            if (expr is Equation &&
+                (expr as Equation).Operator == Equation.Operators.Equal &&
+                (expr as Equation).b == 0 &&
+                (expr as Equation).a.Has(sym) &&
+                (expr as Equation).SimplifyEquation() is Equation &&
+                ((expr as Equation).SimplifyEquation() as Equation).a is Power &&
+                (((expr as Equation).SimplifyEquation() as Equation).a as Power).exp is Integer &&
+                ((((expr as Equation).SimplifyEquation() as Equation).a as Power).exp as Integer).val < 0)
+                return false;
+
+            if (expr is And)
+            {
+                var result = (expr as And).Map(elt => elt.CheckVariable(sym));
+
+                if (result is And)
+                {
+                    var eqs = (expr as And).args.Select(elt => elt as Equation).ToList();
+
+                    return eqs.CheckVariableEqLs(sym);
+                }
+
+                return result;
+            }
+
+
+            if (expr is Or &&
+                (expr as Or).args.All(elt => elt is And))
+                return (expr as Or).Map(elt => elt.CheckVariable(sym));
+
+            return expr;
+        }
+
+
+
         // EliminateVarAnd
         // EliminateVarOr
         // EliminateVarLs
