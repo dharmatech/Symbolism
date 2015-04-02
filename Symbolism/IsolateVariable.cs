@@ -158,6 +158,10 @@ namespace Symbolism.IsolateVariable
                     sym);
             }
 
+            
+
+            if (eq.a is Power) return eq;
+
             throw new Exception();
         }
 

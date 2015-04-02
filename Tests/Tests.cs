@@ -1112,12 +1112,9 @@ namespace Tests
                 DoubleFloat.tolerance = null;
             }
 
-
-
-
             #endregion
-                
-            #region PSE 5E Example 4.5 vyC
+            
+            #region PSE 5E Example 4.5 b
 
             {
                 Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
@@ -1147,9 +1144,11 @@ namespace Tests
                 var vA = new Symbol("vA");
                 var thA = new Symbol("thA");
 
+                var vC = new Symbol("vC");
+
                 var eqs = new And(
 
-                    // vxA == vA * cos(thA),
+                    vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
 
                     // tAC == 2 * tAB,
@@ -1162,43 +1161,42 @@ namespace Tests
                     // yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
 
 
-                    // vxC == vxA + ax * tAC,
+                    vxC == vxA + ax * tAC,
                     vyC == vyA + ay * tAC,
 
                     // xC == xA + vxA * tAC + ax * (tAC ^ 2) / 2,
-                    yC == yA + vyA * tAC + ay * (tAC ^ 2) / 2 //,
+                    yC == yA + vyA * tAC + ay * (tAC ^ 2) / 2,
 
-                    // ay != 0
+                    vC == sqrt((vxC ^ 2) + (vyC ^ 2)),
+
+                    ay != 0
                 );
 
-                var zeros = new List<Equation>() { yC == 0 };
+                var zeros = new List<Equation>() { ax == 0, yC == 0 };
                 var vals = new List<Equation>() { yA == 45, vA == 20, thA == (30).ToRadians(), ay == -9.8, Trig.Pi == Math.PI };
 
                 DoubleFloat.tolerance = 0.00001;
 
                 eqs
-                    .EliminateVariables(vyA, tAC)
-                    .IsolateVariable(vyC)
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxC, vxA, vyA, vyC, tAC)
                     .SimplifyEquation()
+                    .SimplifyLogical()
                     .CheckVariable(ay)
                     .AssertEqTo(
                         new Or(
                             new And(
-                                vyC == -ay * sqrt(2 * ((sin(thA) ^ 2) * (vA ^ 2) / (2 * ay) - yA + yC) / ay),
-                                1 / ay != 0),
+                                ay != 0,
+                                vC == sqrt((cos(thA) ^ 2) * (vA ^ 2) + ((sin(thA) * vA - (sin(thA) * vA + sqrt((sin(thA) ^ 2) * (vA ^ 2) + -2 * ay * yA))) ^ 2))),
                             new And(
-                                vyC == ay * sqrt(2 * ((sin(thA) ^ 2) * (vA ^ 2) / (2 * ay) - yA + yC) / ay),
-                                1 / ay != 0)))
-                    .SubstituteEqLs(zeros)
+                                ay != 0,
+                                vC == sqrt((cos(thA) ^ 2) * (vA ^ 2) + ((sin(thA) * vA - (sin(thA) * vA - sqrt((sin(thA) ^ 2) * (vA ^ 2) + -2 * ay * yA))) ^ 2)))))
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(vyC == 31.336879231, vyC == -31.336879231));
-                
+                    .AssertEqTo(new Or(vC == 35.805027579936315, vC == 35.805027579936322));
+
                 DoubleFloat.tolerance = null;
             }
 
-
-            
-            
             #endregion
 
             #endregion
