@@ -62,6 +62,8 @@ namespace Symbolism.IsolateVariable
                 var b = eq.a.AlgebraicExpand().CoefficientGpe(sym, 1);
                 var c = eq.a.AlgebraicExpand().CoefficientGpe(sym, 0);
 
+                if (a == null || b == null || c == null) return eq;
+
                 return new Or(
 
                     new And(
@@ -140,6 +142,7 @@ namespace Symbolism.IsolateVariable
             if (eq.a is Sum && eq.a.Has(elt => elt is Power && (elt as Power).exp == new Integer(1) / 2 && (elt as Power).bas.Has(sym)))
                 return eq;
 
+            if (eq.a is Sum && eq.AlgebraicExpand().Equals(eq)) return eq;
 
             if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
 

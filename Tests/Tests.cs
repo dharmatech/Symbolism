@@ -1131,6 +1131,94 @@ namespace Tests
 
             #endregion
 
+            #region PSE 5E Example 4.6
+
+            {
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var xB = new Symbol("xB");
+
+                var yA = new Symbol("yA");
+                var yB = new Symbol("yB");
+
+                var vxA = new Symbol("vxA");
+                var vxB = new Symbol("vxB");
+
+                var vyA = new Symbol("vyA");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var eqs = new And(
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+                    ay != 0,
+
+                    yA != 0
+                );
+
+                var vals = new List<Equation>() { xA == 0, yA == 100, vxA == 40, vyA == 0, yB == 0, ax == 0, ay == -9.8, Trig.Pi == Math.PI };
+
+                var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                DoubleFloat.tolerance = 0.00001;
+
+                eqs
+                    .SubstituteEqLs(vals.Where(eq => eq.b == 0).ToList())
+                    .EliminateVariables(vxB, vyB, tAB)
+                    .IsolateVariable(xB)
+                    .LogicalExpand().SimplifyEquation()
+                    .CheckVariable(yA)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                xB == -1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
+                                ay / (vxA ^ 2) != 0,
+                                ay != 0,
+                                yA != 0),
+                            new And(
+                                xB == 1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
+                                ay / (vxA ^ 2) != 0,
+                                ay != 0,
+                                yA != 0)))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(new Or(xB == 180.70158058105022, xB == -180.70158058105022));
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, xB, tAB)
+                    .IsolateVariable(vyB)
+                    .LogicalExpand().SimplifyEquation()
+                    .CheckVariable(yA)
+                    .AssertEqTo(
+                        new Or(
+                          new And(
+                              vyB == -ay * sqrt(-2 / ay * yA),
+                              1 / ay != 0,
+                              ay != 0,
+                              yA != 0),
+                          new And(
+                              vyB == ay * sqrt(-2 / ay * yA),
+                              1 / ay != 0,
+                              ay != 0,
+                              yA != 0)))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(new Or(vyB == 44.271887242357309, vyB == -44.271887242357309));
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
             #endregion
 
             #region PSE 5E Example 4.3

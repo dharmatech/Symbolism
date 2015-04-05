@@ -66,7 +66,10 @@ namespace Symbolism.EliminateVariable
 
         public static MathObject EliminateVariableEqLs(this List<Equation> eqs, Symbol sym)
         {
-            if (eqs.Any(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym)) == false)
+            if (eqs.Any(elt => 
+                    elt.Operator == Equation.Operators.Equal &&
+                    elt.Has(sym) && 
+                    elt.AlgebraicExpand().Has(sym)) == false)
                 return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
 
             // var eq = eqs.First(elt => elt.Has(sym));
