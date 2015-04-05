@@ -693,6 +693,18 @@ namespace Tests
 
                 #endregion
 
+                #region EliminateVariable
+
+                new And((x ^ 3) == (y ^ 5), z == x)
+                .EliminateVariable(x)
+                .AssertEqTo((z ^ 3) == (y ^ 5));
+                
+                new And((x ^ 3) == (y ^ 5), z == (x ^ 7))
+                .EliminateVariable(x)        
+                .AssertEqTo(new And((x ^ 3) == (y ^ 5), z == (x ^ 7)));
+                
+                #endregion
+
             }
 
 

@@ -66,31 +66,30 @@ namespace Symbolism.EliminateVariable
 
         public static MathObject EliminateVariableEqLs(this List<Equation> eqs, Symbol sym)
         {
-            if (eqs.Any(elt => 
+            if (eqs.Any(elt =>
                     elt.Operator == Equation.Operators.Equal &&
-                    elt.Has(sym) && 
-                    elt.AlgebraicExpand().Has(sym)) == false)
+                    elt.Has(sym) &&
+                    elt.AlgebraicExpand().Has(sym) &&
+                    elt.IsolateVariableEq(sym).Has(obj => obj is Equation && (obj as Equation).a == sym && (obj as Equation).b.FreeOf(sym))
+                    ) == false)
                 return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
-
-            // var eq = eqs.First(elt => elt.Has(sym));
-
-
-
-
-
-
-
-            // var eq = eqs.First(elt => elt.Has(sym) && elt.AlgebraicExpand().Has(sym));
 
             var eq = eqs.First(elt =>
                 elt.Operator == Equation.Operators.Equal &&
                 elt.Has(sym) &&
-                elt.AlgebraicExpand().Has(sym));
+                elt.AlgebraicExpand().Has(sym) &&
+                elt.IsolateVariableEq(sym).Has(obj => obj is Equation && (obj as Equation).a == sym && (obj as Equation).b.FreeOf(sym)));
 
             var rest = eqs.Except(new List<Equation>() { eq });
 
             var result = eq.IsolateVariableEq(sym);
 
+            // sym was not isolated
+
+            if (result is Equation && 
+                ((result as Equation).a != sym || (result as Equation).b.Has(sym)))
+                return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
+            
             if (result is Equation)
             {
                 var eq_sym = result as Equation;
