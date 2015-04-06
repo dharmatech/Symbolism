@@ -1173,9 +1173,9 @@ namespace Tests
                     xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
                     yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
 
-                    ay != 0,
+                    vxA != 0,
 
-                    yA != 0
+                    ay != 0
                 );
 
                 var vals = new List<Equation>() { xA == 0, yA == 100, vxA == 40, vyA == 0, yB == 0, ax == 0, ay == -9.8, Trig.Pi == Math.PI };
@@ -1185,44 +1185,70 @@ namespace Tests
                 DoubleFloat.tolerance = 0.00001;
 
                 eqs
-                    .SubstituteEqLs(vals.Where(eq => eq.b == 0).ToList())
                     .EliminateVariables(vxB, vyB, tAB)
                     .IsolateVariable(xB)
                     .LogicalExpand().SimplifyEquation()
-                    .CheckVariable(yA)
+                    .CheckVariable(ay)
+                    .CheckVariable(vxA).SimplifyLogical()
+                    .SubstituteEq(ax == 0)
                     .AssertEqTo(
                         new Or(
                             new And(
+                                vxA != 0,
+                                xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
+                                ay * (vxA ^ -2) != 0,
+                                ay != 0),
+                            new And(
+                                vxA != 0,
+                                xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + -1 * sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
+                                ay * (vxA ^ -2) != 0,
+                                ay != 0)))
+                    .SubstituteEqLs(zeros)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vxA != 0,
                                 xB == -1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
                                 ay / (vxA ^ 2) != 0,
-                                ay != 0,
-                                yA != 0),
+                                ay != 0),
                             new And(
+                                vxA != 0,
                                 xB == 1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
                                 ay / (vxA ^ 2) != 0,
-                                ay != 0,
-                                yA != 0)))
+                                ay != 0)))     
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(xB == 180.70158058105022, xB == -180.70158058105022));
 
                 eqs
-                    .SubstituteEqLs(zeros)
                     .EliminateVariables(vxB, xB, tAB)
                     .IsolateVariable(vyB)
                     .LogicalExpand().SimplifyEquation()
-                    .CheckVariable(yA)
+                    .CheckVariable(ay)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vyB == -1 * ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
+                                (ay ^ -1) != 0,
+                                vxA != 0,
+                                ay != 0),
+                            new And(
+                                vyB == ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
+                                (ay ^ -1) != 0,
+                                vxA != 0,
+                                ay != 0)))
+                    .SubstituteEqLs(zeros)
                     .AssertEqTo(
                         new Or(
                           new And(
                               vyB == -ay * sqrt(-2 / ay * yA),
                               1 / ay != 0,
-                              ay != 0,
-                              yA != 0),
+                              vxA != 0,
+                              ay != 0),
                           new And(
                               vyB == ay * sqrt(-2 / ay * yA),
                               1 / ay != 0,
-                              ay != 0,
-                              yA != 0)))
+                              vxA != 0,
+                              ay != 0)))
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(vyB == 44.271887242357309, vyB == -44.271887242357309));
 
