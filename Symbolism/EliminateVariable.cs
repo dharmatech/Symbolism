@@ -13,7 +13,19 @@ namespace Symbolism.EliminateVariable
     {
         public static MathObject CheckVariableEqLs(this List<Equation> eqs, Symbol sym)
         {
+            // (a == 10, a == 0)   ->   10 == 0   ->   false
+
             if (eqs.EliminateVariableEqLs(sym) == false) return false;
+
+            // (1/a != 0  &&  a != 0)   ->   a != 0
+
+            if (eqs.Any(eq => eq.Operator == Equation.Operators.NotEqual && eq.a == sym && eq.b == 0)
+                &&
+                eqs.Any(eq => eq.Operator == Equation.Operators.NotEqual && eq.a == 1 / sym && eq.b == 0))
+                return eqs
+                    .Where(eq => (eq.Operator == Equation.Operators.NotEqual && eq.a == 1 / sym && eq.b == 0) == false)
+                    .ToList()
+                    .CheckVariableEqLs(sym);
 
             return new And() { args = eqs.Select(eq => eq as MathObject).ToList() };
         }

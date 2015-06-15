@@ -1228,12 +1228,12 @@ namespace Tests
                         new Or(
                             new And(
                                 vyB == -1 * ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                                (ay ^ -1) != 0,
+                                // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0),
                             new And(
                                 vyB == ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                                (ay ^ -1) != 0,
+                                // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
@@ -1241,12 +1241,12 @@ namespace Tests
                         new Or(
                           new And(
                               vyB == -ay * sqrt(-2 / ay * yA),
-                              1 / ay != 0,
+                              // 1 / ay != 0,
                               vxA != 0,
                               ay != 0),
                           new And(
                               vyB == ay * sqrt(-2 / ay * yA),
-                              1 / ay != 0,
+                              // 1 / ay != 0,
                               vxA != 0,
                               ay != 0)))
                     .SubstituteEqLs(vals)
