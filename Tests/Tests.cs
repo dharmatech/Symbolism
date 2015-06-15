@@ -1257,6 +1257,155 @@ namespace Tests
 
             #endregion
 
+            #region PSE 5E Example 4.7
+
+            {
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var th = new Symbol("th");
+                var d = new Symbol("d");
+
+                var eqs = new And(
+
+                    cos(th) == (xB - xA) / d,
+                    sin(th) == (yA - yB) / d,
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+                    yB != 0,
+
+                    ay != 0
+                );
+
+                var vals = new List<Equation>() { xA == 0, yA == 0, vxA == 25, vyA == 0, ax == 0, ay == -9.8, th == (35).ToRadians(), Trig.Pi == Math.PI };
+
+                var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                DoubleFloat.tolerance = 0.00001;
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, vyB, d, yB, tAB)
+                    .IsolateVariable(xB)
+                    .LogicalExpand()
+                    .CheckVariable(ay)
+                    .SimplifyEquation()
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                xB == -(sin(th) / cos(th) + sqrt((cos(th) ^ -2) * (sin(th) ^ 2))) * (vxA ^ 2) / ay,
+                                ay / (vxA ^ 2) != 0,
+                                sin(th) / cos(th) * xB != 0,
+                                ay != 0),
+                            new And(
+                                xB == -(sin(th) / cos(th) - sqrt((cos(th) ^ -2) * (sin(th) ^ 2))) * (vxA ^ 2) / ay,
+                                ay / (vxA ^ 2) != 0,
+                                sin(th) / cos(th) * xB != 0,
+                                ay != 0)))
+                    .SubstituteEqLs(vals)
+                    .SimplifyEquation()
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                xB == 89.312185996136435,
+                                xB != 0),
+                            new And(
+                                xB == 7.0805039835788038E-15,
+                                xB != 0)));
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, vyB, d, xB, tAB)
+                    .IsolateVariable(yB)
+                    .LogicalExpand()
+                    .CheckVariable(yB)
+                    .AssertEqTo(
+                        new And(
+                            yB == 2 * (sin(th) ^ 2) * (vxA ^ 2) / ay / (cos(th) ^ 2),
+                            -ay * (cos(th) ^ 2) / (sin(th) ^ 2) / (vxA ^ 2) / 2 != 0,
+                            yB != 0,
+                            ay != 0))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(
+                        new And(
+                            yB == -62.537065888482395,
+                            yB != 0));
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, vyB, d, xB, yB)
+                    .IsolateVariable(tAB)
+                    .LogicalExpand().CheckVariable(ay).SimplifyEquation().SimplifyLogical()
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                tAB == -(sin(th) * vxA / cos(th) + sqrt((sin(th) ^ 2) * (vxA ^ 2) / (cos(th) ^ 2))) / ay,
+                                ay != 0,
+                                sin(th) * tAB * vxA / cos(th) != 0),
+                            new And(
+                                tAB == -(sin(th) * vxA / cos(th) - sqrt((sin(th) ^ 2) * (vxA ^ 2) / (cos(th) ^ 2))) / ay,
+                                ay != 0,
+                                sin(th) * tAB * vxA / cos(th) != 0)))
+                    .SubstituteEqLs(vals)
+                    .CheckVariable(tAB).SimplifyEquation()
+                    .AssertEqTo(
+                        new And(
+                            tAB == 3.5724874398454571,
+                            tAB != 0));
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, d, tAB, xB, yB)
+                    .IsolateVariable(vyB)
+                    .LogicalExpand()
+                    .CheckVariable(ay)
+                    .SimplifyEquation()
+                    .CheckVariable(ay)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vyB == -ay * (sin(th) * vxA / (ay * cos(th)) + sqrt((sin(th) ^ 2) * (vxA ^ 2) / ((ay ^ 2) * (cos(th) ^ 2)))),
+                                sin(th) * vxA * vyB / (ay * cos(th)) != 0,
+                                ay != 0),
+                            new And(
+                                vyB == -ay * (sin(th) * vxA / (ay * cos(th)) - sqrt((sin(th) ^ 2) * (vxA ^ 2) / ((ay ^ 2) * (cos(th) ^ 2)))),
+                                sin(th) * vxA * vyB / (ay * cos(th)) != 0,
+                                ay != 0)))
+                    .SubstituteEqLs(vals)
+                    .CheckVariable(vyB)
+                    .SimplifyEquation()
+                    .CheckVariable(vyB)
+                    .AssertEqTo(
+                        new And(
+                            vyB == -35.010376910485483,
+                            vyB != 0));
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
             #endregion
 
             #region PSE 5E Example 4.3
