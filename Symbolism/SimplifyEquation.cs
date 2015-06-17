@@ -9,6 +9,9 @@ namespace Symbolism.SimplifyEquation
     {
         public static MathObject SimplifyEquation(this MathObject expr)
         {
+            // 10 * x == 0   ->   x == 0
+            // 10 * x != 0   ->   x == 0
+
             if (expr is Equation &&
                 (expr as Equation).a is Product &&
                 ((expr as Equation).a as Product).elts.Any(elt => elt is Number) &&
@@ -17,7 +20,10 @@ namespace Symbolism.SimplifyEquation
                     new Product() { elts = ((expr as Equation).a as Product).elts.Where(elt => !(elt is Number)).ToList() }.Simplify(),
                     0,
                     (expr as Equation).Operator).Simplify();
-            
+
+            // x ^ 2 == 0   ->   x == 0
+            // x ^ 2 != 0   ->   x == 0
+
             if (expr is Equation &&
                 (expr as Equation).b == 0 &&
                 (expr as Equation).a is Power &&
