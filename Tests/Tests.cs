@@ -122,6 +122,7 @@ namespace Tests
 
             Func<MathObject, MathObject> sin = obj => Trig.Sin(obj);
             Func<MathObject, MathObject> cos = obj => Trig.Cos(obj);
+            Func<MathObject, MathObject> tan = obj => new Tan(obj).Simplify();
 
             {
                 var a = new Symbol("a");
@@ -1400,6 +1401,100 @@ namespace Tests
                         new And(
                             vyB == -35.010376910485483,
                             vyB != 0));
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
+            #region PSE 5E P4.9
+
+            {
+                // In a local bar, a customer slides an empty beer mug
+                // down the counter for a refill. The bartender is momentarily 
+                // distracted and does not see the mug, which slides
+                // off the counter and strikes the floor 1.40 m from the
+                // base of the counter. If the height of the counter is 
+                // 0.860 m, (a) with what velocity did the mug leave the
+                // counter and (b) what was the direction of the mug’s 
+                // velocity just before it hit the floor?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var thB = new Symbol("thB");
+                var vB = new Symbol("vB");
+
+                var eqs = new And(
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    tan(thB) == vyB / vxB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+                    xB != 0
+                );
+
+                var vals = new List<Equation>() { xA == 0, yA == 0.86, /* vxA */ vyA == 0, xB == 1.4, yB == 0, /* vxB vyB vB thB */ /* tAB */ ax == 0, ay == -9.8 };
+
+                var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                DoubleFloat.tolerance = 0.00001;
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(thB, vxB, vyB, tAB)
+                    .IsolateVariable(vxA)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vxA == ay * (xB ^ 2) / yA / 4 * sqrt(-8 / ay * (xB ^ -2) * yA),
+                                2 / ay * (xB ^ -2) * yA != 0,
+                                xB != 0),
+                            new And(
+                                vxA == -ay * (xB ^ 2) / yA / 4 * sqrt(-8 / ay * (xB ^ -2) * yA),
+                                2 / ay * (xB ^ -2) * yA != 0,
+                                xB != 0)))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(new Or(vxA == -3.3417722634053204, vxA == 3.3417722634053204));
+
+                eqs
+                    .SubstituteEqLs(zeros)
+                    .EliminateVariables(vxB, vyB, tAB, vxA)
+                    .LogicalExpand()
+                    .CheckVariable(xB)
+                    .SimplifyLogical()
+                    .IsolateVariable(thB)
+                    .AssertEqTo(
+                        new And(
+                            -tan(thB) / ay != 0,
+                            thB == new Atan(-2 * yA / xB),
+                            xB != 0))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(
+                        new And(
+                            0.1020408163265306 * tan(thB) != 0,
+                            thB == -0.88760488150470185));
 
                 DoubleFloat.tolerance = null;
             }

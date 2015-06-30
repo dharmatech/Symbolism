@@ -58,6 +58,18 @@ namespace Symbolism.IsolateVariable
             if (eq.a is Power && (eq.a as Power).exp == -new Integer(1) / 2)
                 return (eq.a / eq.a == eq.b / eq.a).IsolateVariable(sym);
 
+            // x ^ 2 == y
+            // x ^ 2 - y == 0
+
+            if (eq.a.AlgebraicExpand().DegreeGpe(new List<MathObject>() { sym }) == 2 &&
+                eq.b != 0)
+            {
+                return
+                    (eq.a - eq.b == 0).IsolateVariable(sym);
+            }
+
+            // a x^2 + b x + c == 0
+
             if (eq.a.AlgebraicExpand().DegreeGpe(new List<MathObject>() { sym }) == 2)
             {
                 var a = eq.a.AlgebraicExpand().CoefficientGpe(sym, 2);
@@ -163,10 +175,45 @@ namespace Symbolism.IsolateVariable
                     sym);
             }
 
-            
+            // x ^ -2 == y
+
+            if (eq.a is Power &&
+                (eq.a as Power).bas == sym &&
+                (eq.a as Power).exp is Integer &&
+                ((eq.a as Power).exp as Integer).val < 0)
+                return (eq.a / eq.a == eq.b / eq.a).IsolateVariableEq(sym);
 
             if (eq.a is Power) return eq;
 
+            // sin(x) == y
+
+            // Or(x == asin(y), x  == Pi - asin(y))
+
+            if (eq.a is Sin)
+                return
+                    new Or(
+                        (eq.a as Sin).args[0] == new Asin(eq.b),
+                        (eq.a as Sin).args[0] == new Symbol("Pi") - new Asin(eq.b))
+                        .IsolateVariable(sym);
+            
+            // tan(x) == y
+
+            // x == atan(t)
+
+            if (eq.a is Tan)
+                return
+                    ((eq.a as Tan).args[0] == new Atan(eq.b))
+                    .IsolateVariable(sym);
+            
+            // asin(x) == y
+            //
+            // x == sin(y)
+
+            if (eq.a is Asin)
+                return
+                    ((eq.a as Asin).args[0] == new Sin(eq.b))
+                    .IsolateVariable(sym);
+            
             throw new Exception();
         }
 

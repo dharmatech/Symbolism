@@ -907,6 +907,24 @@ namespace Symbolism
         }
     }
 
+    public class Tan : Function
+    {
+        MathObject TanProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Tan(((DoubleFloat)ls[0]).val));
+
+            return new Tan(ls[0]);
+        }
+
+        public Tan(MathObject param)
+        {
+            name = "tan";
+            args = new List<MathObject>() { param };
+            proc = TanProc;
+        }
+    }
+
     public class Asin : Function
     {
         MathObject AsinProc(params MathObject[] ls)
@@ -922,6 +940,24 @@ namespace Symbolism
             name = "asin";
             args = new List<MathObject>() { param };
             proc = AsinProc;
+        }
+    }
+
+    public class Atan : Function
+    {
+        MathObject AtanProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Atan(((DoubleFloat)ls[0]).val));
+
+            return new Atan(ls[0]);
+        }
+
+        public Atan(MathObject param)
+        {
+            name = "atan";
+            args = new List<MathObject>() { param };
+            proc = AtanProc;
         }
     }
 
