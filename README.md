@@ -10,6 +10,8 @@ The projects "PSE 5E ..." are examples and problems from the textbook "Physics f
 
 [Here's a walk-through of solving a physics problem](https://gist.github.com/dharmatech/d6d499f14c808b159689).
 
+A slightly more complex [walk-through](https://gist.github.com/dharmatech/a5e74ef03d98b3ff1c45).
+
 References:
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
