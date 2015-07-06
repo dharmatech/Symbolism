@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AlgebraicExpand.cs" />
     <Compile Include="CoefficientGpe.cs" />
+    <Compile Include="DeepSelect.cs" />
     <Compile Include="EliminateVariable.cs" />
     <Compile Include="ExpandPower.cs" />
     <Compile Include="ExpandProduct.cs" />

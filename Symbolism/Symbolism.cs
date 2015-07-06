@@ -827,6 +827,19 @@ namespace Symbolism
         }
 
         public And() { name = "And"; args = new List<MathObject>(); proc = AndProc; }
+
+        public MathObject Add(MathObject obj)
+        {
+            var ls = new List<MathObject>(args);
+
+            ls.Add(obj);
+
+            var and = new And();
+
+            and.args = ls;
+
+            return and.Simplify();
+        }
     }
 
     public class Or : Function

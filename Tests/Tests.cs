@@ -29,6 +29,7 @@ using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 using Symbolism.IsolateVariable;
 using Symbolism.EliminateVariable;
+using Symbolism.DeepSelect;
 
 namespace Tests
 {
@@ -123,6 +124,8 @@ namespace Tests
             Func<MathObject, MathObject> sin = obj => Trig.Sin(obj);
             Func<MathObject, MathObject> cos = obj => Trig.Cos(obj);
             Func<MathObject, MathObject> tan = obj => new Tan(obj).Simplify();
+
+            Func<MathObject, MathObject> asin = obj => new Asin(obj).Simplify();
 
             {
                 var a = new Symbol("a");
@@ -1495,6 +1498,183 @@ namespace Tests
                         new And(
                             0.1020408163265306 * tan(thB) != 0,
                             thB == -0.88760488150470185));
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
+            #region DoubleAngleFormulaFunc
+
+            Func<MathObject, MathObject> DoubleAngleFormulaFunc =
+                    elt =>
+                    {
+                        if (elt is Product)
+                        {
+                            var items = new List<MathObject>();
+
+                            foreach (var item in (elt as Product).elts)
+                            {
+                                if (item is Sin)
+                                {
+                                    var sym = (item as Sin).args.First();
+
+                                    if (items.Any(obj => (obj is Cos) && (obj as Cos).args.First() == sym))
+                                    {
+                                        items = items.Where(obj => ((obj is Cos) && (obj as Cos).args.First() == sym) == false).ToList();
+
+                                        items.Add(sin(2 * sym) / 2);
+                                    }
+                                    else items.Add(item);
+                                }
+
+                                else if (item is Cos)
+                                {
+                                    var sym = (item as Cos).args.First();
+
+                                    if (items.Any(obj => (obj is Sin) && (obj as Sin).args.First() == sym))
+                                    {
+                                        items = items.Where(obj => ((obj is Sin) && (obj as Sin).args.First() == sym) == false).ToList();
+
+                                        items.Add(sin(2 * sym) / 2);
+                                    }
+                                    else items.Add(item);
+                                }
+
+                                else items.Add(item);
+
+                            }
+                            return new Product() { elts = items }.Simplify();
+                        }
+                        return elt;
+                    };
+
+            #endregion
+
+            #region PSE 5E P4.11
+
+            {
+                // One strategy in a snowball fight is to throw a first snowball
+                // at a high angle over level ground. While your opponent is watching
+                // the first one, you throw a second one at a low angle and timed
+                // to arrive at your opponent before or at the same time as the first one.
+
+                // Assume both snowballs are thrown with a speed of 25.0 m/s.
+
+                // The first one is thrown at an angle of 70.0° with respect to the horizontal. 
+
+                // (a) At what angle should the second (lowangle) 
+                // snowball be thrown if it is to land at the same
+                // point as the first?
+
+                // (b) How many seconds later should the second snowball 
+                // be thrown if it is to land at the same time as the first?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+
+                var thA = new Symbol("thA");
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+                var tAC = new Symbol("tAC");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>() { xA == 0, yA == 0, /* vxA vyA */ vA == 25.0, /* thA == 70.0, */ /* xB == 20.497, */ /* yB */ /* vxB */ vyB == 0, /* tAB */ ax == 0, ay == -9.8, Pi == Math.PI };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    {
+                        // thA = ... || thA = ...
+
+                        var expr = eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(yB, vxA, vyA, vxB, tAB)
+                            .DeepSelect(DoubleAngleFormulaFunc)
+                            .IsolateVariable(thA);
+
+                        // th_delta = ...
+
+                        var th1 = ((expr as Or).args[0] as Equation).b;
+                        var th2 = ((expr as Or).args[1] as Equation).b;
+
+                        var th_delta = new Symbol("th_delta");
+
+                        eqs
+                            .Add(th_delta == (th1 - th2).AlgebraicExpand())
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(yB, vxA, vyA, vxB, tAB)
+
+                            .DeepSelect(DoubleAngleFormulaFunc)
+                            .EliminateVariable(xB)
+
+                            .AssertEqTo(th_delta == asin(sin(2 * thA)) - Pi / 2)
+
+                            .SubstituteEq(thA == (70).ToRadians())
+                            .SubstituteEq(Pi == Math.PI)
+
+                            .AssertEqTo(th_delta == -0.87266462599716454)
+                            ;
+                    }
+
+                    {
+                        // tAB = ...
+
+                        var tAB_eq = eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(yB, vxA, vyA, vxB, xB)
+                            .IsolateVariable(tAB);
+
+                        new And(
+                            new Or(thA == (20).ToRadians(), thA == (70).ToRadians()),
+                            tAB_eq,
+                            tAC == tAB * 2)
+                            .LogicalExpand()
+                            .EliminateVariables(thA, tAB)
+
+                            .AssertEqTo(new Or(
+                                tAC == -2 * sin(Pi / 9) * vA / ay,
+                                tAC == -2 * sin(7 * Pi / 18) * vA / ay))
+
+                            .SubstituteEqLs(vals)
+                            .AssertEqTo(
+                                new Or(
+                                    tAC == 1.7450007312534115,
+                                    tAC == 4.794350106050552));
+                    }
+                }
 
                 DoubleFloat.tolerance = null;
             }
