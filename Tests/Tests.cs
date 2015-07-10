@@ -1681,6 +1681,91 @@ namespace Tests
 
             #endregion
 
+
+            #region PSE 5E P4.13
+
+            {
+                // An artillery shell is fired with an initial velocity of 
+                // 300 m/s at 55.0° above the horizontal. It explodes on a
+                // mountainside 42.0 s after firing. What are the x and y
+                // coordinates of the shell where it explodes, relative to its
+                // firing point?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>() { xA == 0, yA == 0, /* vxA vyA */ vA == 300.0, thA == (55).ToRadians(), /* xB yB vxB vyB */ tAB == 42, ax == 0, ay == -9.8, Pi == Math.PI };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariable(vxA)
+                            .EliminateVariable(vyA)
+                            
+                            .AssertEqTo(
+                                new And(
+                                    vxB == cos(thA) * vA,
+                                    vyB == ay * tAB + sin(thA) * vA,
+                                    xB == cos(thA) * tAB * vA,
+                                    yB == ay * (tAB ^ 2) / 2 + sin(thA) * tAB * vA))
+
+                            .SubstituteEqLs(vals)
+                            
+                            .AssertEqTo(                            
+                                new And(
+                                    vxB == 172.07293090531385,
+                                    vyB == -165.85438671330249,
+                                    xB == 7227.0630980231817,
+                                    yB == 1677.7157580412968))
+
+                            ;
+                    }
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
+
+
             #endregion
 
             #region PSE 5E Example 4.3
