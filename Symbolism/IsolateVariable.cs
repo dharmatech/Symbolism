@@ -16,6 +16,29 @@ namespace Symbolism.IsolateVariable
 
             if (eq.FreeOf(sym)) return eq;
 
+            // sin(x) / cos(x) == y   ->   tan(x) == y
+
+            if (eq.a is Product && (eq.a as Product).elts.Any(elt => elt == new Sin(sym)) &&
+                eq.a is Product && (eq.a as Product).elts.Any(elt => elt == 1 / new Cos(sym)))
+                return
+                    (eq.a / new Sin(sym) * new Cos(sym) * new Tan(sym) == eq.b).IsolateVariableEq(sym);
+
+            // A sin(x)^2 == B sin(x) cos(x)   ->   A sin(x)^2 / (B sin(x) cos(x)) == 1
+
+            if (
+                eq.a is Product && 
+                (eq.a as Product).elts.Any(elt => 
+                    (elt == new Sin(sym)) ||
+                    ((elt is Power) && (elt as Power).bas == new Sin(sym) && (elt as Power).exp is Number)) &&
+
+                eq.b is Product && 
+                (eq.b as Product).elts.Any(elt => 
+                    (elt == new Sin(sym)) || 
+                    ((elt is Power) && (elt as Power).bas == new Sin(sym) && (elt as Power).exp is Number))
+                )
+                return
+                    (eq.a / eq.b == 1).IsolateVariableEq(sym);
+
             if (eq.b.Has(sym)) return IsolateVariableEq(new Equation(eq.a - eq.b, 0), sym);
 
             if (eq.a == sym) return eq;

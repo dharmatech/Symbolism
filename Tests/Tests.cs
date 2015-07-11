@@ -1764,7 +1764,98 @@ namespace Tests
 
             #endregion
 
+            #region PSE 5E P4.15
 
+            {
+                // A projectile is fired in such a way that its horizontal
+                // range is equal to three times its maximum height.
+                //
+                // What is the angle of projection? 
+                // Give your answer to three significant figures.
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+
+                var xC = new Symbol("xC");
+                var yC = new Symbol("yC");
+
+                var vxC = new Symbol("vxC");
+                var vyC = new Symbol("vyC");
+
+
+                var tAB = new Symbol("tAB");
+                var tBC = new Symbol("tBC");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    xC - xA == 3 * yB,
+
+                    tAB == tBC,
+
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+
+                    vxC == vxB + ax * tBC,
+                    vyC == vyB + ay * tBC,
+
+                    xC == xB + vxB * tBC + ax * (tBC ^ 2) / 2,
+                    yC == yB + vyB * tBC + ay * (tBC ^ 2) / 2
+
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>() 
+                    { 
+                        xA == 0, yA == 0, /* vxA vyA vA thA */ /* xB yB vxB */ vyB == 0, /* tAB tBC */ 
+                        /* xC */ yC == 0,
+
+                        ax == 0, ay == -9.8, Pi == Math.PI 
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    eqs
+                        .SubstituteEqLs(zeros)
+                        .EliminateVariables(xC, tAB, vxA, vyA, vxB, xB, yB, vxC, vyC, tBC)
+                        .IsolateVariable(thA)
+                        .AssertEqTo(thA == new Atan(new Integer(4) / 3));
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
 
             #endregion
 
