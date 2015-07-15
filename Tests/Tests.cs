@@ -21,6 +21,8 @@ using Symbolism;
 using Physics;
 using Utils;
 
+using Symbolism.Denominator;
+
 using Symbolism.LogicalExpand;
 using Symbolism.SimplifyEquation;
 using Symbolism.SimplifyLogical;
@@ -75,6 +77,24 @@ namespace Tests
 
             return obj;
         }
+
+        public static MathObject MultiplyBothSidesBy(this MathObject obj, MathObject item)
+        {
+            if (obj is Equation)
+                return (obj as Equation).a * item == (obj as Equation).b * item;
+
+            throw new Exception();
+        }
+
+        public static MathObject AddToBothSides(this MathObject obj, MathObject item)
+        {
+            if (obj is Equation)
+                return (obj as Equation).a + item == (obj as Equation).b + item;
+
+            throw new Exception();
+        }
+
+
     }
 
     class Program
@@ -126,6 +146,7 @@ namespace Tests
             Func<MathObject, MathObject> tan = obj => new Tan(obj).Simplify();
 
             Func<MathObject, MathObject> asin = obj => new Asin(obj).Simplify();
+            Func<MathObject, MathObject> atan = obj => new Atan(obj).Simplify();
 
             {
                 var a = new Symbol("a");
@@ -431,6 +452,15 @@ namespace Tests
 
                 #endregion
 
+                #region Denominator
+                {
+                    ((new Integer(2) / 3) * ((x * (x + 1)) / (x + 2)) * (y ^ z))
+                        .Denominator()
+                        .AssertEqTo(3 * (x + 2));
+                }
+                #endregion
+
+
                 #region LogicalExpand
 
                 new And(new Or(a, b), c)
@@ -702,16 +732,14 @@ namespace Tests
                 new And((x ^ 3) == (y ^ 5), z == x)
                 .EliminateVariable(x)
                 .AssertEqTo((z ^ 3) == (y ^ 5));
-                
+
                 new And((x ^ 3) == (y ^ 5), z == (x ^ 7))
-                .EliminateVariable(x)        
+                .EliminateVariable(x)
                 .AssertEqTo(new And((x ^ 3) == (y ^ 5), z == (x ^ 7)));
-                
+
                 #endregion
 
             }
-
-
 
             #region EliminateVariable
 
@@ -791,7 +819,6 @@ namespace Tests
                     .EliminateVariable(y)
                     .AssertEqTo(new And(x != z, x == 10));
             }
-
 
             #region PSE Example 2.6
 
@@ -1219,7 +1246,7 @@ namespace Tests
                                 vxA != 0,
                                 xB == 1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
                                 ay / (vxA ^ 2) != 0,
-                                ay != 0)))     
+                                ay != 0)))
                     .SubstituteEqLs(vals)
                     .AssertEqTo(new Or(xB == 180.70158058105022, xB == -180.70158058105022));
 
@@ -1232,12 +1259,12 @@ namespace Tests
                         new Or(
                             new And(
                                 vyB == -1 * ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                                // (ay ^ -1) != 0,
+                    // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0),
                             new And(
                                 vyB == ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                                // (ay ^ -1) != 0,
+                    // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
@@ -1245,12 +1272,12 @@ namespace Tests
                         new Or(
                           new And(
                               vyB == -ay * sqrt(-2 / ay * yA),
-                              // 1 / ay != 0,
+                    // 1 / ay != 0,
                               vxA != 0,
                               ay != 0),
                           new And(
                               vyB == ay * sqrt(-2 / ay * yA),
-                              // 1 / ay != 0,
+                    // 1 / ay != 0,
                               vxA != 0,
                               ay != 0)))
                     .SubstituteEqLs(vals)
@@ -1504,7 +1531,67 @@ namespace Tests
 
             #endregion
 
+            #region SumDifferenceFormulaFunc
+
+            // sin(u) cos(v) - cos(u) sin(v) -> sin(u - v)
+
+            Func<MathObject, MathObject> SumDifferenceFormulaFunc = elt =>
+            {
+                if (elt is Sum)
+                {
+                    var items = new List<MathObject>();
+
+                    foreach (var item in (elt as Sum).elts)
+                    {
+                        if (
+                            item is Product &&
+                            (item as Product).elts[0] == -1 &&
+                            (item as Product).elts[1] is Cos &&
+                            (item as Product).elts[2] is Sin
+                            )
+                        {
+                            var u_ = ((item as Product).elts[1] as Cos).args[0];
+                            var v_ = ((item as Product).elts[2] as Sin).args[0];
+
+                            Func<MathObject, bool> match = obj =>
+                                obj is Product &&
+                                (obj as Product).elts[0] is Cos &&
+                                (obj as Product).elts[1] is Sin &&
+
+                                ((obj as Product).elts[1] as Sin).args[0] == u_ &&
+                                ((obj as Product).elts[0] as Cos).args[0] == v_;
+
+                            if (items.Any(obj => match(obj)))
+                            {
+                                items = items.Where(obj => match(obj) == false).ToList();
+
+                                items.Add(sin(u_ - v_));
+                            }
+                            else items.Add(item);
+                        }
+                        else items.Add(item);
+                    }
+
+                    return new Sum() { elts = items }.Simplify();
+                }
+
+                return elt;
+            };
+
+            #endregion
+
+            {
+                var u = new Symbol("u");
+                var v = new Symbol("v");
+
+                (sin(u) * cos(v) - cos(u) * sin(v))
+                    .DeepSelect(SumDifferenceFormulaFunc)
+                    .AssertEqTo(sin(u - v));
+            }
+
             #region DoubleAngleFormulaFunc
+
+            // sin(u) cos(u) -> sin(2 u) / 2
 
             Func<MathObject, MathObject> DoubleAngleFormulaFunc =
                     elt =>
@@ -1738,7 +1825,7 @@ namespace Tests
                             .SubstituteEqLs(zeros)
                             .EliminateVariable(vxA)
                             .EliminateVariable(vyA)
-                            
+
                             .AssertEqTo(
                                 new And(
                                     vxB == cos(thA) * vA,
@@ -1747,8 +1834,8 @@ namespace Tests
                                     yB == ay * (tAB ^ 2) / 2 + sin(thA) * tAB * vA))
 
                             .SubstituteEqLs(vals)
-                            
-                            .AssertEqTo(                            
+
+                            .AssertEqTo(
                                 new And(
                                     vxB == 172.07293090531385,
                                     vyB == -165.85438671330249,
@@ -1850,6 +1937,120 @@ namespace Tests
                         .EliminateVariables(xC, tAB, vxA, vyA, vxB, xB, yB, vxC, vyC, tBC)
                         .IsolateVariable(thA)
                         .AssertEqTo(thA == new Atan(new Integer(4) / 3));
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+
+            #region PSE 5E P4.17
+
+            {
+                // A cannon with a muzzle speed of 1000 m/s is used to
+                // start an avalanche on a mountain slope. The target is 
+                // 2000 m from the cannon horizontally and 800 m above
+                // the cannon.
+                //
+                // At what angle, above the horizontal, should the cannon be fired?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+
+                var xC = new Symbol("xC");
+                var yC = new Symbol("yC");
+
+                var vxC = new Symbol("vxC");
+                var vyC = new Symbol("vyC");
+
+
+                var tAB = new Symbol("tAB");
+                var tBC = new Symbol("tBC");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var phi = new Symbol("phi");
+
+                var eqs = new And(
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>() 
+                    { 
+                        xA ==    0, yA ==   0, /* vxA vyA */ vA == 1000, /* thA */ 
+                        xB == 2000, yB == 800.0, /* vxB vyB */ 
+                        /* tAB */ ax == 0, ay == -9.8, Pi == Math.PI 
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(vxA, vyA, vxB, vyB, tAB)
+
+                            .MultiplyBothSidesBy(cos(thA) ^ 2).AlgebraicExpand()
+                            .Substitute(cos(thA) ^ 2, (1 + cos(2 * thA)) / 2)
+                            .DeepSelect(DoubleAngleFormulaFunc).AlgebraicExpand()
+                            .AddToBothSides(-sin(2 * thA) * xB / 2)
+                            .AddToBothSides(-yB / 2)
+                            .MultiplyBothSidesBy(2 / xB).AlgebraicExpand()
+
+                            // yB / xB = tan(phi)
+                            // yB / xB = sin(phi) / cos(phi)
+
+                            // phi = atan(yB / xB)
+
+                            .Substitute(cos(2 * thA) * yB / xB, cos(2 * thA) * sin(phi) / cos(phi))
+                            .MultiplyBothSidesBy(cos(phi)).AlgebraicExpand()
+                            .DeepSelect(SumDifferenceFormulaFunc)
+                            .IsolateVariable(thA)
+
+                            .Substitute(phi, new Atan(yB / xB).Simplify())
+
+                            .AssertEqTo(
+                                new Or(
+                                    thA == -(asin(ay * cos(atan(yB / xB)) * (vA ^ -2) * xB + -1 * cos(atan(yB / xB)) * yB / xB) - atan(yB / xB)) / 2,
+                                    thA == -(-asin(ay * cos(atan(yB / xB)) * (vA ^ -2) * xB - cos(atan(yB / xB)) * yB / xB) - atan(yB / xB) + Pi) / 2))
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(
+                                new Or(
+                                    thA == 0.39034573609628065,
+                                    thA == -1.5806356857788124))
+                            ;
+                    }
                 }
 
                 DoubleFloat.tolerance = null;
