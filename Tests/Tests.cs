@@ -2057,7 +2057,113 @@ namespace Tests
             }
 
             #endregion
+            
+            #region PSE 5E P4.19
 
+            {
+                // A placekicker must kick a football from a point 36.0 m
+                // (about 40 yards) from the goal, and half the crowd
+                // hopes the ball will clear the crossbar, which is 3.05 m
+                // high. When kicked, the ball leaves the ground with a
+                // speed of 20.0 m/s at an angle of 53.0° to the horizontal.
+                //
+                // (a) By how much does the ball clear or fall short of
+                //     clearing the crossbar ?
+                //
+                // (b) Does the ball approach the crossbar while still 
+                //     rising or while falling ?
+                
+                Func <MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+                
+                var tAB = new Symbol("tAB");
+                
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var cleared_by = new Symbol("cleared_by");
+
+                var goal_height = new Symbol("goal_height");
+                
+                var eqs = new And(
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+                    cleared_by == yB - goal_height
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        xA == 0, yA == 0, /* vxA vyA */ vA == 20, thA == (53).ToRadians(),
+                        xB == 36, /* yB */ /* vxB vyB */ 
+                        /* tAB */ ax == 0, ay == -9.8, Pi == Math.PI,
+
+                        goal_height == 3.05
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(vxA, vyA, vxB, vyB, tAB, yB)
+
+                            .AssertEqTo(
+                                cleared_by == -goal_height + sin(thA) / cos(thA) * xB + ay / 2 * (cos(thA) ^ -2) * (vA ^ -2) * (xB ^ 2)
+                                )
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(cleared_by == 0.88921618776713007);
+                    }
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(cleared_by, vxA, vyA, vxB, tAB, yB)
+                            .IsolateVariable(vyB)
+
+                            .AssertEqTo(vyB == sin(thA) * vA + ay / cos(thA) / vA * xB)
+                            
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(vyB == -13.338621888454744);
+                    }
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+            
             #endregion
 
             #region PSE 5E Example 4.3
