@@ -2164,6 +2164,90 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E P4.21
+
+            {
+                // A firefighter a distance d from a burning building directs 
+                // a stream of water from a fire hose at angle θi above
+                // the horizontal as in Figure P4.20.If the initial speed of
+                // the stream is vi, at what height h does the water strike
+                // the building?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+                var tAB = new Symbol("tAB");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var d = new Symbol("d");
+                var thi = new Symbol("thi");
+                var vi = new Symbol("vi");
+                var h = new Symbol("h");
+                
+                var eqs = new And(
+
+                    vxA == vA * cos(thA),
+                    vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2
+                    
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        xA == 0, yA == 0, /* vxA vyA */ vA == vi, thA == thi,
+                        xB == d, yB == h, /* vxB vyB */ 
+                        /* tAB */ ax == 0, ay == -9.8, Pi == Math.PI
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+                    
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(vxA, vyA, vxB, vyB, tAB)
+                            
+                            .SubstituteEqLs(vals.Where(eq => eq.b is Symbol).ToList())
+
+                            .AssertEqTo(
+
+                                h == d * sin(thi) / cos(thi) + ay * (d ^ 2) / (cos(thi) ^ 2) / (vi ^ 2) / 2
+                                
+                                );
+                    }
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+            
             #endregion
 
             #region PSE 5E Example 4.3
