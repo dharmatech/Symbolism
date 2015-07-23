@@ -49,6 +49,7 @@
     <Compile Include="AlgebraicExpand.cs" />
     <Compile Include="CoefficientGpe.cs" />
     <Compile Include="DeepSelect.cs" />
+    <Compile Include="DegreeGpe.cs" />
     <Compile Include="Denominator.cs" />
     <Compile Include="EliminateVariable.cs" />
     <Compile Include="ExpandPower.cs" />

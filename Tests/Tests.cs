@@ -27,6 +27,7 @@ using Symbolism.LogicalExpand;
 using Symbolism.SimplifyEquation;
 using Symbolism.SimplifyLogical;
 
+using Symbolism.DegreeGpe;
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 using Symbolism.IsolateVariable;

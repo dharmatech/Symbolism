@@ -215,30 +215,7 @@ namespace Symbolism
         // For example, in C#, the precedence of ^ is lower than +.
         // But for printing purposes, we'd like ^ to have a 
         // higher precedence than +.
-
-        public int DegreeMonomialGpe(List<MathObject> v)
-        {
-            if (v.All(FreeOf)) return 0;
-
-            if (v.Contains(this)) return 1;
-            
-            if (this is Power && ((Power)this).exp is Integer && ((Integer)((Power)this).exp).val > 1)
-                return ((Integer)((Power)this).exp).val;
-
-            if (this is Product) 
-                return ((Product)this).elts.Select(elt => elt.DegreeMonomialGpe(v)).Sum();
-
-            return 0;
-        }
-
-        public int DegreeGpe(List<MathObject> v)
-        {
-            if (this is Sum)
-                return ((Sum)this).elts.Select(elt => elt.DegreeMonomialGpe(v)).Max();
-
-            return DegreeMonomialGpe(v);
-        }
-
+        
         public int Precedence()
         {
             if (this is Integer) return 1000;

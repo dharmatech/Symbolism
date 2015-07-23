@@ -6,6 +6,8 @@ using System.Text;
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 
+using Symbolism.DegreeGpe;
+
 namespace Symbolism.IsolateVariable
 {
     public static class Extensions
