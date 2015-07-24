@@ -22,130 +22,59 @@ namespace Symbolism
     public abstract class MathObject
     {
         //////////////////////////////////////////////////////////////////////
-        public static implicit operator MathObject(int n)
-        { return new Integer(n); }
+        public static implicit operator MathObject(int n) => new Integer(n); 
 
-        public static implicit operator MathObject(bool val)
-        { return new Bool(val); }
+        public static implicit operator MathObject(bool val) => new Bool(val);
         //////////////////////////////////////////////////////////////////////
         #region overloads for 'int'
-
-        public static MathObject operator +(MathObject a, int b)
-        { return a + new Integer(b); }
-
-        public static MathObject operator -(MathObject a, int b)
-        { return a - new Integer(b); }
-
-        public static MathObject operator *(MathObject a, int b)
-        { return a * new Integer(b); }
-
-        public static MathObject operator /(MathObject a, int b)
-        { return a / new Integer(b); }
-
-        public static MathObject operator ^(MathObject a, int b)
-        { return a ^ new Integer(b); }
-
-
-        public static MathObject operator +(int a, MathObject b)
-        { return new Integer(a) + b; }
-
-        public static MathObject operator -(int a, MathObject b)
-        { return new Integer(a) - b; }
-
-        public static MathObject operator *(int a, MathObject b)
-        { return new Integer(a) * b; }
-
-        public static MathObject operator /(int a, MathObject b)
-        { return new Integer(a) / b; }
-
-        public static MathObject operator ^(int a, MathObject b)
-        { return new Integer(a) ^ b; }
+        public static MathObject operator +(MathObject a, int b) => a + new Integer(b);
+        public static MathObject operator -(MathObject a, int b) => a - new Integer(b);
+        public static MathObject operator *(MathObject a, int b) => a * new Integer(b);
+        public static MathObject operator /(MathObject a, int b) => a / new Integer(b);                                                                  
+        public static MathObject operator ^(MathObject a, int b) => a ^ new Integer(b);
+        public static MathObject operator +(int a, MathObject b) => new Integer(a) + b;                                                                  
+        public static MathObject operator -(int a, MathObject b) => new Integer(a) - b;
+        public static MathObject operator *(int a, MathObject b) => new Integer(a) * b;
+        public static MathObject operator /(int a, MathObject b) => new Integer(a) / b;
+        public static MathObject operator ^(int a, MathObject b) => new Integer(a) ^ b;
         #endregion
         //////////////////////////////////////////////////////////////////////
         #region overloads for 'double'
 
-        public static MathObject operator +(MathObject a, double b)
-        { return a + new DoubleFloat(b); }
-
-        public static MathObject operator -(MathObject a, double b)
-        { return a - new DoubleFloat(b); }
-
-        public static MathObject operator *(MathObject a, double b)
-        { return a * new DoubleFloat(b); }
-
-        public static MathObject operator /(MathObject a, double b)
-        { return a / new DoubleFloat(b); }
-
-        public static MathObject operator ^(MathObject a, double b)
-        { return a ^ new DoubleFloat(b); }
-
-
-        public static MathObject operator +(double a, MathObject b)
-        { return new DoubleFloat(a) + b; }
-
-        public static MathObject operator -(double a, MathObject b)
-        { return new DoubleFloat(a) - b; }
-
-        public static MathObject operator *(double a, MathObject b)
-        { return new DoubleFloat(a) * b; }
-
-        public static MathObject operator /(double a, MathObject b)
-        { return new DoubleFloat(a) / b; }
-
-        public static MathObject operator ^(double a, MathObject b)
-        { return new DoubleFloat(a) ^ b; }
+        public static MathObject operator +(MathObject a, double b) => a + new DoubleFloat(b);
+        public static MathObject operator -(MathObject a, double b) => a - new DoubleFloat(b);
+        public static MathObject operator *(MathObject a, double b) => a * new DoubleFloat(b);
+        public static MathObject operator /(MathObject a, double b) => a / new DoubleFloat(b);
+        public static MathObject operator ^(MathObject a, double b) => a ^ new DoubleFloat(b);
+        public static MathObject operator +(double a, MathObject b) => new DoubleFloat(a) + b;
+        public static MathObject operator -(double a, MathObject b) => new DoubleFloat(a) - b;
+        public static MathObject operator *(double a, MathObject b) => new DoubleFloat(a) * b;
+        public static MathObject operator /(double a, MathObject b) => new DoubleFloat(a) / b;
+        public static MathObject operator ^(double a, MathObject b) => new DoubleFloat(a) ^ b;
 
         #endregion
         //////////////////////////////////////////////////////////////////////
-        public static Equation operator ==(MathObject a, MathObject b)
-        { return new Equation(a, b); }
+        public static Equation operator ==(MathObject a, MathObject b) => new Equation(a, b);
+        public static Equation operator !=(MathObject a, MathObject b) => new Equation(a, b, Equation.Operators.NotEqual);
 
-        public static Equation operator !=(MathObject a, MathObject b)
-        { return new Equation(a, b, Equation.Operators.NotEqual); }
+        public static Equation operator ==(MathObject a, double b) => new Equation(a, new DoubleFloat(b));
+        public static Equation operator ==(double a, MathObject b) => new Equation(new DoubleFloat(a), b);
 
+        public static Equation operator !=(MathObject a, double b) => new Equation(a, new DoubleFloat(b), Equation.Operators.NotEqual);
+        public static Equation operator !=(double a, MathObject b) => new Equation(new DoubleFloat(a), b, Equation.Operators.NotEqual);
 
-        public static Equation operator ==(MathObject a, double b)
-        { return new Equation(a, new DoubleFloat(b)); }
-
-        public static Equation operator ==(double a, MathObject b)
-        { return new Equation(new DoubleFloat(a), b); }
-
-        public static Equation operator !=(MathObject a, double b)
-        { return new Equation(a, new DoubleFloat(b), Equation.Operators.NotEqual); }
-
-        public static Equation operator !=(double a, MathObject b)
-        { return new Equation(new DoubleFloat(a), b, Equation.Operators.NotEqual); }
-
-
-        public static Equation operator ==(MathObject a, int b)
-        { return new Equation(a, new Integer(b)); }
-
-        public static Equation operator ==(int a, MathObject b)
-        { return new Equation(new Integer(a), b); }
-
-        public static Equation operator !=(MathObject a, int b)
-        { return new Equation(a, new Integer(b), Equation.Operators.NotEqual); }
-
-        public static Equation operator !=(int a, MathObject b)
-        { return new Equation(new Integer(a), b, Equation.Operators.NotEqual); }
+        public static Equation operator ==(MathObject a, int b) => new Equation(a, new Integer(b));
+        public static Equation operator ==(int a, MathObject b) => new Equation(new Integer(a), b);
+        public static Equation operator !=(MathObject a, int b) => new Equation(a, new Integer(b), Equation.Operators.NotEqual);
+        public static Equation operator !=(int a, MathObject b) => new Equation(new Integer(a), b, Equation.Operators.NotEqual);
         //////////////////////////////////////////////////////////////////////
-        public static MathObject operator +(MathObject a, MathObject b)
-        { return new Sum(a, b).Simplify(); }
+        public static MathObject operator +(MathObject a, MathObject b) => new Sum(a, b).Simplify();
+        public static MathObject operator -(MathObject a, MathObject b) => new Difference(a, b).Simplify();
+        public static MathObject operator *(MathObject a, MathObject b) => new Product(a, b).Simplify();
+        public static MathObject operator /(MathObject a, MathObject b) => new Quotient(a, b).Simplify();
+        public static MathObject operator ^(MathObject a, MathObject b) => new Power(a, b).Simplify();
 
-        public static MathObject operator -(MathObject a, MathObject b)
-        { return new Difference(a, b).Simplify(); }
-
-        public static MathObject operator *(MathObject a, MathObject b)
-        { return new Product(a, b).Simplify(); }
-
-        public static MathObject operator /(MathObject a, MathObject b)
-        { return new Quotient(a, b).Simplify(); }
-
-        public static MathObject operator ^(MathObject a, MathObject b)
-        { return new Power(a, b).Simplify(); }
-
-        public static MathObject operator -(MathObject a)
-        { return new Difference(a).Simplify(); }
+        public static MathObject operator -(MathObject a) { return new Difference(a).Simplify(); }
         
         // Precedence is used for printing purposes.
         // Thus, the precedence values below do not necessarily reflect 
@@ -344,12 +273,8 @@ namespace Symbolism
 
         public Fraction(Integer a, Integer b)
         { numerator = a; denominator = b; }
-
-        //public override string ToString()
-        //{ return "Fraction(" + numerator + ", " + denominator + ")"; }
-
-        public override string ToString()
-        { return numerator + "/" + denominator; }
+        
+        public override string ToString() => numerator + "/" + denominator;
 
         public DoubleFloat ToDouble() { return new DoubleFloat((double)numerator.val / (double)denominator.val); }
         //////////////////////////////////////////////////////////////////////
