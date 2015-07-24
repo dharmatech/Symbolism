@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Symbolism;
+using Symbolism.Substitute;
 using Physics;
 
 namespace PSE_Example_4._3_The_Long_Jump

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Symbolism;
+using Symbolism.Substitute;
 using Physics;
 using Utils;
 

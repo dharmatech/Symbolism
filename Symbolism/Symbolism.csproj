@@ -58,6 +58,7 @@
     <Compile Include="LogicalExpand.cs" />
     <Compile Include="SimplifyEquation.cs" />
     <Compile Include="SimplifyLogical.cs" />
+    <Compile Include="Substitute.cs" />
     <Compile Include="Symbolism.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

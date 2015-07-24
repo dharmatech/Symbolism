@@ -21,6 +21,8 @@ using Symbolism;
 using Physics;
 using Utils;
 
+using Symbolism.Substitute;
+
 using Symbolism.Denominator;
 
 using Symbolism.LogicalExpand;

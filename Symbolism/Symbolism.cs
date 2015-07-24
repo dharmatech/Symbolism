@@ -162,7 +162,6 @@ namespace Symbolism
             return false;
         }
 
-
         public bool Has(Func<MathObject, bool> proc)
         {
             if (proc(this)) return true;
@@ -179,36 +178,7 @@ namespace Symbolism
         }
 
         public bool FreeOf(MathObject a) { return !Has(a); }
-
-        public MathObject Substitute(MathObject a, MathObject b)
-        {
-            if (this == a) return b;
-
-            if (this is Equation) return (this as Equation).Substitute(a, b);
-
-            if (this is Power) return ((Power)this).Substitute(a, b);
-
-            if (this is Product) return ((Product)this).Substitute(a, b);
-
-            if (this is Sum) return ((Sum)this).Substitute(a, b);
-
-            if (this is Function) return ((Function)this).Substitute(a, b);
-
-            return this;
-        }
-
-        public MathObject SubstituteEq(Equation eq)
-        { return Substitute(eq.a, eq.b); }
-
-        public MathObject SubstituteEqLs(List<Equation> eqs)
-        { return eqs.Aggregate(this, (a, eq) => a.SubstituteEq(eq)); }
-
-        public MathObject Substitute(MathObject a, int b)
-        { return Substitute(a, new Integer(b)); }
-
-        public MathObject Substitute(MathObject a, double b)
-        { return Substitute(a, new DoubleFloat(b)); }
-
+        
         // Precedence is used for printing purposes.
         // Thus, the precedence values below do not necessarily reflect 
         // the C# operator precedence values.
@@ -306,15 +276,7 @@ namespace Symbolism
 
             throw new Exception();
         }
-
-        public MathObject Substitute(MathObject x, MathObject y)
-        {
-            if (Operator == Operators.Equal) return (a.Substitute(x, y) == b.Substitute(x, y)).Simplify();
-            if (Operator == Operators.NotEqual) return (a.Substitute(x, y) != b.Substitute(x, y)).Simplify();
-
-            throw new Exception();
-        }
-
+        
         public MathObject Simplify()
         {
             if (a is Number && b is Number) return (bool)this;
@@ -411,11 +373,7 @@ namespace Symbolism
             
             return false;
         }
-
-
-
         
-
         public override int GetHashCode()
         { return val.GetHashCode(); }
     }
@@ -747,14 +705,7 @@ namespace Symbolism
             return str.ToString();
         }
 
-        public MathObject Substitute(MathObject a, MathObject b)
-        {
-            var obj = (Function)this.MemberwiseClone();
-
-            obj.args = args.ConvertAll(arg => arg.Substitute(a, b));
-
-            return obj.Simplify();
-        }
+        public MathObject Clone() => MemberwiseClone() as MathObject;
     }
 
     public static class FunctionExtensions
@@ -1282,9 +1233,6 @@ namespace Symbolism
 
             return new Power(v, w);
         }
-
-        public MathObject Substitute(MathObject a, MathObject b)
-        { return bas.Substitute(a, b) ^ exp.Substitute(a, b); }
     }
 
     public class Product : MathObject
@@ -1478,14 +1426,6 @@ namespace Symbolism
 
             return new Product() { elts = res };
         }
-
-        public MathObject Substitute(MathObject a, MathObject b)
-        {
-            return
-                new Product() { elts = elts.ConvertAll(elt => elt.Substitute(a, b)) }
-                .Simplify();
-        }
-
     }
 
     public class Sum : MathObject
@@ -1688,13 +1628,6 @@ namespace Symbolism
             str.Append(")");
 
             return str.ToString();
-        }
-
-        public MathObject Substitute(MathObject a, MathObject b)
-        {
-            return
-                new Sum() { elts = elts.ConvertAll(elt => elt.Substitute(a, b)) }
-                .Simplify();
         }
     }
 
