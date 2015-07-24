@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using static Symbolism.ListConstructor;
+
 namespace Symbolism
 {
     public abstract class MathObject
@@ -185,8 +187,7 @@ namespace Symbolism
 
         public Bool(bool b) { val = b; }
 
-        public override string ToString()
-        { return val.ToString(); }
+        public override string ToString() => val.ToString();
 
         public override bool Equals(object obj)
         {
@@ -219,8 +220,7 @@ namespace Symbolism
 
         public Integer(int n) { val = n; }
         
-        public override string ToString()
-        { return val.ToString(); }
+        public override string ToString() => val.ToString();
 
         public override bool Equals(object obj)
         {
@@ -241,8 +241,7 @@ namespace Symbolism
 
         public DoubleFloat(double n) { val = n; }
 
-        public override string ToString()
-        { return val.ToString("R"); }
+        public override string ToString() => val.ToString("R");
 
         //public bool EqualWithinTolerance(DoubleFloat obj)
         //{
@@ -276,7 +275,7 @@ namespace Symbolism
         
         public override string ToString() => numerator + "/" + denominator;
 
-        public DoubleFloat ToDouble() { return new DoubleFloat((double)numerator.val / (double)denominator.val); }
+        public DoubleFloat ToDouble() => new DoubleFloat((double)numerator.val / (double)denominator.val);
         //////////////////////////////////////////////////////////////////////
 
         public override bool Equals(object obj)
@@ -530,14 +529,45 @@ namespace Symbolism
 
         public Symbol(String str) { name = str; }
 
-        public override string ToString()
-        { return name; }
+        public override string ToString() => name;
 
         public override int GetHashCode() { return name.GetHashCode(); }
 
         public override bool Equals(Object obj)
         {
             if (obj is Symbol) return name == (obj as Symbol).name;
+
+            return false;
+        }
+    }
+
+    public static class ListConstructor
+    {
+        public static List<T> List<T>(params T[] items) => new List<T>(items);
+    }
+
+    public static class ListUtils
+    {
+        public static bool IsEmpty(this List<MathObject> obj) => obj.Count == 0;
+
+        public static List<MathObject> Cons(this List<MathObject> obj, MathObject elt)
+        {
+            var res = new List<MathObject>(obj);
+            res.Insert(0, elt);
+            return res;
+        }
+
+        public static List<MathObject> Cdr(this List<MathObject> obj) => obj.GetRange(1, obj.Count - 1);
+
+        public static bool equal(List<MathObject> a, List<MathObject> b)
+        {
+            if (a.Count == 0 && b.Count == 0) return true;
+
+            if (a.Count == 0) return false;
+
+            if (b.Count == 0) return false;
+
+            if (a[0] == b[0]) return equal(a.Cdr(), b.Cdr());
 
             return false;
         }
@@ -822,34 +852,7 @@ namespace Symbolism
         }
     }
 
-    public static class ListUtils
-    {
-        public static bool IsEmpty(this List<MathObject> obj)
-        { return obj.Count == 0; }
-
-        public static List<MathObject> Cons(this List<MathObject> obj, MathObject elt)
-        {
-            var res = new List<MathObject>(obj);
-            res.Insert(0, elt);
-            return res;
-        }
-
-        public static List<MathObject> Cdr(this List<MathObject> obj)
-        { return obj.GetRange(1, obj.Count - 1); }
-
-        public static bool equal(List<MathObject> a, List<MathObject> b)
-        {
-            if (a.Count == 0 && b.Count == 0) return true;
-
-            if (a.Count == 0) return false;
-
-            if (b.Count == 0) return false;
-
-            if (a[0] == b[0]) return equal(a.Cdr(), b.Cdr());
-
-            return false;
-        }
-    }
+    
 
     public static class OrderRelation
     {
@@ -873,8 +876,8 @@ namespace Symbolism
                 return new Product() { elts = ((Product)u).elts.Cdr() };
 
             if (u is Product) return u;
-
-            return new Product() { elts = new List<MathObject>() { u } };
+            
+            return new Product(u);
         }
 
         public static MathObject Const(MathObject u)
@@ -1060,10 +1063,10 @@ namespace Symbolism
             var v = bas;
             var w = exp;
 
-            if (v == new Integer(0)) return new Integer(0);
-            if (v == new Integer(1)) return new Integer(1);
-            if (w == new Integer(0)) return new Integer(1);
-            if (w == new Integer(1)) return v;
+            if (v == 0) return 0;
+            if (v == 1) return 1;
+            if (w == 0) return 1;
+            if (w == 1) return v;
 
             // Logic from MPL/Scheme:
             //
@@ -1162,17 +1165,15 @@ namespace Symbolism
             var q = qElts[0];
             var qs = qElts.Cdr();
 
-            var res = RecursiveSimplify(new List<MathObject>() { p, q });
+            var res = RecursiveSimplify(List(p, q));
 
             if (res.Count == 0) return MergeProducts(ps, qs);
 
             if (res.Count == 1) return MergeProducts(ps, qs).Cons(res[0]);
 
-            if (ListUtils.equal(res, new List<MathObject>() { p, q }))
-                return MergeProducts(ps, qElts).Cons(p);
+            if (ListUtils.equal(res, List(p, q))) return MergeProducts(ps, qElts).Cons(p);
 
-            if (ListUtils.equal(res, new List<MathObject>() { q, p }))
-                return MergeProducts(pElts, qs).Cons(q);
+            if (ListUtils.equal(res, List(q, p))) return MergeProducts(pElts, qs).Cons(q);
 
             throw new Exception();
         }
@@ -1189,7 +1190,7 @@ namespace Symbolism
 
             if (val == 1.0) return new List<MathObject>() { };
 
-            return new List<MathObject>() { new DoubleFloat(val) };
+            return List<MathObject>(new DoubleFloat(val));
         }
 
         public static List<MathObject> RecursiveSimplify(List<MathObject> elts)
@@ -1201,15 +1202,9 @@ namespace Symbolism
                         ((Product)elts[0]).elts,
                         ((Product)elts[1]).elts);
 
-                if (elts[0] is Product)
-                    return MergeProducts(
-                        ((Product)elts[0]).elts,
-                        new List<MathObject>() { elts[1] });
+                if (elts[0] is Product) return MergeProducts(((Product)elts[0]).elts, List(elts[1]));
 
-                if (elts[1] is Product)
-                    return MergeProducts(
-                        new List<MathObject>() { elts[0] },
-                        ((Product)elts[1]).elts);
+                if (elts[1] is Product) return MergeProducts(List(elts[0]), ((Product)elts[1]).elts);
 
                 //////////////////////////////////////////////////////////////////////
 
@@ -1225,20 +1220,15 @@ namespace Symbolism
                     &&
                     (elts[1] is Integer || elts[1] is Fraction))
                 {
-                    var P =
-                        Rational.SimplifyRNE(new Product(elts[0], elts[1]));
+                    var P = Rational.SimplifyRNE(new Product(elts[0], elts[1]));
+                    
+                    if (P == 1) return new List<MathObject>() { };
 
-                    if (P is Integer && ((Integer)P).val == 1)
-                        return new List<MathObject>() { };
-
-                    return new List<MathObject>() { P };
+                    return List(P);
                 }
 
-                if (elts[0] == new Integer(1))
-                    return new List<MathObject>() { elts[1] };
-
-                if (elts[1] == new Integer(1))
-                    return new List<MathObject>() { elts[0] };
+                if (elts[0] == 1) return List(elts[1]);
+                if (elts[1] == 1) return List(elts[0]);
 
                 var p = elts[0];
                 var q = elts[1];
@@ -1247,26 +1237,24 @@ namespace Symbolism
                 {
                     var res = OrderRelation.Base(p) ^ (OrderRelation.Exponent(p) + OrderRelation.Exponent(q));
 
-                    if (res is Integer && ((Integer)res).val == 1)
-                        return new List<MathObject>() { };
-                    else
-                        return new List<MathObject>() { res };
+                    if (res == 1) return new List<MathObject>() { };
+
+                    return List(res);
                 }
 
-                if (OrderRelation.Compare(q, p))
-                    return new List<MathObject>() { q, p };
+                if (OrderRelation.Compare(q, p)) return List(q, p);
 
-                return new List<MathObject>() { p, q };
+                return List(p, q);
             }
 
             if (elts[0] is Product)
                 return
                     MergeProducts(
-                        ((Product)elts[0]).elts,
+                        ((Product)elts[0]).elts, 
                         RecursiveSimplify(elts.Cdr()));
 
             return MergeProducts(
-                new List<MathObject>() { elts[0] },
+                List(elts[0]),
                 RecursiveSimplify(elts.Cdr()));
 
             throw new Exception();
@@ -1276,11 +1264,11 @@ namespace Symbolism
         {
             if (elts.Count == 1) return elts[0];
 
-            if (elts.Any(elt => elt == new Integer(0))) return new Integer(0);
+            if (elts.Any(elt => elt == 0)) return 0;
 
             var res = RecursiveSimplify(elts);
 
-            if (res.IsEmpty()) return new Integer(1);
+            if (res.IsEmpty()) return 1;
 
             if (res.Count == 1) return res[0];
 
@@ -1318,17 +1306,15 @@ namespace Symbolism
             var q = qElts[0];
             var qs = qElts.Cdr();
 
-            var res = RecursiveSimplify(new List<MathObject>() { p, q });
+            var res = RecursiveSimplify(List(p, q));
 
             if (res.Count == 0) return MergeSums(ps, qs);
 
             if (res.Count == 1) return MergeSums(ps, qs).Cons(res[0]);
 
-            if (ListUtils.equal(res, new List<MathObject>() { p, q }))
-                return MergeSums(ps, qElts).Cons(p);
+            if (ListUtils.equal(res, List(p, q))) return MergeSums(ps, qElts).Cons(p);
 
-            if (ListUtils.equal(res, new List<MathObject>() { q, p }))
-                return MergeSums(pElts, qs).Cons(q);
+            if (ListUtils.equal(res, List(q, p))) return MergeSums(pElts, qs).Cons(q);
 
             throw new Exception();
         }
@@ -1360,11 +1346,11 @@ namespace Symbolism
                 if (elts[0] is Sum)
                     return MergeSums(
                         ((Sum)elts[0]).elts,
-                        new List<MathObject>() { elts[1] });
+                        List(elts[1]));
 
                 if (elts[1] is Sum)
                     return MergeSums(
-                        new List<MathObject>() { elts[0] },
+                        List(elts[0]),
                         ((Sum)elts[1]).elts);
 
                 //////////////////////////////////////////////////////////////////////
@@ -1381,53 +1367,32 @@ namespace Symbolism
                     &&
                     (elts[1] is Integer || elts[1] is Fraction))
                 {
-                    var P =
-                        Rational.SimplifyRNE(new Sum(elts[0], elts[1]));
+                    var P = Rational.SimplifyRNE(new Sum(elts[0], elts[1]));
 
-                    if (P is Integer && ((Integer)P).val == 0)
-                        return new List<MathObject>() { };
+                    if (P == 0) return new List<MathObject>() { };
 
-                    return new List<MathObject>() { P };
+                    return List(P);
                 }
 
-                if (elts[0] is Integer && elts[1] is Integer)
-                {
-                    var res = ((Integer)elts[0]).val + ((Integer)elts[1]).val;
+                if (elts[0] == 0) return List(elts[1]);
 
-                    return res == 0 ?
-                        new List<MathObject>() :
-                        new List<MathObject>() { new Integer(res) };
-                }
-
-                if (elts[0] is Integer && ((Integer)elts[0]).val == 0)
-                    return new List<MathObject>() { elts[1] };
-
-                if (elts[1] is Integer && ((Integer)elts[1]).val == 0)
-                    return new List<MathObject>() { elts[0] };
-
+                if (elts[1] == 0) return List(elts[0]);
+                
                 var p = elts[0];
                 var q = elts[1];
 
                 if (OrderRelation.Term(p) == OrderRelation.Term(q))
                 {
-                    var res =
-                        new Product(
-                            OrderRelation.Term(p),
-                            new Sum(
-                                OrderRelation.Const(p),
-                                OrderRelation.Const(q)).Simplify()
-                            ).Simplify();
+                    var res = OrderRelation.Term(p) * (OrderRelation.Const(p) + OrderRelation.Const(q));
 
-                    if (res is Integer && ((Integer)res).val == 0)
-                        return new List<MathObject>() { };
-                    else
-                        return new List<MathObject>() { res };
+                    if (res == 0) return new List<MathObject>() { };
+                    
+                    return List(res);
                 }
 
-                if (OrderRelation.Compare(q, p))
-                    return new List<MathObject>() { q, p };
+                if (OrderRelation.Compare(q, p)) return List(q, p);
 
-                return new List<MathObject>() { p, q };
+                return List(p, q);
             }
 
             if (elts[0] is Sum)
@@ -1436,7 +1401,7 @@ namespace Symbolism
                         ((Sum)elts[0]).elts, RecursiveSimplify(elts.Cdr()));
 
             return MergeSums(
-                new List<MathObject>() { elts[0] }, RecursiveSimplify(elts.Cdr()));
+                List(elts[0]), RecursiveSimplify(elts.Cdr()));
         }
 
         public MathObject Simplify()
@@ -1445,7 +1410,7 @@ namespace Symbolism
 
             var res = RecursiveSimplify(elts);
 
-            if (res.Count == 0) return new Integer(0);
+            if (res.Count == 0) return 0;
             if (res.Count == 1) return res[0];
 
             return new Sum() { elts = res };
@@ -1497,7 +1462,6 @@ namespace Symbolism
         public Quotient(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
 
-        public MathObject Simplify()
-        { return elts[0] * (elts[1] ^ -1); }
+        public MathObject Simplify() => elts[0] * (elts[1] ^ -1);
     }
 }
