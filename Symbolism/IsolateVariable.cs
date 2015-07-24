@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Symbolism.Has;
+
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 

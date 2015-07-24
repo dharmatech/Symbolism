@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Symbolism.Substitute;
+using Symbolism.Has;
 using Symbolism.AlgebraicExpand;
 using Symbolism.IsolateVariable;
 using Symbolism.SimplifyEquation;

@@ -146,38 +146,6 @@ namespace Symbolism
 
         public static MathObject operator -(MathObject a)
         { return new Difference(a).Simplify(); }
-
-        public bool Has(MathObject a)
-        {
-            if (this == a) return true;
-
-            if (this is Equation) return (this as Equation).a.Has(a) || (this as Equation).b.Has(a);
-
-            if (this is Power) return (((Power)this).bas.Has(a) || ((Power)this).exp.Has(a));
-
-            if (this is Product)  return ((Product) this).elts.Any(elt => elt.Has(a));
-            if (this is Sum)      return ((Sum)     this).elts.Any(elt => elt.Has(a));
-            if (this is Function) return ((Function)this).args.Any(elt => elt.Has(a));
-
-            return false;
-        }
-
-        public bool Has(Func<MathObject, bool> proc)
-        {
-            if (proc(this)) return true;
-
-            if (this is Equation) return (this as Equation).a.Has(proc) || (this as Equation).b.Has(proc);
-
-            if (this is Power) return (this as Power).bas.Has(proc) || (this as Power).exp.Has(proc);
-
-            if (this is Product)  return (this as  Product).elts.Any(elt => elt.Has(proc));
-            if (this is Sum)      return (this as      Sum).elts.Any(elt => elt.Has(proc));
-            if (this is Function) return (this as Function).args.Any(elt => elt.Has(proc));
-
-            return false;
-        }
-
-        public bool FreeOf(MathObject a) { return !Has(a); }
         
         // Precedence is used for printing purposes.
         // Thus, the precedence values below do not necessarily reflect 
