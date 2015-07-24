@@ -186,9 +186,6 @@ namespace Symbolism
         public Equation(MathObject x, MathObject y, Operators op)
         { a = x; b = y; Operator = op; }
 
-        public String ObjectString()
-        { return "Equation(" + a + ", " + b + ")"; }
-
         public override string ToString()
         { 
             if (Operator == Operators.Equal) return a + " == " + b;
@@ -292,10 +289,7 @@ namespace Symbolism
         public int val;
 
         public Integer(int n) { val = n; }
-
-        public string ObjectPrint()
-        { return "Integer(" + val.ToString() + ")"; }
-
+        
         public override string ToString()
         { return val.ToString(); }
 
@@ -317,9 +311,6 @@ namespace Symbolism
         public double val;
 
         public DoubleFloat(double n) { val = n; }
-
-        public string ObjectPrint()
-        { return "Double(" + val.ToString("R") + ")"; }
 
         public override string ToString()
         { return val.ToString("R"); }
@@ -613,9 +604,6 @@ namespace Symbolism
         public String name;
 
         public Symbol(String str) { name = str; }
-
-        public string ObjectPrint()
-        { return "Symbol(" + name + ")"; }
 
         public override string ToString()
         { return name; }
@@ -1118,9 +1106,6 @@ namespace Symbolism
 
         public Power(MathObject a, MathObject b) { bas = a; exp = b; }
 
-        public string ObjectPrint()
-        { return "Power(" + bas + ", " + exp + ")"; }
-
         public override string ToString()
         {
             var str = new StringBuilder();
@@ -1209,24 +1194,6 @@ namespace Symbolism
 
         public Product(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
-
-        public string ObjectString()
-        {
-            var str = new StringBuilder();
-
-            str.Append("Product(");
-
-            for (var i = 0; i < elts.Count - 1; i++)
-            {
-                str.Append(elts[i]);
-                str.Append(", ");
-            }
-
-            str.Append(elts[elts.Count - 1]);
-            str.Append(")");
-
-            return str.ToString();
-        }
 
         public override string ToString()
         {
@@ -1576,24 +1543,6 @@ namespace Symbolism
             if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append("(");
             str.Append(elts[elts.Count - 1]);
             if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append(")");
-
-            return str.ToString();
-        }
-
-        public string ObjectPrint()
-        {
-            var str = new StringBuilder();
-
-            str.Append("Sum(");
-
-            for (var i = 0; i < elts.Count - 1; i++)
-            {
-                str.Append(elts[i]);
-                str.Append(", ");
-            }
-
-            str.Append(elts[elts.Count - 1]);
-            str.Append(")");
 
             return str.ToString();
         }
