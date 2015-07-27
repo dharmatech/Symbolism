@@ -1272,6 +1272,11 @@ namespace Symbolism
 
             if (res.Count == 1) return res[0];
 
+            // Without the below, the following throws an exception:
+            // sqrt(a * b) * (sqrt(a * b) / a) / c
+
+            if (res.Any(elt => elt is Product)) return new Product() { elts = res }.Simplify();
+
             return new Product() { elts = res };
         }
     }

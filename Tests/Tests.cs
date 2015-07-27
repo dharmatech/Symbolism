@@ -330,6 +330,11 @@ namespace Tests
 
                 AssertIsTrue((a == b) != (a != b));
 
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+                
+                (sqrt(a * b) * (sqrt(a * b) / a) / c)
+                    .AssertEqTo(b / c);
+                
                 #region Equation.ToString
 
                 Assert((x == y).ToString() == "x == y", "x == y");
@@ -630,7 +635,7 @@ namespace Tests
 
                 Assert((0 == x - y).IsolateVariableEq(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+                
 
                 (a * (x ^ 2) + b * x + c == 0)
                     .IsolateVariable(x)
@@ -742,6 +747,8 @@ namespace Tests
                 .AssertEqTo(new And((x ^ 3) == (y ^ 5), z == (x ^ 7)));
 
                 #endregion
+
+
 
             }
 
@@ -2244,6 +2251,242 @@ namespace Tests
                                 h == d * sin(thi) / cos(thi) + ay * (d ^ 2) / (cos(thi) ^ 2) / (vi ^ 2) / 2
                                 
                                 );
+                    }
+                }
+
+                DoubleFloat.tolerance = null;
+            }
+
+            #endregion
+            
+            #region PSE 5E P4.23
+
+            {
+                // A basketball star covers 2.80 m horizontally in a jump to
+                // dunk the ball. His motion through space can be modeled as 
+                // that of a particle at a point called his center of mass. 
+                // His center of mass is at elevation 1.02 m when he leaves 
+                // the floor. It reaches a maximum height of 1.85 m above 
+                // the floor and is at elevation 0.900 m when he touches down
+                // again.
+
+                // Determine:
+
+                // (a) his time of flight (his “hang time”)
+
+                // (b) his horizontal and (c) vertical velocity components at the instant of takeoff
+
+                // (d) his takeoff angle. 
+
+                // (e) For comparison, determine the hang time of a
+                // whitetail deer making a jump with center-of-mass elevations
+                // y_i = 1.20 m
+                // y_max = 2.50 m
+                // y_f = 0.700 m
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+
+                var tAB = new Symbol("tAB");
+
+
+                var xC = new Symbol("xC");
+                var yC = new Symbol("yC");
+
+                var vxC = new Symbol("vxC");
+                var vyC = new Symbol("vyC");
+
+
+                var tBC = new Symbol("tBC");
+
+                var tAC = new Symbol("tAC");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    //vxA == vA * cos(thA),
+                    //vyA == vA * sin(thA),
+
+                    vxB == vxA + ax * tAB,
+                    vyB == vyA + ay * tAB,
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                    yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2,
+
+
+                    vxC == vxB + ax * tBC,
+                    vyC == vyB + ay * tBC,
+
+                    xC == xB + vxB * tBC + ax * (tBC ^ 2) / 2,
+                    yC == yB + vyB * tBC + ay * (tBC ^ 2) / 2,
+
+                    tAC == tAB + tBC,
+
+                    // vyA / vxA == tan(thA),
+
+                    tan(thA) == vyA / vxA,
+
+                    ay != 0
+
+                );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        xA == 0,    yA == 1.02, /* vxA vyA vA thA */
+                        /* xB */    yB == 1.85, /* vxB            */ vyB == 0,
+                        xC == 2.80, yC == 0.9,  /* vxC vyC        */
+
+                        /* tAB tBC */ ax == 0, ay == -9.8, Pi == Math.PI
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(thA, vxB, xB, vxC, vyC, vxA, vyA, tAB)
+
+                            .CheckVariable(ay).SimplifyEquation().SimplifyLogical()
+
+                            .EliminateVariable(tBC)
+
+                            .LogicalExpand().SimplifyEquation().CheckVariable(ay).SimplifyLogical()
+
+                            .AssertEqTo(
+
+                                new Or(
+                                    new And(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    new And(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    new And(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    new And(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC)))))
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(
+
+                                new Or(
+                                    tAC == 0.028747849043843032,
+                                    tAC == -0.85188272280886768,
+                                    tAC == 0.85188272280886768,
+                                    tAC == -0.028747849043843032));
+                    }
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(thA, vxB, vxC, xB)
+
+                            .IsolateVariable(vxA)
+
+                            .EliminateVariables(tAC, vyC, tAB, vyA)
+
+                            .SimplifyEquation().CheckVariable(ay)
+
+                            .EliminateVariable(tBC)
+
+                            .LogicalExpand().SimplifyEquation().CheckVariable(ay).SimplifyLogical()
+
+                            .AssertEqTo(
+
+                                new Or(
+                                    new And(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    new And(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    new And(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    new And(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1))))
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(
+
+                                new Or(
+                                    vxA == 97.398591307814215,
+                                    vxA == -3.286837407346058,
+                                    vxA == 3.286837407346058,
+                                    vxA == -97.398591307814215));
+                    }
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(thA, vxA, vxC, vyC, vxB, xB, tAB, tAC, tBC)
+
+                            .SimplifyEquation().CheckVariable(ay).SimplifyLogical()
+
+                            .IsolateVariable(vyA)
+
+                            .LogicalExpand().SimplifyEquation().CheckVariable(ay)
+
+                            .AssertEqTo(
+                                new Or(
+                                    new And(ay != 0, vyA == ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB))),
+                                    new And(ay != 0, vyA == -1 * ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)))))
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(
+                                new Or(
+                                    vyA == -4.0333608814486217,
+                                    vyA == 4.0333608814486217));
+                    }
+
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+
+                            .EliminateVariables(vxA, vyA, vxB, xB, vxC, tBC, tAB, vyC, tAC)
+
+                            .LogicalExpand()
+                            .SimplifyEquation()
+                            .SimplifyLogical()
+                            .CheckVariable(ay)
+
+                            .AssertEqTo(
+
+                                new Or(
+                                    new And(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    new And(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    new And(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    new And(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC))))
+
+                                    ))
+
+                            .IsolateVariable(thA)
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(
+                                new Or(
+                                    thA == 0.88702813023277882,
+                                    thA == -0.041387227947930878,
+                                    thA == -0.041387227947930878,
+                                    thA == 0.88702813023277882));
+
                     }
                 }
 
