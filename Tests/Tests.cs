@@ -1649,6 +1649,55 @@ namespace Tests
 
             #endregion
 
+            #region SinCosToTanFunc
+
+
+            // sin(x) / cos(x) -> tan(x)
+
+            Func<MathObject, MathObject> SinCosToTanFunc = elt =>
+            {
+                if (elt is Product)
+                {
+                    if ((elt as Product).elts.Any(obj1 =>
+                            obj1 is Sin &&
+                            (elt as Product).elts.Any(obj2 => obj2 == 1 / cos((obj1 as Sin).args[0]))))
+                    {
+                        var sin_ = (elt as Product).elts.First(obj1 =>
+                            obj1 is Sin &&
+                            (elt as Product).elts.Any(obj2 => obj2 == 1 / cos((obj1 as Sin).args[0])));
+
+                        var arg = (sin_ as Sin).args[0];
+
+                        return elt * cos(arg) / sin(arg) * tan(arg);
+                    }
+
+                    return elt;
+                }
+
+                return elt;
+            };
+
+            #endregion
+
+            {
+                var x = new Symbol("x");
+                var y = new Symbol("y");
+
+                (sin(x) / cos(x)).DeepSelect(SinCosToTanFunc)
+
+                    .AssertEqTo(tan(x));
+
+                (y * sin(x) / cos(x)).DeepSelect(SinCosToTanFunc)
+
+                    .AssertEqTo(tan(x) * y);
+
+                (sin(x) * sin(y) / cos(x) / cos(y))
+                    .DeepSelect(SinCosToTanFunc)
+                    .DeepSelect(SinCosToTanFunc)
+
+                    .AssertEqTo(tan(x) * tan(y));
+            }
+            
             #region PSE 5E P4.11
 
             {
@@ -2494,7 +2543,192 @@ namespace Tests
             }
 
             #endregion
-            
+
+            #region PSE 5E E5.1
+
+            {
+                // A hockey puck having a mass of 0.30 kg slides on the horizontal, 
+                // frictionless surface of an ice rink. Two forces act on
+                // the puck, as shown in Figure 5.5.The force F1 has a magnitude 
+                // of 5.0 N, and the force F2 has a magnitude of 8.0 N.
+
+                // Determine both the magnitude and the direction of the puck’s acceleration.
+
+                // Determine the components of a third force that,
+                // when applied to the puck, causes it to have zero acceleration.
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var F = new Symbol("F");
+                var th = new Symbol("th");
+
+                var Fx = new Symbol("Fx");
+                var Fy = new Symbol("Fy");
+
+
+                var F1 = new Symbol("F1");
+                var th1 = new Symbol("th1");
+
+                var F1x = new Symbol("F1x");
+                var F1y = new Symbol("F1y");
+                
+
+                var F2 = new Symbol("F2");
+                var th2 = new Symbol("th2");
+
+                var F2x = new Symbol("F2x");
+                var F2y = new Symbol("F2y");
+
+
+                var F3 = new Symbol("F3");
+                var th3 = new Symbol("th3");
+
+                var F3x = new Symbol("F3x");
+                var F3y = new Symbol("F3y");
+
+
+                var a = new Symbol("a");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var m = new Symbol("m");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    Fx == F * cos(th),
+                    Fy == F * sin(th),
+
+                    Fx == ax * m,
+                    Fy == ay * m,
+
+                    Fx == F1x + F2x + F3x,
+                    Fy == F1y + F2y + F3y,
+
+                    F1x == F1 * cos(th1), F1y == F1 * sin(th1),
+
+                    F2x == F2 * cos(th2), F2y == F2 * sin(th2),
+
+                    F3x == F3 * cos(th3), F3y == F3 * sin(th3),
+
+                    a == sqrt((ax ^ 2) + (ay ^ 2))
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+
+                        m == 0.3,
+
+                        F1 == 5.0, th1 == (-20).ToRadians(),
+                        F2 == 8.0, th2 == (60).ToRadians(),
+
+                        F3 == 0,
+
+                        Pi == Math.PI
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // a 
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(ax, ay, Fx, Fy, F, F1x, F1y, F2x, F2y, F3x, F3y)
+                            .DeepSelect(SinCosToTanFunc)
+                            .EliminateVariable(th)
+                            
+                            .AssertEqTo(
+
+                                a ==
+                                    sqrt(
+                                        ((cos(th1) * F1 + cos(th2) * F2) ^ 2) * (m ^ -2) +
+                                        (cos(atan(((cos(th1) * F1 + cos(th2) * F2) ^ -1) * (F1 * sin(th1) + F2 * sin(th2)))) ^ -2) *
+                                        ((cos(th1) * F1 + cos(th2) * F2) ^ 2) *
+                                        (m ^ -2) *
+                                        (sin(atan(((cos(th1) * F1 + cos(th2) * F2) ^ -1) * (F1 * sin(th1) + F2 * sin(th2)))) ^ 2))
+
+                            )
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(a == 33.811874017759315);
+                    }
+
+                    // th
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(a, F, Fx, Fy, ax, ay, F1x, F1y, F2x, F2y, F3x, F3y)
+                            .DeepSelect(SinCosToTanFunc)
+                            .IsolateVariable(th)
+
+                            .AssertEqTo(
+
+                                th == atan((F1 * sin(th1) + F2 * sin(th2)) / (cos(th1) * F1 + cos(th2) * F2))
+
+                                )
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(th == 0.54033704850428876);
+                    }
+                }
+
+                {
+                    var vals = new List<Equation>()
+                    {
+
+                        m == 0.3,
+
+                        F1 == 5.0, th1 == (-20).ToRadians(),
+                        F2 == 8.0, th2 == (60).ToRadians(),
+
+                        ax == 0, ay == 0,
+
+                        Pi == Math.PI
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+                    
+                    // F3x
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(F3, th3, F3y, F1x, F2x, Fx, F, Fy, F1y, F2y, a)
+                            .IsolateVariable(F3x)
+                            
+                            .AssertEqTo(F3x == -1 * cos(th1) * F1 + -1 * cos(th2) * F2)
+
+                            .SubstituteEqLs(vals)
+                            
+                            .AssertEqTo(F3x == -8.6984631039295444);
+                    }
+
+
+                    // F3y
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(F3, th3, F3x, F1x, F2x, Fx, F, Fy, F1y, F2y, a)
+                            .IsolateVariable(F3y)
+
+                            .AssertEqTo(F3y == -1 * F1 * sin(th1) + -1 * F2 * sin(th2))
+                            
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(F3y == -5.2181025136471657);
+                    }   
+                }
+            }
+
+            #endregion
+
             #endregion
 
             #region PSE 5E Example 4.3
