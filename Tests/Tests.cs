@@ -2728,7 +2728,125 @@ namespace Tests
             }
 
             #endregion
+            
+            #region PSE 5E E5.4
 
+            {
+                // A traffic light weighing 125 N hangs from a cable tied to two
+                // other cables fastened to a support. The upper cables make
+                // angles of 37.0° and 53.0° with the horizontal. Find the tension
+                // in the three cables.
+                
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var F = new Symbol("F");    // total force magnitude
+                var th = new Symbol("th");  // total force direction
+
+                var Fx = new Symbol("Fx");  // total force x-component
+                var Fy = new Symbol("Fy");  // total force y-component
+
+
+                var F1 = new Symbol("F1");
+                var th1 = new Symbol("th1");
+
+                var F1x = new Symbol("F1x");
+                var F1y = new Symbol("F1y");
+
+
+                var F2 = new Symbol("F2");
+                var th2 = new Symbol("th2");
+
+                var F2x = new Symbol("F2x");
+                var F2y = new Symbol("F2y");
+
+
+                var F3 = new Symbol("F3");
+                var th3 = new Symbol("th3");
+
+                var F3x = new Symbol("F3x");
+                var F3y = new Symbol("F3y");
+
+
+                var a = new Symbol("a");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var m = new Symbol("m");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    Fx == F * cos(th),
+                    Fy == F * sin(th),
+
+                    Fx == ax * m,
+                    Fy == ay * m,
+
+                    Fx == F1x + F2x + F3x,
+                    Fy == F1y + F2y + F3y,
+
+                    F1x == F1 * cos(th1), F1y == F1 * sin(th1),
+                    F2x == F2 * cos(th2), F2y == F2 * sin(th2),
+                    F3x == F3 * cos(th3), F3y == F3 * sin(th3),
+
+                    a == sqrt((ax ^ 2) + (ay ^ 2))
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+
+                        // m 
+
+                        /* F1 */    th1 == (180 - 37).ToRadians(),  // F1x F1y
+                        /* F2 */    th2 == (53).ToRadians(),        // F2x F2y
+                        F3 == 125,  th3 == (270).ToRadians(),       // F3x F3y
+                        
+                        ax == 0,    ay == 0,
+
+                        Pi == Math.PI
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // F1
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(Fx, Fy, F, F1x, F1y, F2x, F2y, F2, F3x, F3y, a)
+                            .IsolateVariable(F1)
+                            
+                            .AssertEqTo(F1 == (F3 * sin(th3) - cos(th3) * F3 * sin(th2) / cos(th2)) / (cos(th1) * sin(th2) / cos(th2) - sin(th1)))
+
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(F1 == 75.226877894006023);
+                    }
+
+                    // F2
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(Fx, Fy, F, F1x, F1y, F2x, F2y, F1, F3x, F3y, a)
+                            .IsolateVariable(F2)
+
+                            .AssertEqTo(F2 == (cos(th3) * F3 * sin(th1) / cos(th1) - F3 * sin(th3)) / (sin(th2) - cos(th2) * sin(th1) / cos(th1)))
+                            
+                            .SubstituteEqLs(vals)
+
+                            .AssertEqTo(F2 == 99.829438755911582);
+                    }
+
+                }
+            }
+
+            #endregion
+            
             #endregion
 
             #region PSE 5E Example 4.3
