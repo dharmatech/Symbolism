@@ -1,3 +1,5 @@
+# Symbolism
+
 Library that implements automatic simplification of algebraic expressions in C#.
 
 To get an idea of the kinds of expressions it handles, see the [tests in this file](https://github.com/dharmatech/Symbolism/blob/master/Tests/Tests.cs).
@@ -12,7 +14,13 @@ The projects "PSE 5E ..." are examples and problems from the textbook "Physics f
 
 A slightly more complex [walk-through](https://gist.github.com/dharmatech/a5e74ef03d98b3ff1c45).
 
-References:
+In action:
+
+![](http://i.imgur.com/7FH36o1.png)
+
+[Unit test](https://github.com/dharmatech/Symbolism/blob/ff09e2c20e026091225f4f303bbb06487a08f58d/Tests/Tests.cs#L2732) for that example.
+
+# References
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
 by Joel S. Cohen
