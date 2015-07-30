@@ -5,6 +5,10 @@ To get an idea of the kinds of expressions it handles, see the [tests in this fi
 
 The automatic simplification algorithm comes from the book "Computer Algebra and Symbolic Computation: Mathematical Methods" by Joel S. Cohen.
 
+The core of the system is in [Symbolism.cs](https://github.com/dharmatech/Symbolism/blob/master/Symbolism/Symbolism.cs).
+
+Symbolism began as a port of the Scheme [MPL library](https://github.com/dharmatech/mpl) to C#.
+
 [GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
 
 The projects "PSE 5E ..." are examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
@@ -26,3 +30,4 @@ by Joel S. Cohen
 
 Computer Algebra and Symbolic Computation: Mathematical Methods 
 by Joel S. Cohen 
+
