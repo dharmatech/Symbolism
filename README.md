@@ -1,4 +1,3 @@
-# Symbolism
 
 Library that implements automatic simplification of algebraic expressions in C#.
 
@@ -20,7 +19,7 @@ In action:
 
 [Unit test](https://github.com/dharmatech/Symbolism/blob/ff09e2c20e026091225f4f303bbb06487a08f58d/Tests/Tests.cs#L2732) for that example.
 
-# References
+References:
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
 by Joel S. Cohen
