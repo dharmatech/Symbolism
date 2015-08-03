@@ -21,6 +21,8 @@ using Symbolism;
 using Physics;
 using Utils;
 
+using Symbolism.CosFun;
+
 using Symbolism.Has;
 using Symbolism.Substitute;
 
@@ -145,8 +147,15 @@ namespace Tests
                 if (!eq) Console.WriteLine(eq.ToString());
             };
 
+            Action<Equation> AssertIsFalse = (eq) =>
+            {
+                if (eq) Console.WriteLine(eq.ToString());
+            };
+
+
             Func<MathObject, MathObject> sin = obj => Trig.Sin(obj);
-            Func<MathObject, MathObject> cos = obj => Trig.Cos(obj);
+            
+            Func<MathObject, MathObject> cos = obj => new Cos(obj).Simplify();
             Func<MathObject, MathObject> tan = obj => new Tan(obj).Simplify();
 
             Func<MathObject, MathObject> asin = obj => new Asin(obj).Simplify();
@@ -426,7 +435,51 @@ namespace Tests
                 Assert((x + y).Equals(x * y) == false, "(x + y).Equals(x * y)");
 
                 #endregion
+                
+                {
+                    (x < y).Substitute(x, 10).Substitute(y, 20).AssertEqTo(true);
 
+                    (x > y).Substitute(x, 10).Substitute(y, 20).AssertEqTo(false);
+                }
+
+                #region Cos
+
+                {
+                    var Pi = new Symbol("Pi");
+
+                    cos(0).AssertEqTo(1);
+
+                    cos(Pi).AssertEqTo(-1);
+
+                    cos(-10).AssertEqTo(cos(10));
+
+                    cos(-10 * x).AssertEqTo(cos(10 * x));
+
+                    cos(3 * Pi).AssertEqTo(-1);
+
+                    cos(2 * Pi * 3 / 4).AssertEqTo(0);
+
+                    // cos( a + b + ... + n * pi ) where abs(n) >= 2
+
+                    cos(x - 3 * Pi).AssertEqTo(cos(x + Pi));
+                    cos(x + 3 * Pi).AssertEqTo(cos(x + Pi));
+
+                    cos(x - 2 * Pi).AssertEqTo(cos(x));
+                    cos(x + 2 * Pi).AssertEqTo(cos(x));
+
+                    cos(x + Pi * 7 / 2).AssertEqTo(cos(x + Pi * 3 / 2));
+
+                    // cos( a + b + ... + n/2 * pi )
+
+                    cos(x - Pi * 3 / 2).AssertEqTo(-sin(x));
+                    cos(x - Pi * 1 / 2).AssertEqTo(sin(x));
+                    cos(x + Pi * 1 / 2).AssertEqTo(-sin(x));
+                    cos(x + Pi * 3 / 2).AssertEqTo(sin(x));
+                }
+
+
+                #endregion
+                
                 #region Has
 
                 Assert(a.Has(elt => elt == a), "a.Has(elt => elt == a)");
@@ -468,8 +521,7 @@ namespace Tests
                         .AssertEqTo(3 * (x + 2));
                 }
                 #endregion
-
-
+                
                 #region LogicalExpand
 
                 new And(new Or(a, b), c)
@@ -747,9 +799,6 @@ namespace Tests
                 .AssertEqTo(new And((x ^ 3) == (y ^ 5), z == (x ^ 7)));
 
                 #endregion
-
-
-
             }
 
             #region EliminateVariable
@@ -2842,6 +2891,199 @@ namespace Tests
                             .AssertEqTo(F2 == 99.829438755911582);
                     }
 
+                }
+            }
+
+            #endregion
+            
+            #region PSE 5E E5.6
+
+            {
+                // A crate of mass m is placed on a frictionless inclined plane of
+                // angle θ. (a) Determine the acceleration of the crate after it is
+                // released.
+
+                // (b) Suppose the crate is released from rest at the top of
+                // the incline, and the distance from the front edge of the crate
+                // to the bottom is d. How long does it take the front edge to
+                // reach the bottom, and what is its speed just as it gets there?
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                var F = new Symbol("F");    // total force magnitude
+                var th = new Symbol("th");  // total force direction
+
+                var Fx = new Symbol("Fx");  // total force x-component
+                var Fy = new Symbol("Fy");  // total force y-component
+
+
+                var F1 = new Symbol("F1");
+                var th1 = new Symbol("th1");
+
+                var F1x = new Symbol("F1x");
+                var F1y = new Symbol("F1y");
+
+
+                var F2 = new Symbol("F2");
+                var th2 = new Symbol("th2");
+
+                var F2x = new Symbol("F2x");
+                var F2y = new Symbol("F2y");
+
+
+                //var F3 = new Symbol("F3");
+                //var th3 = new Symbol("th3");
+
+                //var F3x = new Symbol("F3x");
+                //var F3y = new Symbol("F3y");
+
+
+                var a = new Symbol("a");
+
+                var ax = new Symbol("ax");
+                var ay = new Symbol("ay");
+
+                var m = new Symbol("m");
+
+                var n = new Symbol("n");
+                var g = new Symbol("g");
+
+                var incline = new Symbol("incline");
+
+                var Pi = new Symbol("Pi");
+                
+                var xA = new Symbol("xA");
+                var yA = new Symbol("yA");
+
+                var vxA = new Symbol("vxA");
+                var vyA = new Symbol("vyA");
+
+                var vA = new Symbol("vA");
+                var thA = new Symbol("thA");
+
+
+                var xB = new Symbol("xB");
+                var yB = new Symbol("yB");
+
+                var vxB = new Symbol("vxB");
+                var vyB = new Symbol("vyB");
+
+
+                var tAB = new Symbol("tAB");
+                
+                var d = new Symbol("d");
+                
+                var eqs = new And(
+
+                    Fx == F * cos(th),
+                    Fy == F * sin(th),
+
+                    Fx == ax * m,
+                    Fy == ay * m,
+
+                    Fx == F1x + F2x, //+ F3x,
+                    Fy == F1y + F2y, //+ F3y,
+
+                    F1x == F1 * cos(th1), F1y == F1 * sin(th1),
+                    F2x == F2 * cos(th2), F2y == F2 * sin(th2),
+                    //F3x == F3 * cos(th3), F3y == F3 * sin(th3),
+
+                    a == sqrt((ax ^ 2) + (ay ^ 2)),
+
+                    xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+
+                    vxB == vxA + ax * tAB,
+
+                    d != 0
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+
+                        // m 
+                        
+                        F1 == n,        th1 == 90 * Pi / 180,            // F1x F1y
+                        F2 == m * g,    th2 == 270 * Pi / 180 + incline, // F2x F2y
+                        //F3 == 125,    th3 == (270).ToRadians(),        // F3x F3y
+                        
+                        /* ax */  ay == 0,
+
+                        // Pi == Math.PI
+
+                        xA == 0, xB == d, vxA == 0
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // ax
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(a, F)
+                            .DeepSelect(SinCosToTanFunc)
+                            .EliminateVariables(th, Fx, F1x, F2x, Fy, F1y, F2y, vxB, xB)
+                            .SubstituteEqLs(vals)
+                            .EliminateVariable(n)
+                            .IsolateVariable(ax)
+
+                            .AssertEqTo(
+                                new And(
+                                    ax == g * sin(incline),
+                                    d != 0));
+                    }
+
+                    // tAB
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(a, F)
+                            .DeepSelect(SinCosToTanFunc)
+                            .EliminateVariables(th, Fx, F1x, F2x, Fy, F1y, F2y, ax, vxB)
+                            .SubstituteEqLs(vals)
+                            .EliminateVariable(n)
+                            .IsolateVariable(tAB).LogicalExpand().CheckVariable(d)
+                            
+                            .AssertEqTo(
+                                new Or(
+                                    new And(
+                                        tAB == - sqrt(2 * d * g * sin(incline)) / sin(incline) / g,
+                                        - g * sin(incline) / 2 != 0,
+                                        d != 0),
+                                    new And(
+                                        tAB == sqrt(2 * d * g * sin(incline)) / sin(incline) / g,
+                                        -g * sin(incline) / 2 != 0,
+                                        d != 0))
+                            );
+                    }
+
+                    // vxB
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .EliminateVariables(a, F)
+                            .DeepSelect(SinCosToTanFunc)
+                            .EliminateVariables(th, Fx, F1x, F2x, Fy, F1y, F2y, ax, tAB)
+                            .SubstituteEqLs(vals)
+                            .CheckVariable(d)
+                            .EliminateVariable(n)
+
+                            .AssertEqTo(
+                                new Or(
+                                    new And(
+                                        -g * sin(incline) / 2 != 0,
+                                        vxB == -sqrt(2 * d * g * sin(incline)),
+                                        d != 0
+                                    ),
+                                    new And(
+                                        -g * sin(incline) / 2 != 0,
+                                        vxB == sqrt(2 * d * g * sin(incline)),
+                                        d != 0))
+                            );
+                    }
                 }
             }
 

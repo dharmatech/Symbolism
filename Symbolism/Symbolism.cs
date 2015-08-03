@@ -58,6 +58,8 @@ namespace Symbolism
         //////////////////////////////////////////////////////////////////////
         public static Equation operator ==(MathObject a, MathObject b) => new Equation(a, b);
         public static Equation operator !=(MathObject a, MathObject b) => new Equation(a, b, Equation.Operators.NotEqual);
+        public static Equation operator <(MathObject a, MathObject b) => new Equation(a, b, Equation.Operators.LessThan);
+        public static Equation operator >(MathObject a, MathObject b) => new Equation(a, b, Equation.Operators.GreaterThan);
 
         public static Equation operator ==(MathObject a, double b) => new Equation(a, new DoubleFloat(b));
         public static Equation operator ==(double a, MathObject b) => new Equation(new DoubleFloat(a), b);
@@ -104,7 +106,7 @@ namespace Symbolism
 
     public class Equation : MathObject
     {
-        public enum Operators { Equal, NotEqual }
+        public enum Operators { Equal, NotEqual, LessThan, GreaterThan }
 
         public MathObject a;
         public MathObject b;
@@ -121,6 +123,8 @@ namespace Symbolism
         { 
             if (Operator == Operators.Equal) return a + " == " + b;
             if (Operator == Operators.NotEqual) return a + " != " + b;
+            if (Operator == Operators.LessThan) return a + " < " + b;
+            if (Operator == Operators.GreaterThan) return a + " > " + b;
             throw new Exception();
         }
 
@@ -135,7 +139,6 @@ namespace Symbolism
 
         Boolean ToBoolean()
         {
-
             if (a is Bool && b is Bool) return (a as Bool).Equals(b);
 
             if (a is Equation && b is Equation) return (a as Equation).Equals(b);
@@ -170,6 +173,14 @@ namespace Symbolism
             if (eq.Operator == Operators.NotEqual)
                 return !((eq.a == eq.b).ToBoolean());
 
+            if (eq.Operator == Operators.LessThan)
+                if (eq.a is Number && eq.b is Number)
+                    return (eq.a as Number).ToDouble().val < (eq.b as Number).ToDouble().val;
+            
+            if (eq.Operator == Operators.GreaterThan)
+                if (eq.a is Number && eq.b is Number)
+                    return (eq.a as Number).ToDouble().val > (eq.b as Number).ToDouble().val;
+            
             throw new Exception();
         }
         
@@ -188,14 +199,9 @@ namespace Symbolism
         public Bool(bool b) { val = b; }
 
         public override string ToString() => val.ToString();
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Bool) return val == (obj as Bool).val;
-
-            return false;
-        }
-
+        
+        public override bool Equals(object obj) => val == (obj as Bool)?.val;
+        
         public override int GetHashCode()
         { return val.GetHashCode(); }
     }
@@ -212,7 +218,10 @@ namespace Symbolism
     //    { return !((eq.a == eq.b).ToBoolean()); }
     //}
 
-    public abstract class Number : MathObject { }
+    public abstract class Number : MathObject
+    {
+        public abstract DoubleFloat ToDouble();
+    }
 
     public class Integer : Number
     {
@@ -221,16 +230,14 @@ namespace Symbolism
         public Integer(int n) { val = n; }
         
         public override string ToString() => val.ToString();
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Integer) return val == ((Integer)obj).val;
-
-            return false;
-        }
-
+        
+        public override bool Equals(object obj) => val == (obj as Integer)?.val;
+        
         public override int GetHashCode()
         { return val.GetHashCode(); }
+
+        public override DoubleFloat ToDouble() => new DoubleFloat(val);
+        
     }
 
     public class DoubleFloat : Number
@@ -263,6 +270,8 @@ namespace Symbolism
         
         public override int GetHashCode()
         { return val.GetHashCode(); }
+
+        public override DoubleFloat ToDouble() => this;
     }
 
     public class Fraction : Number
@@ -275,18 +284,14 @@ namespace Symbolism
         
         public override string ToString() => numerator + "/" + denominator;
 
-        public DoubleFloat ToDouble() => new DoubleFloat((double)numerator.val / (double)denominator.val);
+        public override DoubleFloat ToDouble() => new DoubleFloat((double)numerator.val / (double)denominator.val);
         //////////////////////////////////////////////////////////////////////
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Fraction) return
-                numerator.val == ((Fraction)obj).numerator.val
-                &&
-                denominator.val == ((Fraction)obj).denominator.val;
-            return false;
-        }
-
+        
+        public override bool Equals(object obj) =>
+            numerator == (obj as Fraction)?.numerator
+            &&
+            denominator == (obj as Fraction)?.denominator;            
+        
         public override int GetHashCode()
         {
             return numerator.val.GetHashCode() + denominator.val.GetHashCode();
@@ -722,7 +727,7 @@ namespace Symbolism
 
         public Or() { name = "Or"; args = new List<MathObject>(); proc = OrProc; }
     }
-
+    
     public class Sin : Function
     {
         MathObject SinProc(params MathObject[] ls)
@@ -741,23 +746,7 @@ namespace Symbolism
         }
     }
 
-    public class Cos : Function
-    {
-        MathObject CosProc(params MathObject[] ls)
-        {
-            if (ls[0] is DoubleFloat)
-                return new DoubleFloat(Math.Cos(((DoubleFloat)ls[0]).val));
-
-            return new Cos(ls[0]);
-        }
-
-        public Cos(MathObject param)
-        {
-            name = "cos";
-            args = new List<MathObject>() { param };
-            proc = CosProc;
-        }
-    }
+    
 
     public class Tan : Function
     {

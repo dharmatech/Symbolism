@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AlgebraicExpand.cs" />
     <Compile Include="CoefficientGpe.cs" />
+    <Compile Include="CosFun.cs" />
     <Compile Include="DeepSelect.cs" />
     <Compile Include="DegreeGpe.cs" />
     <Compile Include="Denominator.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Has.cs" />
     <Compile Include="IsolateVariable.cs" />
     <Compile Include="LogicalExpand.cs" />
+    <Compile Include="Numerator.cs" />
     <Compile Include="SimplifyEquation.cs" />
     <Compile Include="SimplifyLogical.cs" />
     <Compile Include="Substitute.cs" />

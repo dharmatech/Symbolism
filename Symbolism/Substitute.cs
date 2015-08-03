@@ -21,6 +21,12 @@ namespace Symbolism
                     if ((obj as Equation).Operator == Equation.Operators.NotEqual)
                         return ((obj as Equation).a.Substitute(a, b) != (obj as Equation).b.Substitute(a, b)).Simplify();
 
+                    if ((obj as Equation).Operator == Equation.Operators.LessThan)
+                        return ((obj as Equation).a.Substitute(a, b) < (obj as Equation).b.Substitute(a, b)).Simplify();
+
+                    if ((obj as Equation).Operator == Equation.Operators.GreaterThan)
+                        return ((obj as Equation).a.Substitute(a, b) > (obj as Equation).b.Substitute(a, b)).Simplify();
+
                     throw new Exception();
                 }
 

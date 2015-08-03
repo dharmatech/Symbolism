@@ -19,6 +19,8 @@ using System.Text;
 
 using Symbolism;
 
+using Symbolism.CosFun;
+
 namespace Physics
 {
     public static class Misc

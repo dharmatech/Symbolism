@@ -28,9 +28,11 @@ namespace Symbolism
 
                 if (result is Equation)
                     return
-                        (result as Equation).a.DeepSelect(proc) ==
-                        (result as Equation).b.DeepSelect(proc);
-
+                        new Equation(
+                            (result as Equation).a.DeepSelect(proc),
+                            (result as Equation).b.DeepSelect(proc),
+                            (result as Equation).Operator);
+                
                 if (result is Sum)
                     return
                         new Sum() { elts = (result as Sum).elts.Select(elt => elt.DeepSelect(proc)).ToList() }.Simplify();

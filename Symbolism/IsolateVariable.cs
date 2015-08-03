@@ -5,6 +5,8 @@ using System.Text;
 
 using Symbolism.Has;
 
+using Symbolism.CosFun;
+
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;
 
