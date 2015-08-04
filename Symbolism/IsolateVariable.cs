@@ -5,7 +5,7 @@ using System.Text;
 
 using Symbolism.Has;
 
-using Symbolism.CosFun;
+using Symbolism.Trigonometric;
 
 using Symbolism.CoefficientGpe;
 using Symbolism.AlgebraicExpand;

@@ -8,8 +8,25 @@ using Symbolism.Denominator;
 
 using static Symbolism.ListConstructor;
 
-namespace Symbolism.CosFun
+namespace Symbolism.Trigonometric
 {
+    public class Sin : Function
+    {
+        MathObject SinProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Sin(((DoubleFloat)ls[0]).val));
+
+            return new Sin(ls[0]);
+        }
+
+        public Sin(MathObject param)
+        {
+            name = "sin";
+            args = new List<MathObject>() { param };
+            proc = SinProc;
+        }
+    }
     public class Cos : Function
     {
         public static MathObject Mod(MathObject x, MathObject y)
@@ -177,6 +194,106 @@ namespace Symbolism.CosFun
             name = "cos";
             args = new List<MathObject>() { param };
             proc = CosProc;
+        }
+    }
+    public class Tan : Function
+    {
+        MathObject TanProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Tan(((DoubleFloat)ls[0]).val));
+
+            return new Tan(ls[0]);
+        }
+
+        public Tan(MathObject param)
+        {
+            name = "tan";
+            args = new List<MathObject>() { param };
+            proc = TanProc;
+        }
+    }
+    public class Asin : Function
+    {
+        MathObject AsinProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Asin(((DoubleFloat)ls[0]).val));
+
+            return new Asin(ls[0]);
+        }
+
+        public Asin(MathObject param)
+        {
+            name = "asin";
+            args = new List<MathObject>() { param };
+            proc = AsinProc;
+        }
+    }
+    public class Atan : Function
+    {
+        MathObject AtanProc(params MathObject[] ls)
+        {
+            if (ls[0] is DoubleFloat)
+                return new DoubleFloat(Math.Atan(((DoubleFloat)ls[0]).val));
+
+            return new Atan(ls[0]);
+        }
+
+        public Atan(MathObject param)
+        {
+            name = "atan";
+            args = new List<MathObject>() { param };
+            proc = AtanProc;
+        }
+    }
+    public class Atan2 : Function
+    {
+        MathObject Atan2Proc(params MathObject[] ls)
+        {
+            //if (
+            //    (ls[0] is DoubleFloat || ls[0] is Integer)
+            //    &&
+            //    (ls[1] is DoubleFloat || ls[1] is Integer)
+            //    )
+            //    return new DoubleFloat(
+            //        Math.Atan2(
+            //            (ls[0] as Number).ToDouble().val,
+            //            (ls[1] as Number).ToDouble().val));
+
+
+            if (ls[0] is DoubleFloat && ls[1] is DoubleFloat)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((DoubleFloat)ls[0]).val,
+                        ((DoubleFloat)ls[1]).val));
+
+            if (ls[0] is Integer && ls[1] is DoubleFloat)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((Integer)ls[0]).val,
+                        ((DoubleFloat)ls[1]).val));
+
+            if (ls[0] is DoubleFloat && ls[1] is Integer)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((DoubleFloat)ls[0]).val,
+                        ((Integer)ls[1]).val));
+
+            if (ls[0] is Integer && ls[1] is Integer)
+                return new DoubleFloat(
+                    Math.Atan2(
+                        ((Integer)ls[0]).val,
+                        ((Integer)ls[1]).val));
+
+            return new Atan2(ls[0], ls[1]);
+        }
+
+        public Atan2(MathObject a, MathObject b)
+        {
+            name = "atan2";
+            args = new List<MathObject>() { a, b };
+            proc = Atan2Proc;
         }
     }
 }

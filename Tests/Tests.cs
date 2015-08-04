@@ -21,7 +21,7 @@ using Symbolism;
 using Physics;
 using Utils;
 
-using Symbolism.CosFun;
+using Symbolism.Trigonometric;
 
 using Symbolism.Has;
 using Symbolism.Substitute;

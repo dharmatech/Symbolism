@@ -19,7 +19,7 @@ using System.Text;
 
 using Symbolism;
 
-using Symbolism.CosFun;
+using Symbolism.Trigonometric;
 
 namespace Physics
 {
@@ -75,7 +75,7 @@ namespace Physics
         { return new Asin(arg).Simplify(); }
 
         public static MathObject Atan2(MathObject a, MathObject b)
-        { return new Symbolism.Atan2(a, b).Simplify(); }
+        { return new Atan2(a, b).Simplify(); }
     }
 
     public class Point
