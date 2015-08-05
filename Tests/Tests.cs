@@ -3089,6 +3089,103 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E E5.9
+
+            {
+                // When two objects of unequal mass are hung vertically over a
+                // frictionless pulley of negligible mass, as shown in Figure
+                // 5.15a, the arrangement is called an Atwood machine. The device 
+                // is sometimes used in the laboratory to measure the freefall
+                // acceleration.
+                //
+                // Determine the magnitude of the acceleration of the two 
+                // objects and the tension in the lightweight cord.
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+
+                var F_m1 = new Symbol("F_m1");      // total force on mass 1
+                var F_m2 = new Symbol("F_m2");      // total force on mass 2
+
+                var F1_m1 = new Symbol("F1_m1");    // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");    // force 2 on mass 1
+
+                var F1_m2 = new Symbol("F1_m2");    // force 1 on mass 2
+                var F2_m2 = new Symbol("F2_m2");    // force 2 on mass 2
+
+                var m1 = new Symbol("m1");
+                var m2 = new Symbol("m2");
+
+                var a = new Symbol("a");
+
+                var T = new Symbol("T");
+
+                var g = new Symbol("g");
+
+
+                var eqs = new And(
+
+                    F_m1 == F1_m1 - F2_m1,
+                    F_m2 == F2_m2 - F1_m2,
+
+                    F_m1 == m1 * a,
+                    F_m2 == m2 * a,
+
+                    F1_m1 == T,
+                    F2_m1 == m1 * g,
+
+                    F1_m2 == T,
+                    F2_m2 == m2 * g
+                    
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        m1 == 2.0, m2 == 4.0, g == 9.8
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // a
+                    {
+                        eqs
+                            .EliminateVariables(F_m1, F_m2, F2_m1, F2_m2, F1_m1, F1_m2, T)
+                            .IsolateVariable(a)
+                            
+                            .AssertEqTo(
+                                a == (-1 * g * m1 + g * m2) / (m1 + m2)
+                            )
+
+                            .SubstituteEqLs(vals)
+                            
+                            .AssertEqTo(a == 3.2666666666666666);
+                    }
+
+                    // T
+                    {
+                        eqs
+                            .EliminateVariables(F_m1, F_m2, F2_m1, F2_m2, F1_m1, F1_m2, a)
+                            .IsolateVariable(T)
+                            
+                            .AssertEqTo(
+                                T == 2 * g * m2 / (1 + m2 / m1)
+                            )
+
+                            .SubstituteEqLs(vals)
+                            
+                            .AssertEqTo(
+                                T == 26.133333333333333
+                            );
+                    }
+                    
+                }
+            }
+
+            #endregion
+            
             #endregion
 
             #region PSE 5E Example 4.3
