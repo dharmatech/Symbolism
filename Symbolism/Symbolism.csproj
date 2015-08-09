@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AlgebraicExpand.cs" />
     <Compile Include="CoefficientGpe.cs" />
+    <Compile Include="RationalizeExpression.cs" />
     <Compile Include="Trigonometric.cs" />
     <Compile Include="DeepSelect.cs" />
     <Compile Include="DegreeGpe.cs" />

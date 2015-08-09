@@ -39,6 +39,8 @@ using Symbolism.IsolateVariable;
 using Symbolism.EliminateVariable;
 using Symbolism.DeepSelect;
 
+using Symbolism.RationalizeExpression;
+
 namespace Tests
 {
     public static class Extensions
@@ -441,6 +443,90 @@ namespace Tests
 
                     (x > y).Substitute(x, 10).Substitute(y, 20).AssertEqTo(false);
                 }
+
+                #region Sin
+
+                {
+                    var Pi = new Symbol("Pi");
+
+                    sin(0).AssertEqTo(0);
+
+                    sin(Pi).AssertEqTo(0);
+
+                    sin(-10).AssertEqTo(-sin(10));
+
+                    sin(-x).AssertEqTo(-sin(x));
+
+                    sin(-5 * x).AssertEqTo(-sin(5 * x));
+
+                    // sin(k/n pi) for n = 1 2 3 4 6
+
+                    sin(-2 * Pi).AssertEqTo(0);
+                    sin(-1 * Pi).AssertEqTo(0);
+                    sin( 2 * Pi).AssertEqTo(0);
+                    sin( 3 * Pi).AssertEqTo(0);
+
+                    sin(-7 * Pi / 2).AssertEqTo(1);
+                    sin(-5 * Pi / 2).AssertEqTo(-1);
+                    sin(-3 * Pi / 2).AssertEqTo(1);
+                    sin(-1 * Pi / 2).AssertEqTo(-1);
+                    sin( 1 * Pi / 2).AssertEqTo(1);
+                    sin( 3 * Pi / 2).AssertEqTo(-1);
+                    sin( 5 * Pi / 2).AssertEqTo(1);
+                    sin( 7 * Pi / 2).AssertEqTo(-1);
+                    
+                    sin(-4 * Pi / 3).AssertEqTo( sqrt(3)/2);
+                    sin(-2 * Pi / 3).AssertEqTo(-sqrt(3)/2);
+                    sin(-1 * Pi / 3).AssertEqTo(-sqrt(3)/2);
+                    sin( 1 * Pi / 3).AssertEqTo( sqrt(3)/2);
+                    sin( 2 * Pi / 3).AssertEqTo( sqrt(3)/2);
+                    sin( 4 * Pi / 3).AssertEqTo(-sqrt(3)/2);
+                    sin( 5 * Pi / 3).AssertEqTo(-sqrt(3)/2);
+                    sin( 7 * Pi / 3).AssertEqTo( sqrt(3)/2);
+
+                    sin(-3 * Pi / 4).AssertEqTo(-1/sqrt(2));
+                    sin(-1 * Pi / 4).AssertEqTo(-1/sqrt(2));
+                    sin( 1 * Pi / 4).AssertEqTo( 1/sqrt(2));
+                    sin( 3 * Pi / 4).AssertEqTo( 1/sqrt(2));
+                    sin( 5 * Pi / 4).AssertEqTo(-1/sqrt(2));
+                    sin( 7 * Pi / 4).AssertEqTo(-1/sqrt(2));
+                    sin( 9 * Pi / 4).AssertEqTo( 1/sqrt(2));
+                    sin(11 * Pi / 4).AssertEqTo( 1/sqrt(2));
+
+                    var half = new Integer(1) / 2;
+
+                    sin(-5 * Pi / 6).AssertEqTo(-half);
+                    sin(-1 * Pi / 6).AssertEqTo(-half);
+                    sin( 1 * Pi / 6).AssertEqTo( half);
+                    sin( 5 * Pi / 6).AssertEqTo( half);
+                    sin( 7 * Pi / 6).AssertEqTo(-half);
+                    sin(11 * Pi / 6).AssertEqTo(-half);
+                    sin(13 * Pi / 6).AssertEqTo( half);
+                    sin(17 * Pi / 6).AssertEqTo( half);
+
+                    // sin(a/b pi) where a/b > 1/2 (i.e. not in first quadrant)
+
+                    sin(15 * Pi / 7).AssertEqTo( sin(1 * Pi / 7));
+                    sin( 8 * Pi / 7).AssertEqTo(-sin(1 * Pi / 7));
+                    sin( 4 * Pi / 7).AssertEqTo( sin(3 * Pi / 7));
+
+                    // sin( a + b + ... + n * pi ) where abs(n) >= 2
+
+                    sin(x - 3 * Pi).AssertEqTo(sin(x + Pi));
+                    sin(x - 2 * Pi).AssertEqTo(sin(x));
+                    sin(x + 2 * Pi).AssertEqTo(sin(x));
+                    sin(x + 3 * Pi).AssertEqTo(sin(x + Pi));
+                    sin(x + 7 * Pi / 2).AssertEqTo(sin(x + 3 * Pi / 2));
+
+                    // sin( a + b + ... + n/2 * pi )
+
+                    sin(x - 3 * Pi / 2).AssertEqTo( cos(x));
+                    sin(x - 1 * Pi / 2).AssertEqTo(-cos(x));
+                    sin(x + 1 * Pi / 2).AssertEqTo( cos(x));
+                    sin(x + 3 * Pi / 2).AssertEqTo(-cos(x));
+                }
+
+                #endregion
 
                 #region Cos
 
@@ -2706,6 +2792,10 @@ namespace Tests
 
                             .SubstituteEqLs(vals)
 
+                            .Substitute(3, 3.0)
+
+                            //.DispLong()
+
                             .AssertEqTo(a == 33.811874017759315);
                     }
 
@@ -2724,6 +2814,8 @@ namespace Tests
                                 )
 
                             .SubstituteEqLs(vals)
+
+                            .Substitute(3, 3.0)
 
                             .AssertEqTo(th == 0.54033704850428876);
                     }
@@ -2770,6 +2862,10 @@ namespace Tests
                             .AssertEqTo(F3y == -1 * F1 * sin(th1) + -1 * F2 * sin(th2))
                             
                             .SubstituteEqLs(vals)
+
+                            // .DispLong()
+
+                            .Substitute(3, 3.0)
 
                             .AssertEqTo(F3y == -5.2181025136471657);
                     }   
@@ -3186,6 +3282,220 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E E5.10
+
+            {
+                // Acceleration of Two Objects Connected by a Cord
+
+                // A ball of mass m1 and a block of mass m2 are attached by a
+                // lightweight cord that passes over a frictionless pulley of 
+                // negligible mass, as shown in Figure 5.16a. The block lies 
+                // on a frictionless incline of angle th. Find the magnitude 
+                // of the acceleration of the two objects and the tension in the cord.
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");        // force 2 on mass 1
+                var F3_m1 = new Symbol("F3_m1");        // force 3 on mass 1
+
+                var th1_m1 = new Symbol("th1_m1");      // direction of force 1 on mass 1
+                var th2_m1 = new Symbol("th2_m1");      // direction of force 2 on mass 1
+                var th3_m1 = new Symbol("th3_m1");      // direction of force 3 on mass 1
+
+                var F1x_m1 = new Symbol("F1x_m1");      // x-component of force 1 on mass 1
+                var F2x_m1 = new Symbol("F2x_m1");      // x-component of force 2 on mass 1
+                var F3x_m1 = new Symbol("F3x_m1");      // x-component of force 3 on mass 1
+
+                var F1y_m1 = new Symbol("F1y_m1");      // y-component of force 1 on mass 1
+                var F2y_m1 = new Symbol("F2y_m1");      // y-component of force 2 on mass 1
+                var F3y_m1 = new Symbol("F3y_m1");      // y-component of force 3 on mass 1
+
+                var Fx_m1 = new Symbol("Fx_m1");        // x-component of total force on mass 1
+                var Fy_m1 = new Symbol("Fy_m1");        // y-component of total force on mass 1
+
+                var ax_m1 = new Symbol("ax_m1");        // x-component of acceleration of mass 1
+                var ay_m1 = new Symbol("ay_m1");        // y-component of acceleration of mass 1
+
+                var m1 = new Symbol("m1");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m2 = new Symbol("F1_m2");        // force 1 on mass 2
+                var F2_m2 = new Symbol("F2_m2");        // force 2 on mass 2
+                var F3_m2 = new Symbol("F3_m2");        // force 3 on mass 2
+
+                var th1_m2 = new Symbol("th1_m2");      // direction of force 1 on mass 2
+                var th2_m2 = new Symbol("th2_m2");      // direction of force 2 on mass 2
+                var th3_m2 = new Symbol("th3_m2");      // direction of force 3 on mass 2
+
+                var F1x_m2 = new Symbol("F1x_m2");      // x-component of force 1 on mass 2
+                var F2x_m2 = new Symbol("F2x_m2");      // x-component of force 2 on mass 2
+                var F3x_m2 = new Symbol("F3x_m2");      // x-component of force 3 on mass 2
+
+                var F1y_m2 = new Symbol("F1y_m2");      // y-component of force 1 on mass 2
+                var F2y_m2 = new Symbol("F2y_m2");      // y-component of force 2 on mass 2
+                var F3y_m2 = new Symbol("F3y_m2");      // y-component of force 3 on mass 2
+
+                var Fx_m2 = new Symbol("Fx_m2");        // x-component of total force on mass 2
+                var Fy_m2 = new Symbol("Fy_m2");        // y-component of total force on mass 2
+
+                var ax_m2 = new Symbol("ax_m2");        // x-component of acceleration of mass 2
+                var ay_m2 = new Symbol("ay_m2");        // y-component of acceleration of mass 2
+
+                var m2 = new Symbol("m2");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var incline = new Symbol("incline");
+
+                var T = new Symbol("T");                // tension in cable
+
+                var g = new Symbol("g");                // gravity
+
+                var n = new Symbol("n");                // normal force on block
+
+                var a = new Symbol("a");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    ax_m2 == ay_m1,                     // the block moves right as the ball moves up
+
+                    ////////////////////////////////////////////////////////////////////////////////
+
+                    F1x_m1 == F1_m1 * cos(th1_m1),
+                    F2x_m1 == F2_m1 * cos(th2_m1),
+                    F3x_m1 == F3_m1 * cos(th3_m1),
+
+                    F1y_m1 == F1_m1 * sin(th1_m1),
+                    F2y_m1 == F2_m1 * sin(th2_m1),
+                    F3y_m1 == F3_m1 * sin(th3_m1),
+
+                    Fx_m1 == F1x_m1 + F2x_m1 + F3x_m1,
+                    Fy_m1 == F1y_m1 + F2y_m1 + F3y_m1,
+
+                    Fx_m1 == m1 * ax_m1,
+                    Fy_m1 == m1 * ay_m1,
+
+                    ////////////////////////////////////////////////////////////////////////////////
+
+                    F1x_m2 == F1_m2 * cos(th1_m2),
+                    F2x_m2 == F2_m2 * cos(th2_m2),
+                    F3x_m2 == F3_m2 * cos(th3_m2),
+
+                    F1y_m2 == F1_m2 * sin(th1_m2),
+                    F2y_m2 == F2_m2 * sin(th2_m2),
+                    F3y_m2 == F3_m2 * sin(th3_m2),
+
+                    Fx_m2 == F1x_m2 + F2x_m2 + F3x_m2,
+                    Fy_m2 == F1y_m2 + F2y_m2 + F3y_m2,
+
+                    Fx_m2 == m2 * ax_m2,
+                    Fy_m2 == m2 * ay_m2,
+
+                    ////////////////////////////////////////////////////////////////////////////////
+                    
+                    a == ax_m2
+                    
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        ax_m1 == 0,                         // ball  moves vertically
+                        ay_m2 == 0,                         // block moves horizontally
+
+                        F1_m1 == T,
+                        F2_m1 == m1 * g,
+                        F3_m1 == 0,
+
+                        th1_m1 == 90 * Pi / 180,            // force 1 is straight up
+                        th2_m1 == 270 * Pi / 180,           // force 2 is straight down
+
+                        F1_m2 == n,
+                        F2_m2 == T,
+                        F3_m2 == m2 * g,
+
+                        th1_m2 == 90 * Pi / 180,            // force 1 is straight up
+                        th2_m2 == 180 * Pi / 180,           // force 2 is straight down
+                        th3_m2 == 270 * Pi / 180 + incline  // force 3 direction
+
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+                    
+                    // a
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+                                F1x_m1, F2x_m1, F3x_m1,
+                                F1y_m1, F2y_m1, F3y_m1,
+                                
+                                Fx_m1, Fy_m1,
+
+                                F1x_m2, F2x_m2, F3x_m2,
+                                F1y_m2, F2y_m2, F3y_m2,
+
+                                Fx_m2, Fy_m2,                                
+                                
+                                ax_m2, n, T, ay_m1
+                            )
+                            
+                            .AssertEqTo(
+                            
+                                a == (g * m1 - g * m2 * sin(incline)) / (-m1 - m2)
+
+                            )
+
+                            .SubstituteEq(m1 == 10.0)
+                            .SubstituteEq(m2 == 5.0)
+                            .SubstituteEq(incline == 45 * Math.PI / 180)
+                            .SubstituteEq(g == 9.8)
+
+                            .AssertEqTo(a == -4.2234511814572784);
+                    }
+                    
+                    // T
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+                                F1x_m1, F2x_m1, F3x_m1,
+                                F1y_m1, F2y_m1, F3y_m1,
+
+                                Fx_m1, Fy_m1,
+
+                                F1x_m2, F2x_m2, F3x_m2,
+                                F1y_m2, F2y_m2, F3y_m2,
+
+                                Fx_m2, Fy_m2,
+
+                                ax_m2, n, a, ay_m1
+                            )
+                            
+                            .IsolateVariable(T)
+                            .RationalizeExpression()
+                            
+                            .AssertEqTo(
+
+                                T == m1 * (-g * m2 - g * m2 * sin(incline)) / (-m1 - m2)
+
+                            );
+                    }
+                }
+            }
+
+            #endregion
+                        
             #endregion
 
             #region PSE 5E Example 4.3
@@ -3864,7 +4174,8 @@ namespace Tests
                         .Substitute(th1, (180 - 60).ToRadians())
                         .Substitute(th2, (25).ToRadians())
                         .Substitute(th3, (270).ToRadians())
-                        .Substitute(Trig.Pi, Math.PI),
+                        .Substitute(Trig.Pi, Math.PI)
+                        .Substitute(3, 3.0),
                     295.67516405290525);
 
                 // "".Disp();
@@ -3885,7 +4196,8 @@ namespace Tests
                         .Substitute(th1, (180 - 60).ToRadians())
                         .Substitute(th2, (25).ToRadians())
                         .Substitute(th3, (270).ToRadians())
-                        .Substitute(Trig.Pi, Math.PI),
+                        .Substitute(Trig.Pi, Math.PI)
+                        .Substitute(3, 3.0),
                     163.12072360079395);
             }
             #endregion
@@ -4202,8 +4514,7 @@ namespace Tests
             #endregion
 
             Console.WriteLine("Testing complete");
-
-
+            
             Console.ReadLine();
         }
     }

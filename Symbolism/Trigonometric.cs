@@ -12,12 +12,152 @@ namespace Symbolism.Trigonometric
 {
     public class Sin : Function
     {
+        public static MathObject Mod(MathObject x, MathObject y)
+        {
+            if (x is Number && y is Number)
+            {
+                var result = Convert.ToInt32(Math.Floor(((x / y) as Number).ToDouble().val));
+
+                return x - y * result;
+            }
+
+            throw new Exception();
+        }
+
+        Func<MathObject, MathObject> sin = obj => new Sin(obj).Simplify();
+
         MathObject SinProc(params MathObject[] ls)
         {
-            if (ls[0] is DoubleFloat)
-                return new DoubleFloat(Math.Sin(((DoubleFloat)ls[0]).val));
+            var Pi = new Symbol("Pi");
 
-            return new Sin(ls[0]);
+            var half = new Integer(1) / 2;
+
+            var u = ls[0];
+            
+            if (u == 0) return 0;
+
+            if (u == Pi) return 0;
+            
+            if (u is DoubleFloat)
+                return new DoubleFloat(Math.Sin(((DoubleFloat)u).val));
+            
+            if (u is Number && u < 0) return -sin(-u);
+            
+            if (u is Product &&
+                (u as Product).elts[0] is Number &&
+                (u as Product).elts[0] < 0)
+                return -sin(-u);
+
+            if (u is Product &&
+                ((u as Product).elts[0] is Integer || (u as Product).elts[0] is Fraction) &&
+                (u as Product).elts[0] > half &&
+                (u as Product).elts[1] == Pi)
+            {
+                var n = (u as Product).elts[0];
+
+                if (n > 2) return sin(Mod(n, 2) * Pi);
+
+                if (n > 1) return -sin(n * Pi - Pi);
+
+                if (n > half) return sin((1 - n) * Pi);
+
+                return new Sin(n * Pi);
+            }
+
+            // sin(k/n pi)
+            // n is one of 1 2 3 4 6
+
+            if (u is Product &&
+                List<MathObject>(1, 2, 3, 4, 6).Any(elt =>
+                    elt == (u as Product).elts[0].Denominator()) &&
+                (u as Product).elts[0].Numerator() is Integer &&
+                (u as Product).elts[1] == Pi)
+            {
+                var k = (u as Product).elts[0].Numerator();
+                var n = (u as Product).elts[0].Denominator();
+
+                if (n == 1) return 0;
+
+                if (n == 2)
+                {
+                    if (Mod(k, 4) == 1) return 1;
+
+                    if (Mod(k, 4) == 3) return -1;
+                }
+
+                if (n == 3)
+                {
+                    if (Mod(k, 6) == 1) return (3 ^ half) / 2;
+                    if (Mod(k, 6) == 2) return (3 ^ half) / 2;
+
+                    if (Mod(k, 6) == 4) return -(3 ^ half) / 2;
+                    if (Mod(k, 6) == 5) return -(3 ^ half) / 2;
+                }
+
+                if (n == 4)
+                {
+                    if (Mod(k, 8) == 1) return 1 / (2 ^ half);
+                    if (Mod(k, 8) == 3) return 1 / (2 ^ half);
+
+                    if (Mod(k, 8) == 5) return -1 / (2 ^ half);
+                    if (Mod(k, 8) == 7) return -1 / (2 ^ half);
+                }
+
+                if (n == 6)
+                {
+                    if (Mod(k, 12) == 1) return half;
+                    if (Mod(k, 12) == 5) return half;
+
+                    if (Mod(k, 12) == 7) return -half;
+                    if (Mod(k, 12) == 11) return -half;
+                }
+            }
+
+            // sin(x + n pi)
+
+            Func<MathObject, bool> Product_n_Pi = elt =>
+                    (elt is Product) &&
+                    (
+                        (elt as Product).elts[0] is Integer ||
+                        (elt as Product).elts[0] is Fraction
+                    ) &&
+                    Math.Abs(((elt as Product).elts[0] as Number).ToDouble().val) >= 2.0 &&
+
+                    (elt as Product).elts[1] == Pi;
+
+            if (u is Sum && (u as Sum).elts.Any(Product_n_Pi))
+            {
+                var pi_elt = (u as Sum).elts.First(Product_n_Pi);
+
+                var n = (pi_elt as Product).elts[0];
+
+                return sin((u - pi_elt) + Mod(n, 2) * Pi);
+            }
+
+            // sin(a + b + ... + n/2 * Pi)
+
+            Func<MathObject, bool> Product_n_div_2_Pi = elt =>
+                elt is Product &&
+                (
+                    (elt as Product).elts[0] is Integer ||
+                    (elt as Product).elts[0] is Fraction
+                ) &&
+                (elt as Product).elts[0].Denominator() == 2 &&
+                (elt as Product).elts[1] == Pi;
+
+            if (u is Sum && (u as Sum).elts.Any(Product_n_div_2_Pi))
+            {
+                var n_div_2_Pi = (u as Sum).elts.First(Product_n_div_2_Pi);
+
+                var other_elts = u - n_div_2_Pi;
+
+                var n = (n_div_2_Pi as Product).elts[0].Numerator();
+
+                if (Mod(n, 4) == 1) return new Cos(other_elts);
+                if (Mod(n, 4) == 3) return -new Cos(other_elts);
+            }
+
+            return new Sin(u);
         }
 
         public Sin(MathObject param)
