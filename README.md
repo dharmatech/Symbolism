@@ -11,7 +11,7 @@ Symbolism began as a port of the Scheme [MPL library](https://github.com/dharmat
 
 [GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
 
-The examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
+The "PSE 5E" examples and problems in the unit tests are from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
 
 [Here's a walk-through of solving a physics problem](https://gist.github.com/dharmatech/d6d499f14c808b159689).
 
