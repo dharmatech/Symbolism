@@ -11,11 +11,13 @@ Symbolism began as a port of the Scheme [MPL library](https://github.com/dharmat
 
 [GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
 
-The projects "PSE 5E ..." are examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
+The examples and problems from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett.
 
 [Here's a walk-through of solving a physics problem](https://gist.github.com/dharmatech/d6d499f14c808b159689).
 
 A slightly more complex [walk-through](https://gist.github.com/dharmatech/a5e74ef03d98b3ff1c45).
+
+[Walk-through](https://gist.github.com/dharmatech/a14d1a29a7d4c0728d37) of solving a laws of motion problem.
 
 In action:
 
