@@ -3612,9 +3612,159 @@ namespace Tests
             }
 
             #endregion
-            
-            #endregion
 
+            #endregion
+            
+            #region PSE 5E E5.13 - The Sliding Hockey Puck
+
+            {
+                // A hockey puck on a frozen pond is given an initial speed of
+                // 20.0  m/s. If the puck always remains on the ice and slides
+                // 115 m before coming to rest, determine the coefficient of
+                // kinetic friction between the puck and ice.
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var s = new Symbol("s");                // displacement
+                var u = new Symbol("u");                // initial velocity
+                var v = new Symbol("v");                // final velocity
+                var a = new Symbol("a");                // acceleration
+                var t = new Symbol("t");                // time elapsed
+                
+                var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");        // force 2 on mass 1
+                var F3_m1 = new Symbol("F3_m1");        // force 3 on mass 1
+
+                var th1_m1 = new Symbol("th1_m1");      // direction of force 1 on mass 1
+                var th2_m1 = new Symbol("th2_m1");      // direction of force 2 on mass 1
+                var th3_m1 = new Symbol("th3_m1");      // direction of force 3 on mass 1
+
+                var F1x_m1 = new Symbol("F1x_m1");      // x-component of force 1 on mass 1
+                var F2x_m1 = new Symbol("F2x_m1");      // x-component of force 2 on mass 1
+                var F3x_m1 = new Symbol("F3x_m1");      // x-component of force 3 on mass 1
+
+                var F1y_m1 = new Symbol("F1y_m1");      // y-component of force 1 on mass 1
+                var F2y_m1 = new Symbol("F2y_m1");      // y-component of force 2 on mass 1
+                var F3y_m1 = new Symbol("F3y_m1");      // y-component of force 3 on mass 1
+
+                var Fx_m1 = new Symbol("Fx_m1");        // x-component of total force on mass 1
+                var Fy_m1 = new Symbol("Fy_m1");        // y-component of total force on mass 1
+
+                var ax_m1 = new Symbol("ax_m1");        // x-component of acceleration of mass 1
+                var ay_m1 = new Symbol("ay_m1");        // y-component of acceleration of mass 1
+
+                var m1 = new Symbol("m1");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                // var incline = new Symbol("incline");
+                
+                var f_s = new Symbol("f_s");            // force due to static friction
+
+                var f_k = new Symbol("f_k");            // force due to kinetic friction
+
+                var g = new Symbol("g");                // gravity
+
+                var n = new Symbol("n");                // normal force on block
+
+                // var a = new Symbol("a");
+
+                var Pi = new Symbol("Pi");
+
+                var mu_s = new Symbol("mu_s");          // coefficient of static friction
+
+                var mu_k = new Symbol("mu_k");          // coefficient of kinetic friction
+                
+                var eqs = new And(
+
+                    a == ax_m1,
+
+                    v == u + a * t,
+                    s == (u + v) * t / 2,
+                    
+                    F1x_m1 == F1_m1 * cos(th1_m1),
+                    F2x_m1 == F2_m1 * cos(th2_m1),
+                    F3x_m1 == F3_m1 * cos(th3_m1),
+
+                    F1y_m1 == F1_m1 * sin(th1_m1),
+                    F2y_m1 == F2_m1 * sin(th2_m1),
+                    F3y_m1 == F3_m1 * sin(th3_m1),
+
+                    Fx_m1 == F1x_m1 + F2x_m1 + F3x_m1,
+                    Fy_m1 == F1y_m1 + F2y_m1 + F3y_m1,
+
+                    Fx_m1 == m1 * ax_m1,
+                    Fy_m1 == m1 * ay_m1,
+
+                    f_s == mu_s * n,
+                    f_k == mu_k * n
+                    
+                    );
+                
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var symbolic_vals = new List<Equation>()
+                    {
+                        F1_m1 == n,
+                        F2_m1 == f_k,
+                        F3_m1 == m1 * g,
+
+                        th1_m1 == 90 * Pi / 180,            // force 1 is straight up
+                        th2_m1 == 180 * Pi / 180,           // force 2 is left
+                        th3_m1 == 270 * Pi / 180            // force 3 is straight down
+                    };
+
+                    var vals = new List<Equation>()
+                    {
+                        //ax_m1 == 0,
+                        ay_m1 == 0,
+
+                        s == 115,
+                        u == 20,
+                        v == 0,
+
+                        g == 9.8
+                    };
+                    
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // mu_k
+                    {
+                        eqs
+                            .SubstituteEqLs(zeros)
+                            .SubstituteEqLs(symbolic_vals)
+
+                            .EliminateVariables(
+                                t,
+                                F1x_m1, F2x_m1, F3x_m1,
+                                F1y_m1, F2y_m1, F3y_m1,
+
+                                Fx_m1, Fy_m1,
+
+                                f_s, f_k,
+
+                                n,
+
+                                ax_m1, a
+
+                                )
+
+                            .IsolateVariable(mu_k)
+                            
+                            .AssertEqTo(    mu_k == (u ^ 2) / s / g / 2    )
+
+                            .SubstituteEqLs(vals)
+                            
+                            .AssertEqTo(    mu_k == 0.17746228926353147    );
+                    }
+                }
+            }
+
+            #endregion
+            
             #region PSE 5E Example 4.3
             {
                 var thA = new Symbol("thA"); // angle at point A
