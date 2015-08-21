@@ -888,8 +888,7 @@ namespace Tests
             }
 
             #region EliminateVariable
-
-            #region
+            
             {
 
                 var x = new Symbol("x");
@@ -931,9 +930,7 @@ namespace Tests
 
 
             }
-            #endregion
-
-            #region
+            
             {
                 var a = new Symbol("a");
                 var x = new Symbol("x");
@@ -954,8 +951,7 @@ namespace Tests
                     .EliminateVariable(y)
                     .AssertEqTo(new Or(z == a, z == a));
             }
-            #endregion
-
+            
             {
                 var x = new Symbol("x");
                 var y = new Symbol("y");
@@ -965,6 +961,8 @@ namespace Tests
                     .EliminateVariable(y)
                     .AssertEqTo(new And(x != z, x == 10));
             }
+
+            #endregion
 
             #region PSE Example 2.6
 
@@ -3281,12 +3279,10 @@ namespace Tests
             }
 
             #endregion
-            
-            #region PSE 5E E5.10
+
+            #region PSE 5E E5.10 - Acceleration of Two Objects Connected by a Cord
 
             {
-                // Acceleration of Two Objects Connected by a Cord
-
                 // A ball of mass m1 and a block of mass m2 are attached by a
                 // lightweight cord that passes over a frictionless pulley of 
                 // negligible mass, as shown in Figure 5.16a. The block lies 
@@ -3496,11 +3492,9 @@ namespace Tests
 
             #endregion
             
-            #region PSE 5E E5.12
+            #region PSE 5E E5.12 - Experimental Determination of μs and μk
 
             {
-                // Experimental Determination of μs and μk
-
                 // The following is a simple method of measuring coefficients of
                 // friction: Suppose a block is placed on a rough surface
                 // inclined relative to the horizontal, as shown in Figure 5.19. 
@@ -3610,8 +3604,6 @@ namespace Tests
                     }
                 }
             }
-
-            #endregion
 
             #endregion
             
@@ -3759,6 +3751,214 @@ namespace Tests
                             .SubstituteEqLs(vals)
                             
                             .AssertEqTo(    mu_k == 0.17746228926353147    );
+                    }
+                }
+            }
+
+            #endregion
+            
+            #region PSE 5E E5.14 - Acceleration of Two Connected Objects When Friction Is Present
+
+            {
+                // A block of mass m1 on a rough, horizontal surface is connected
+                // to a ball of mass m2 by a lightweight cord over a lightweight,
+                // frictionless pulley, as shown in Figure 5.21a. A force of magnitude
+                // F at an angle th with the horizontal is applied to the block as shown.
+                // The coefficient of kinetic friction between the block and surface
+                // is mu_k. Determine the magnitude of the acceleration of the two objects.
+                
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");        // force 2 on mass 1
+                var F3_m1 = new Symbol("F3_m1");        // force 3 on mass 1
+                var F4_m1 = new Symbol("F4_m1");        // force 4 on mass 1
+                var F5_m1 = new Symbol("F5_m1");        // force 5 on mass 1
+
+                var th1_m1 = new Symbol("th1_m1");      // direction of force 1 on mass 1
+                var th2_m1 = new Symbol("th2_m1");      // direction of force 2 on mass 1
+                var th3_m1 = new Symbol("th3_m1");      // direction of force 3 on mass 1
+                var th4_m1 = new Symbol("th4_m1");      // direction of force 4 on mass 1
+                var th5_m1 = new Symbol("th5_m1");      // direction of force 5 on mass 1
+
+                var F1x_m1 = new Symbol("F1x_m1");      // x-component of force 1 on mass 1
+                var F2x_m1 = new Symbol("F2x_m1");      // x-component of force 2 on mass 1
+                var F3x_m1 = new Symbol("F3x_m1");      // x-component of force 3 on mass 1
+                var F4x_m1 = new Symbol("F4x_m1");      // x-component of force 4 on mass 1
+                var F5x_m1 = new Symbol("F5x_m1");      // x-component of force 5 on mass 1
+
+                var F1y_m1 = new Symbol("F1y_m1");      // y-component of force 1 on mass 1
+                var F2y_m1 = new Symbol("F2y_m1");      // y-component of force 2 on mass 1
+                var F3y_m1 = new Symbol("F3y_m1");      // y-component of force 3 on mass 1
+                var F4y_m1 = new Symbol("F4y_m1");      // y-component of force 4 on mass 1
+                var F5y_m1 = new Symbol("F5y_m1");      // y-component of force 5 on mass 1
+
+                var Fx_m1 = new Symbol("Fx_m1");        // x-component of total force on mass 1
+                var Fy_m1 = new Symbol("Fy_m1");        // y-component of total force on mass 1
+
+                var ax_m1 = new Symbol("ax_m1");        // x-component of acceleration of mass 1
+                var ay_m1 = new Symbol("ay_m1");        // y-component of acceleration of mass 1
+
+                var m1 = new Symbol("m1");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m2 = new Symbol("F1_m2");        // force 1 on mass 2
+                var F2_m2 = new Symbol("F2_m2");        // force 2 on mass 2
+                var F3_m2 = new Symbol("F3_m2");        // force 3 on mass 2
+
+                var th1_m2 = new Symbol("th1_m2");      // direction of force 1 on mass 2
+                var th2_m2 = new Symbol("th2_m2");      // direction of force 2 on mass 2
+                var th3_m2 = new Symbol("th3_m2");      // direction of force 3 on mass 2
+
+                var F1x_m2 = new Symbol("F1x_m2");      // x-component of force 1 on mass 2
+                var F2x_m2 = new Symbol("F2x_m2");      // x-component of force 2 on mass 2
+                var F3x_m2 = new Symbol("F3x_m2");      // x-component of force 3 on mass 2
+
+                var F1y_m2 = new Symbol("F1y_m2");      // y-component of force 1 on mass 2
+                var F2y_m2 = new Symbol("F2y_m2");      // y-component of force 2 on mass 2
+                var F3y_m2 = new Symbol("F3y_m2");      // y-component of force 3 on mass 2
+
+                var Fx_m2 = new Symbol("Fx_m2");        // x-component of total force on mass 2
+                var Fy_m2 = new Symbol("Fy_m2");        // y-component of total force on mass 2
+
+                var ax_m2 = new Symbol("ax_m2");        // x-component of acceleration of mass 2
+                var ay_m2 = new Symbol("ay_m2");        // y-component of acceleration of mass 2
+
+                var m2 = new Symbol("m2");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var incline = new Symbol("incline");
+                
+                var F = new Symbol("F");                // force applied at angle on block
+
+                var th = new Symbol("th");              // angle of force applied on block
+
+                var T = new Symbol("T");                // tension in cable
+
+                var g = new Symbol("g");                // gravity
+
+                var n = new Symbol("n");                // normal force on block
+
+                var a = new Symbol("a");
+
+                var Pi = new Symbol("Pi");
+
+                var f_s = new Symbol("f_s");            // force due to static friction
+                var f_k = new Symbol("f_k");            // force due to kinetic friction
+
+                var mu_s = new Symbol("mu_s");          // coefficient of static friction
+                var mu_k = new Symbol("mu_k");          // coefficient of kinetic friction
+
+                var eqs = new And(
+                    
+                    ax_m1 == ay_m2,                     // the block moves right as the ball moves up
+
+                    ////////////////////////////////////////////////////////////////////////////////
+
+                    F1x_m1 == F1_m1 * cos(th1_m1),
+                    F2x_m1 == F2_m1 * cos(th2_m1),
+                    F3x_m1 == F3_m1 * cos(th3_m1),
+                    F4x_m1 == F4_m1 * cos(th4_m1),
+                    F5x_m1 == F5_m1 * cos(th5_m1),
+
+                    F1y_m1 == F1_m1 * sin(th1_m1),
+                    F2y_m1 == F2_m1 * sin(th2_m1),
+                    F3y_m1 == F3_m1 * sin(th3_m1),
+                    F4y_m1 == F4_m1 * sin(th4_m1),
+                    F5y_m1 == F5_m1 * sin(th5_m1),
+
+                    Fx_m1 == F1x_m1 + F2x_m1 + F3x_m1 + F4x_m1 + F5x_m1,
+                    Fy_m1 == F1y_m1 + F2y_m1 + F3y_m1 + F4y_m1 + F5y_m1,
+
+                    Fx_m1 == m1 * ax_m1,
+                    Fy_m1 == m1 * ay_m1,
+
+                    ////////////////////////////////////////////////////////////////////////////////
+
+                    F1x_m2 == F1_m2 * cos(th1_m2),
+                    F2x_m2 == F2_m2 * cos(th2_m2),
+                    F3x_m2 == F3_m2 * cos(th3_m2),
+
+                    F1y_m2 == F1_m2 * sin(th1_m2),
+                    F2y_m2 == F2_m2 * sin(th2_m2),
+                    F3y_m2 == F3_m2 * sin(th3_m2),
+
+                    Fx_m2 == F1x_m2 + F2x_m2 + F3x_m2,
+                    Fy_m2 == F1y_m2 + F2y_m2 + F3y_m2,
+
+                    Fx_m2 == m2 * ax_m2,
+                    Fy_m2 == m2 * ay_m2,
+
+                    ////////////////////////////////////////////////////////////////////////////////
+
+                    f_k == mu_k * n,
+
+                    a == ax_m1
+
+                    );
+                
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        ay_m1 == 0,                         // block moves horizontally
+                        ax_m2 == 0,                         // ball moves vertically
+                        
+                        F1_m1 == F,
+                        F2_m1 == n,
+                        F3_m1 == T,
+                        F4_m1 == f_k,
+                        F5_m1 == m1 * g,
+                                                                                    
+                        th1_m1 == th,                       // force applied at angle
+                        th2_m1 == 90 * Pi / 180,            // normal force is straight up
+                        th3_m1 == 180 * Pi / 180,           // force due to cord is left
+                        th4_m1 == 180 * Pi / 180,           // force due to friction is left
+                        th5_m1 == 270 * Pi / 180,           // force due to gravity is down
+                        
+                        F1_m2 == T,                          
+                        F2_m2 == m2 * g,      
+                        F3_m2 == 0,               
+                        
+                        th1_m2 == 90 * Pi / 180,            // force due to cord is up
+                        th2_m2 == 270 * Pi / 180            // force due to gravity is down
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // a
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+                                ax_m1,
+
+                                Fx_m1, Fy_m1,
+                                Fx_m2, Fy_m2,
+
+                                F1x_m1, F2x_m1, F3x_m1, F4x_m1, F5x_m1,
+                                F1y_m1, F2y_m1, F3y_m1, F4y_m1, F5y_m1,
+
+                                F1x_m2, F2x_m2, F3x_m2,
+                                F1y_m2, F2y_m2, F3y_m2,
+
+                                T, f_k, n,
+
+                                ay_m2
+                                
+                            )
+                            
+                            .AssertEqTo(
+
+                                a == (g * m2 + g * m1 * mu_k - F * mu_k * sin(th) - cos(th) * F) / (-m1 - m2)
+
+                            );
                     }
                 }
             }
