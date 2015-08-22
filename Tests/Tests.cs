@@ -526,6 +526,24 @@ namespace Tests
                     sin(x + 3 * Pi / 2).AssertEqTo(-cos(x));
                 }
 
+
+                {
+                    var Pi = new Symbol("Pi");
+                    
+                    sin(Pi + x).AssertEqTo(-sin(x));
+                    
+                    sin(Pi + x + y).AssertEqTo(-sin(x + y));
+                }
+
+                {
+                    var Pi = new Symbol("Pi");
+
+                    cos(Pi + x).AssertEqTo(-cos(x));
+
+                    cos(Pi + x + y).AssertEqTo(-cos(x + y));
+                }
+
+
                 #endregion
 
                 #region Cos
@@ -1722,8 +1740,6 @@ namespace Tests
                 return elt;
             };
 
-            #endregion
-
             {
                 var u = new Symbol("u");
                 var v = new Symbol("v");
@@ -1732,6 +1748,69 @@ namespace Tests
                     .DeepSelect(SumDifferenceFormulaFunc)
                     .AssertEqTo(sin(u - v));
             }
+
+            #endregion
+
+
+
+            #region SumDifferenceFormulaFunc 
+
+            // sin(u) cos(v) + cos(u) sin(v) -> sin(u + v)
+
+            Func<MathObject, MathObject> SumDifferenceFormulaAFunc = elt =>
+            {
+                if (elt is Sum)
+                {
+                    var items = new List<MathObject>();
+
+                    foreach (var item in (elt as Sum).elts)
+                    {
+                        if (
+                            item is Product &&
+                            (item as Product).elts[0] is Cos &&
+                            (item as Product).elts[1] is Sin
+                            )
+                        {
+                            var u_ = ((item as Product).elts[0] as Cos).args[0];
+                            var v_ = ((item as Product).elts[1] as Sin).args[0];
+
+                            Func<MathObject, bool> match = obj =>
+                                obj is Product &&
+                                (obj as Product).elts[0] is Cos &&
+                                (obj as Product).elts[1] is Sin &&
+
+                                ((obj as Product).elts[1] as Sin).args[0] == u_ &&
+                                ((obj as Product).elts[0] as Cos).args[0] == v_;
+
+                            if (items.Any(obj => match(obj)))
+                            {
+                                items = items.Where(obj => match(obj) == false).ToList();
+
+                                items.Add(sin(u_ + v_));
+                            }
+                            else items.Add(item);
+                        }
+                        else items.Add(item);
+                    }
+
+                    return new Sum() { elts = items }.Simplify();
+                }
+
+                return elt;
+            };
+
+            {
+                var u = new Symbol("u");
+                var v = new Symbol("v");
+
+                (sin(u) * cos(v) + cos(u) * sin(v))
+                    .DeepSelect(SumDifferenceFormulaAFunc)
+                    .AssertEqTo(sin(u + v));
+            }
+
+            #endregion
+
+
 
             #region DoubleAngleFormulaFunc
 
@@ -3958,6 +4037,128 @@ namespace Tests
 
                                 a == (g * m2 + g * m1 * mu_k - F * mu_k * sin(th) - cos(th) * F) / (-m1 - m2)
 
+                            );
+                    }
+                }
+            }
+
+            #endregion
+            
+            #region PSE 5E P5.25
+
+            {
+                // A bag of cement of weight F_g hangs from three wires as
+                // shown in http://i.imgur.com/f5JpLjY.png
+                //  
+                // Two of the wires make angles th1 and th2 with the horizontal.
+                // If the system is in equilibrium, show that the tension in the
+                // left -hand wire is:
+                //
+                //          T1 == F_g cos(th2) / sin(th1 + th2)
+
+                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");        // force 2 on mass 1
+                var F3_m1 = new Symbol("F3_m1");        // force 3 on mass 1
+
+                var th1_m1 = new Symbol("th1_m1");      // direction of force 1 on mass 1
+                var th2_m1 = new Symbol("th2_m1");      // direction of force 2 on mass 1
+                var th3_m1 = new Symbol("th3_m1");      // direction of force 3 on mass 1
+
+                var F1x_m1 = new Symbol("F1x_m1");      // x-component of force 1 on mass 1
+                var F2x_m1 = new Symbol("F2x_m1");      // x-component of force 2 on mass 1
+                var F3x_m1 = new Symbol("F3x_m1");      // x-component of force 3 on mass 1
+
+                var F1y_m1 = new Symbol("F1y_m1");      // y-component of force 1 on mass 1
+                var F2y_m1 = new Symbol("F2y_m1");      // y-component of force 2 on mass 1
+                var F3y_m1 = new Symbol("F3y_m1");      // y-component of force 3 on mass 1
+
+                var Fx_m1 = new Symbol("Fx_m1");        // x-component of total force on mass 1
+                var Fy_m1 = new Symbol("Fy_m1");        // y-component of total force on mass 1
+
+                var ax_m1 = new Symbol("ax_m1");        // x-component of acceleration of mass 1
+                var ay_m1 = new Symbol("ay_m1");        // y-component of acceleration of mass 1
+
+                var m1 = new Symbol("m1");
+
+                ////////////////////////////////////////////////////////////////////////////////
+                
+                var g = new Symbol("g");                // gravity
+                
+                var a = new Symbol("a");
+
+                var Pi = new Symbol("Pi");
+
+                var T1 = new Symbol("T1");
+                var T2 = new Symbol("T2");
+                var T3 = new Symbol("T3");
+
+                var th1 = new Symbol("th1");
+                var th2 = new Symbol("th2");
+                
+                var eqs = new And(
+                    
+                    F1x_m1 == F1_m1 * cos(th1_m1),
+                    F2x_m1 == F2_m1 * cos(th2_m1),
+                    F3x_m1 == F3_m1 * cos(th3_m1),
+
+                    F1y_m1 == F1_m1 * sin(th1_m1),
+                    F2y_m1 == F2_m1 * sin(th2_m1),
+                    F3y_m1 == F3_m1 * sin(th3_m1),
+
+                    Fx_m1 == F1x_m1 + F2x_m1 + F3x_m1,
+                    Fy_m1 == F1y_m1 + F2y_m1 + F3y_m1,
+
+                    Fx_m1 == m1 * ax_m1,
+                    Fy_m1 == m1 * ay_m1
+                    
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        ax_m1 == 0,
+                        ay_m1 == 0,
+                        
+                        F1_m1 == T2,
+                        F2_m1 == T1,
+                        F3_m1 == m1 * g,
+
+                        th1_m1 == th2,                              
+                        th2_m1 == 180 * Pi / 180 - th1,             
+                        th3_m1 == 270 * Pi / 180
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // T1
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+                            
+                                F1x_m1, F2x_m1, F3x_m1,
+                                F1y_m1, F2y_m1, F3y_m1,
+
+                                Fx_m1, Fy_m1,
+
+                                T2
+                            )
+
+                            .IsolateVariable(T1)
+                            
+                            .RationalizeExpression()
+
+                            .DeepSelect(SumDifferenceFormulaAFunc)
+
+                            .AssertEqTo(
+                                T1 == cos(th2) * g * m1 / sin(th1 + th2)
                             );
                     }
                 }

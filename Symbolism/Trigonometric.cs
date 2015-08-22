@@ -112,7 +112,12 @@ namespace Symbolism.Trigonometric
                     if (Mod(k, 12) == 11) return -half;
                 }
             }
-
+            
+            // sin(Pi + x + y + ...)   ->   -sin(x + y + ...)
+            
+            if (u is Sum && (u as Sum).elts.Any(elt => elt == Pi))
+                return -sin(u - Pi);
+            
             // sin(x + n pi)
 
             Func<MathObject, bool> Product_n_Pi = elt =>
@@ -188,6 +193,8 @@ namespace Symbolism.Trigonometric
             var Pi = new Symbol("Pi");
 
             var half = new Integer(1) / 2;
+
+            var u = ls[0];
 
             if (ls[0] == 0) return 1;
 
@@ -280,6 +287,13 @@ namespace Symbolism.Trigonometric
                 }
             }
 
+
+
+            // cos(Pi + x + y + ...)   ->   -cos(x + y + ...)
+            
+            if (u is Sum && (u as Sum).elts.Any(elt => elt == Pi))
+                return -cos(u - Pi);
+            
             // cos(n Pi + x + y)
 
             // n * Pi where n is Exact && abs(n) >= 2
