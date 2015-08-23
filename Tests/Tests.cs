@@ -4166,6 +4166,202 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E P5.31
+
+            {
+                // Two people pull as hard as they can on ropes attached
+                // to a boat that has a mass of 200 kg. If they pull in the
+                // same direction, the boat has an acceleration of
+                // 1.52 m/s^2 to the right. If they pull in opposite directions,
+                // the boat has an acceleration of 0.518 m/s^2 to the
+                // left.
+                // 
+                // What is the force exerted by each person on the
+                // boat? (Disregard any other forces on the boat.)
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
+                var F2_m1 = new Symbol("F2_m1");        // force 2 on mass 1
+                
+                var th1_m1 = new Symbol("th1_m1");      // direction of force 1 on mass 1
+                var th2_m1 = new Symbol("th2_m1");      // direction of force 2 on mass 1
+                
+                var F1x_m1 = new Symbol("F1x_m1");      // x-component of force 1 on mass 1
+                var F2x_m1 = new Symbol("F2x_m1");      // x-component of force 2 on mass 1
+                
+                var F1y_m1 = new Symbol("F1y_m1");      // y-component of force 1 on mass 1
+                var F2y_m1 = new Symbol("F2y_m1");      // y-component of force 2 on mass 1
+                
+                var Fx_m1 = new Symbol("Fx_m1");        // x-component of total force on mass 1
+                var Fy_m1 = new Symbol("Fy_m1");        // y-component of total force on mass 1
+
+                var ax_m1 = new Symbol("ax_m1");        // x-component of acceleration of mass 1
+                var ay_m1 = new Symbol("ay_m1");        // y-component of acceleration of mass 1
+
+                var m1 = new Symbol("m1");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var F1_m2 = new Symbol("F1_m2");        // force 1 on mass 2
+                var F2_m2 = new Symbol("F2_m2");        // force 2 on mass 2
+
+                var th1_m2 = new Symbol("th1_m2");      // direction of force 1 on mass 2
+                var th2_m2 = new Symbol("th2_m2");      // direction of force 2 on mass 2
+
+                var F1x_m2 = new Symbol("F1x_m2");      // x-component of force 1 on mass 2
+                var F2x_m2 = new Symbol("F2x_m2");      // x-component of force 2 on mass 2
+
+                var F1y_m2 = new Symbol("F1y_m2");      // y-component of force 1 on mass 2
+                var F2y_m2 = new Symbol("F2y_m2");      // y-component of force 2 on mass 2
+
+                var Fx_m2 = new Symbol("Fx_m2");        // x-component of total force on mass 2
+                var Fy_m2 = new Symbol("Fy_m2");        // y-component of total force on mass 2
+
+                var ax_m2 = new Symbol("ax_m2");        // x-component of acceleration of mass 2
+                var ay_m2 = new Symbol("ay_m2");        // y-component of acceleration of mass 2
+
+                var m2 = new Symbol("m2");
+
+                ////////////////////////////////////////////////////////////////////////////////
+                
+                var Pi = new Symbol("Pi");
+                
+                var T1 = new Symbol("T1");
+                var T2 = new Symbol("T2");
+
+                var eqs = new And(
+
+                    m1 == m2,
+                                        
+                    F1x_m1 == F1_m1 * cos(th1_m1),
+                    F2x_m1 == F2_m1 * cos(th2_m1),
+                    
+                    F1y_m1 == F1_m1 * sin(th1_m1),
+                    F2y_m1 == F2_m1 * sin(th2_m1),
+                    
+                    Fx_m1 == F1x_m1 + F2x_m1,
+                    Fy_m1 == F1y_m1 + F2y_m1,
+
+                    Fx_m1 == m1 * ax_m1,
+                    Fy_m1 == m1 * ay_m1,
+
+
+                    F1x_m2 == F1_m2 * cos(th1_m2),
+                    F2x_m2 == F2_m2 * cos(th2_m2),
+
+                    F1y_m2 == F1_m2 * sin(th1_m2),
+                    F2y_m2 == F2_m2 * sin(th2_m2),
+
+                    Fx_m2 == F1x_m2 + F2x_m2,
+                    Fy_m2 == F1y_m2 + F2y_m2,
+
+                    Fx_m2 == m2 * ax_m2,
+                    Fy_m2 == m2 * ay_m2
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                {
+                    var vals = new List<Equation>()
+                    {
+                        ay_m1 == 0,
+
+                        F1_m1 == T1,    th1_m1 == 0,
+                        F2_m1 == T2,    th2_m1 == 0,
+
+                        ay_m2 == 0,
+
+                        F1_m2 == T1,    th1_m2 == 180 * Pi / 180,
+                        F2_m2 == T2,    th2_m2 == 0
+                    };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    var numerical_vals = new List<Equation>()
+                    {
+                        m1 == 200,
+
+                        ax_m1 == 1.52,
+                        ax_m2 == -0.518
+                    };
+                    
+                    // T1
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+                            
+                                m2,
+
+                                F1x_m1, F2x_m1,
+                                F1y_m1, F2y_m1,
+
+                                F1x_m2, F2x_m2,
+                                F1y_m2, F2y_m2,
+
+                                Fx_m1, Fy_m1,
+                                
+                                Fx_m2, Fy_m2,
+
+                                T2
+                                
+                                )
+
+                            .IsolateVariable(T1)
+
+                            .AssertEqTo(
+                            
+                                T1 == -(ax_m2 * m1 - ax_m1 * m1) / 2
+                                
+                            )
+                            
+                            .SubstituteEqLs(numerical_vals)
+
+                            .AssertEqTo(T1 == 203.8);
+                    }
+
+                    // T2
+                    {
+                        eqs
+                            .SubstituteEqLs(vals)
+
+                            .EliminateVariables(
+
+                                m2,
+
+                                F1x_m1, F2x_m1,
+                                F1y_m1, F2y_m1,
+
+                                F1x_m2, F2x_m2,
+                                F1y_m2, F2y_m2,
+
+                                Fx_m1, Fy_m1,
+
+                                Fx_m2, Fy_m2,
+
+                                T1
+
+                                )
+
+                            .IsolateVariable(T2)
+
+                            .AssertEqTo(
+                            
+                                T2 == (ax_m1 * m1 + ax_m2 * m1) / 2
+                                
+                            )
+                            
+                            .SubstituteEqLs(numerical_vals)
+
+                            .AssertEqTo(T2 == 100.19999999999999);
+                    }
+                }
+            }
+
+            #endregion
+            
             #region PSE 5E Example 4.3
             {
                 var thA = new Symbol("thA"); // angle at point A
