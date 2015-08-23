@@ -4362,6 +4362,114 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E P5.59
+
+            {
+                // A mass M is held in place by an applied force F and a
+                // pulley system: 
+                //
+                //                 http://i.imgur.com/TPAHTlW.png
+                //
+                // The pulleys are massless and frictionless. Find 
+                //                     
+                // (a) the tension in each section of rope, T1, T2, T3, T4, and T5
+                //                     
+                // (b) the magnitude of F. 
+                //                     
+                // (Hint: Draw a free - body diagram for each pulley.)
+
+                var pul1_F = new Symbol("pul1_F");      // magnitude of total force on pully 1
+                var pul1_m = new Symbol("pul1_m");      // mass of pully 1
+                var pul1_a = new Symbol("pul1_a");      // acceleration of pully 1
+
+                var pul2_F = new Symbol("pul2_F");      // magnitude of total force on pully 2
+                var pul2_m = new Symbol("pul2_m");      // mass of pully 2
+                var pul2_a = new Symbol("pul2_a");      // acceleration of pully 2
+                
+                var T1 = new Symbol("T1");
+                var T2 = new Symbol("T2");
+                var T3 = new Symbol("T3");
+                var T4 = new Symbol("T4");
+                var T5 = new Symbol("T5");
+
+                var F = new Symbol("F");
+
+                var M = new Symbol("M");
+
+                var g = new Symbol("g");
+
+                var eqs = new And(
+
+                     T1 == F,
+                     T2 == T3,
+                     T1 == T3,
+                     T5 == M * g,
+                     
+                     pul1_a == 0,
+                     pul1_m == 0,
+
+                     pul1_F == T4 - T1 - T2 - T3,
+                     pul1_F == pul1_m * pul1_a,
+
+                     pul2_m == 0,
+
+                     pul2_F == T2 + T3 - T5,
+                     pul2_F == pul2_m * pul2_a
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                // T1
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T2, T3, T4, T5, F)
+                        .IsolateVariable(T1)
+                        .AssertEqTo(T1 == g * M / 2);
+                }
+                
+                // T2
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T1, T3, T4, T5, F)
+                        .IsolateVariable(T2)
+                        .AssertEqTo(T2 == g * M / 2);
+                }
+
+                // T3
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T1, T2, T4, T5, F)
+                        .IsolateVariable(T3)
+                        .AssertEqTo(T3 == g * M / 2);
+                }
+
+                // T4
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T1, T2, T3, T5, F)
+                        .IsolateVariable(T4)
+                        .AssertEqTo(T4 == g * M * 3 / 2);
+                }
+
+                // T5
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T1, T2, T3, T4, F)
+                        .AssertEqTo(T5 == g * M);
+                }
+
+                // F
+                {
+                    eqs
+                        .EliminateVariables(pul1_F, pul2_F, pul1_m, pul2_m, pul1_a, T1, T2, T3, T4, T5)
+                        .IsolateVariable(F)
+                        .AssertEqTo(F == g * M / 2);
+                }
+            }
+
+            #endregion
+            
             #region PSE 5E Example 4.3
             {
                 var thA = new Symbol("thA"); // angle at point A
