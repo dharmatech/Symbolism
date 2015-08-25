@@ -8,6 +8,8 @@ using Symbolism.Denominator;
 
 using static Symbolism.ListConstructor;
 
+using static Symbolism.Trigonometric.Constructors;
+
 namespace Symbolism.Trigonometric
 {
     public class Sin : Function
@@ -23,8 +25,6 @@ namespace Symbolism.Trigonometric
 
             throw new Exception();
         }
-
-        Func<MathObject, MathObject> sin = obj => new Sin(obj).Simplify();
 
         MathObject SinProc(params MathObject[] ls)
         {
@@ -185,8 +185,6 @@ namespace Symbolism.Trigonometric
 
             throw new Exception();
         }
-
-        Func<MathObject, MathObject> cos = obj => new Cos(obj).Simplify();
 
         MathObject CosProc(params MathObject[] ls)
         {
@@ -449,5 +447,15 @@ namespace Symbolism.Trigonometric
             args = new List<MathObject>() { a, b };
             proc = Atan2Proc;
         }
+    }
+
+    public static class Constructors
+    {
+        public static MathObject sin(MathObject obj) => new Sin(obj).Simplify();
+        public static MathObject cos(MathObject obj) => new Cos(obj).Simplify();
+        public static MathObject tan(MathObject obj) => new Tan(obj).Simplify();
+
+        public static MathObject asin(MathObject obj) => new Asin(obj).Simplify();
+        public static MathObject atan(MathObject obj) => new Atan(obj).Simplify();
     }
 }

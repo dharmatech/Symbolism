@@ -41,6 +41,8 @@ using Symbolism.DeepSelect;
 
 using Symbolism.RationalizeExpression;
 
+using static Symbolism.Trigonometric.Constructors;
+
 namespace Tests
 {
     public static class Extensions
@@ -153,15 +155,6 @@ namespace Tests
             {
                 if (eq) Console.WriteLine(eq.ToString());
             };
-
-
-            Func<MathObject, MathObject> sin = obj => Trig.Sin(obj);
-            
-            Func<MathObject, MathObject> cos = obj => new Cos(obj).Simplify();
-            Func<MathObject, MathObject> tan = obj => new Tan(obj).Simplify();
-
-            Func<MathObject, MathObject> asin = obj => new Asin(obj).Simplify();
-            Func<MathObject, MathObject> atan = obj => new Atan(obj).Simplify();
 
             {
                 var a = new Symbol("a");
