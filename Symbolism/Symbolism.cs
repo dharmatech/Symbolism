@@ -1343,4 +1343,9 @@ namespace Symbolism
 
         public MathObject Simplify() => elts[0] * (elts[1] ^ -1);
     }
+
+    public static class Constructors
+    {
+        public static MathObject sqrt(MathObject obj) => obj ^ (new Integer(1) / new Integer(2));
+    }
 }

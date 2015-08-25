@@ -41,6 +41,8 @@ using Symbolism.DeepSelect;
 
 using Symbolism.RationalizeExpression;
 
+using static Symbolism.Constructors;
+
 using static Symbolism.Trigonometric.Constructors;
 
 namespace Tests
@@ -333,8 +335,6 @@ namespace Tests
                 AssertIsTrue(1.0 == new DoubleFloat(3.0) - 2.0);
 
                 AssertIsTrue((a == b) != (a != b));
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
                 
                 (sqrt(a * b) * (sqrt(a * b) / a) / c)
                     .AssertEqTo(b / c);
@@ -437,11 +437,11 @@ namespace Tests
                     (x > y).Substitute(x, 10).Substitute(y, 20).AssertEqTo(false);
                 }
 
+                var Pi = new Symbol("Pi");
+
                 #region Sin
 
                 {
-                    var Pi = new Symbol("Pi");
-
                     sin(0).AssertEqTo(0);
 
                     sin(Pi).AssertEqTo(0);
@@ -521,15 +521,13 @@ namespace Tests
 
 
                 {
-                    var Pi = new Symbol("Pi");
-                    
                     sin(Pi + x).AssertEqTo(-sin(x));
                     
                     sin(Pi + x + y).AssertEqTo(-sin(x + y));
                 }
 
                 {
-                    var Pi = new Symbol("Pi");
+                    // var Pi = new Symbol("Pi");
 
                     cos(Pi + x).AssertEqTo(-cos(x));
 
@@ -542,7 +540,7 @@ namespace Tests
                 #region Cos
 
                 {
-                    var Pi = new Symbol("Pi");
+                    // var Pi = new Symbol("Pi");
 
                     cos(0).AssertEqTo(1);
 
@@ -919,7 +917,7 @@ namespace Tests
 
                 var half = new Integer(1) / 2;
 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ half;
+                // Func<MathObject, MathObject> sqrt = obj => obj ^ half;
 
                 ((x ^ 2) - 4 == 0)
                     .IsolateVariableEq(x)
@@ -1233,8 +1231,6 @@ namespace Tests
             #region PSE 5E Example 4.5
 
             {
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
                 var xA = new Symbol("xA");
                 var xB = new Symbol("xB");
                 var xC = new Symbol("xC");
@@ -1332,8 +1328,6 @@ namespace Tests
             #region PSE 5E Example 4.6
 
             {
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
                 var xA = new Symbol("xA");
                 var xB = new Symbol("xB");
 
@@ -1446,8 +1440,6 @@ namespace Tests
             #region PSE 5E Example 4.7
 
             {
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -1603,9 +1595,7 @@ namespace Tests
                 // 0.860 m, (a) with what velocity did the mug leave the
                 // counter and (b) what was the direction of the mug’s 
                 // velocity just before it hit the floor?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -1921,9 +1911,7 @@ namespace Tests
 
                 // (b) How many seconds later should the second snowball 
                 // be thrown if it is to land at the same time as the first?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -2042,9 +2030,7 @@ namespace Tests
                 // mountainside 42.0 s after firing. What are the x and y
                 // coordinates of the shell where it explodes, relative to its
                 // firing point?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -2124,9 +2110,7 @@ namespace Tests
                 //
                 // What is the angle of projection? 
                 // Give your answer to three significant figures.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -2218,8 +2202,6 @@ namespace Tests
                 // the cannon.
                 //
                 // At what angle, above the horizontal, should the cannon be fired?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
 
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
@@ -2437,9 +2419,7 @@ namespace Tests
                 // the horizontal as in Figure P4.20.If the initial speed of
                 // the stream is vi, at what height h does the water strike
                 // the building?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -2537,9 +2517,7 @@ namespace Tests
                 // y_i = 1.20 m
                 // y_max = 2.50 m
                 // y_f = 0.700 m
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var xA = new Symbol("xA");
                 var yA = new Symbol("yA");
 
@@ -2761,9 +2739,7 @@ namespace Tests
 
                 // Determine the components of a third force that,
                 // when applied to the puck, causes it to have zero acceleration.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var F = new Symbol("F");
                 var th = new Symbol("th");
 
@@ -2952,8 +2928,6 @@ namespace Tests
                 // angles of 37.0° and 53.0° with the horizontal. Find the tension
                 // in the three cables.
                 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
                 var F = new Symbol("F");    // total force magnitude
                 var th = new Symbol("th");  // total force direction
 
@@ -3073,9 +3047,7 @@ namespace Tests
                 // the incline, and the distance from the front edge of the crate
                 // to the bottom is d. How long does it take the front edge to
                 // reach the bottom, and what is its speed just as it gets there?
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 var F = new Symbol("F");    // total force magnitude
                 var th = new Symbol("th");  // total force direction
 
@@ -3266,10 +3238,7 @@ namespace Tests
                 //
                 // Determine the magnitude of the acceleration of the two 
                 // objects and the tension in the lightweight cord.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
-
+                
                 var F_m1 = new Symbol("F_m1");      // total force on mass 1
                 var F_m2 = new Symbol("F_m2");      // total force on mass 2
 
@@ -3360,9 +3329,7 @@ namespace Tests
                 // negligible mass, as shown in Figure 5.16a. The block lies 
                 // on a frictionless incline of angle th. Find the magnitude 
                 // of the acceleration of the two objects and the tension in the cord.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 ////////////////////////////////////////////////////////////////////////////////
 
                 var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
@@ -3573,9 +3540,7 @@ namespace Tests
                 // The incline angle is increased until the block starts to move. 
                 // Let us show that by measuring the critical angle θ_c at which this
                 // slipping just occurs, we can obtain μs.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 ////////////////////////////////////////////////////////////////////////////////
 
                 var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
@@ -3686,9 +3651,7 @@ namespace Tests
                 // 20.0  m/s. If the puck always remains on the ice and slides
                 // 115 m before coming to rest, determine the coefficient of
                 // kinetic friction between the puck and ice.
-
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
-
+                
                 ////////////////////////////////////////////////////////////////////////////////
 
                 var s = new Symbol("s");                // displacement
@@ -3839,7 +3802,7 @@ namespace Tests
                 // The coefficient of kinetic friction between the block and surface
                 // is mu_k. Determine the magnitude of the acceleration of the two objects.
                 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+                
 
                 ////////////////////////////////////////////////////////////////////////////////
 
@@ -4049,7 +4012,7 @@ namespace Tests
                 //
                 //          T1 == F_g cos(th2) / sin(th1 + th2)
 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+                
 
                 ////////////////////////////////////////////////////////////////////////////////
 
@@ -4840,7 +4803,7 @@ namespace Tests
 
                 // timeB.Disp(); nl();
 
-                Func<MathObject, MathObject> sqrt = obj => obj ^ (new Integer(1) / 2);
+                
 
                 AssertIsTrue(
                     timeB
