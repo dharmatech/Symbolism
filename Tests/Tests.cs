@@ -4174,7 +4174,7 @@ namespace Tests
 
             #endregion
                                     
-            #region PSE 5E E5.14 Acceleration of Two Connected Objects When Friction Is Present - Obj5
+            #region PSE 5E E5.14 - Acceleration of Two Connected Objects When Friction Is Present - Obj5
 
             {
                 // A block of mass m1 on a rough, horizontal surface is connected
@@ -4587,6 +4587,161 @@ namespace Tests
                             .AssertEqTo(T2 == 100.19999999999999);
                     }
                 }
+            }
+
+            #endregion
+
+            #region PSE 5E P5.55 
+
+            {
+                // An inventive child named Pat wants to reach an apple
+                // in a tree without climbing the tree. Sitting in a chair
+                // connected to a rope that passes over a frictionless pulley
+                // Pat pulls on the loose end of the rope with such a force
+                // that the spring scale reads 250 N. Pat’s weight is 320 N,
+                // and the chair weighs 160 N.
+                //
+                // http://i.imgur.com/wwlypzB.png
+                //
+                // (a) Draw free - body diagrams for Pat and the chair considered as
+                // separate systems, and draw another diagram for Pat and
+                // the chair considered as one system.
+                //
+                // (b) Show that the acceleration of the system is upward and
+                // find its magnitude.
+                //
+                // (c) Find the force Pat exerts on the chair.
+
+                var b = new Obj3("b");          // boy
+                var c = new Obj3("c");          // chair
+                var s = new Obj3("s");          // system
+
+                var T = new Symbol("T");        // rope tension
+                var n = new Symbol("n");        // normal force
+
+                var Fg_b = new Symbol("Fg_b");  // force due to gravity of the boy
+                var Fg_c = new Symbol("Fg_c");  // force due to gravity of the chair
+                var Fg_s = new Symbol("Fg_s");  // force due to gravity of the system
+
+                var a = new Symbol("a");        // acceleration
+
+                var Pi = new Symbol("Pi");
+                var g = new Symbol("g");
+
+                var eqs = new And(
+
+                    Fg_b == b.m * g,
+                    Fg_c == c.m * g,
+                    Fg_s == s.m * g,
+
+                    Fg_s == Fg_c + Fg_b,
+
+                    s.Equations(),
+                    c.Equations()
+
+                    ).Simplify();
+
+                var vals = new List<Equation>()
+                {
+                    //b.ax == 0,
+                    c.ax == 0,
+                    s.ax == 0,
+
+                    //b.F1 == T,          b.th1 == 90 * Pi / 180,
+                    //b.F2 == n,          b.th2 == 90 * Pi / 180,
+                    //b.F3 == b.m * g,    b.th3 == 270 * Pi / 180,
+
+                    c.F1 == T,          c.th1 == 90 * Pi / 180,
+                    c.F2 == n,          c.th2 == 270 * Pi / 180,
+                    c.F3 == Fg_c,       c.th3 == 270 * Pi / 180,
+
+                    s.F1 == T,          s.th1 == 90 * Pi / 180,
+                    s.F2 == T,          s.th2 == 90 * Pi / 180,
+                    s.F3 == Fg_s,       s.th3 == 270 * Pi / 180,
+
+                    //b.ay == a,
+                    c.ay == a,
+                    s.ay == a
+                };
+
+                var numerical_vals = new List<Equation>()
+                {
+                    T == 250.0,
+                    Fg_b == 320,
+                    Fg_c == 160,
+                    g == 9.8
+                };
+
+                DoubleFloat.tolerance = 0.00001;
+
+                // a
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        s.ΣFx, s.F1x, s.F2x, s.F3x,
+                        s.ΣFy, s.F1y, s.F2y, s.F3y,
+
+                        c.ΣFx, c.F1x, c.F2x, c.F3x,
+                        c.ΣFy, c.F1y, c.F2y, c.F3y,
+
+                        n,
+
+                        s.m,
+
+                        Fg_s,
+
+                        b.m, c.m
+
+                    )
+
+                    .IsolateVariable(a)
+
+                    .AssertEqTo(
+
+                        a == -g * (Fg_b + Fg_c - 2 * T) / (Fg_b + Fg_c)
+
+                    )
+
+                    .SubstituteEqLs(numerical_vals)
+
+                    .AssertEqTo(a == 0.40833333333333333);
+
+                // n
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        s.ΣFx, s.F1x, s.F2x, s.F3x,
+                        s.ΣFy, s.F1y, s.F2y, s.F3y,
+
+                        c.ΣFx, c.F1x, c.F2x, c.F3x,
+                        c.ΣFy, c.F1y, c.F2y, c.F3y,
+
+                        c.m, s.m,
+
+                        Fg_s,
+
+                        b.m,
+
+                        a
+
+                    )
+
+                    .IsolateVariable(n)
+
+                    .AssertEqTo(
+
+                        n == -1 * (Fg_c - T - Fg_c * (Fg_b + Fg_c - 2 * T) / (Fg_b + Fg_c))
+
+                    )
+
+                    .SubstituteEqLs(numerical_vals);
+
+                DoubleFloat.tolerance = null;
+
             }
 
             #endregion
