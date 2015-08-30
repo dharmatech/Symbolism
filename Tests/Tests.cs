@@ -3516,7 +3516,7 @@ namespace Tests
             }
 
             #endregion
-
+            
             #region PSE 5E E5.10 - Acceleration of Two Objects Connected by a Cord
 
             {
@@ -3525,7 +3525,7 @@ namespace Tests
                 // negligible mass, as shown in Figure 5.16a. The block lies 
                 // on a frictionless incline of angle th. Find the magnitude 
                 // of the acceleration of the two objects and the tension in the cord.
-                
+
                 ////////////////////////////////////////////////////////////////////////////////
 
                 var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
@@ -3726,7 +3726,122 @@ namespace Tests
             }
 
             #endregion
-            
+
+            #region PSE 5E E5.10 - Acceleration of Two Objects Connected by a Cord - Obj3
+
+            {
+                // A ball of mass m1 and a block of mass m2 are attached by a
+                // lightweight cord that passes over a frictionless pulley of 
+                // negligible mass, as shown in: 
+                //
+                //      http://i.imgur.com/XMHM6On.png
+                //
+                // The block lies on a frictionless incline of angle th.
+                //
+                // Find the magnitude of the acceleration of the two objects
+                // and the tension in the cord.
+
+                var bal = new Obj2("bal");
+                var blk = new Obj3("blk");
+
+                var th = new Symbol("th");
+
+                var T = new Symbol("T");                // tension in cable
+                var g = new Symbol("g");                // gravity
+                var n = new Symbol("n");                // normal force on block
+                var a = new Symbol("a");
+
+                var m1 = new Symbol("m1");
+                var m2 = new Symbol("m2");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    blk.ax == bal.ay,                   // the block moves right as the ball moves up
+
+                    a == blk.ax,
+
+                    bal.Equations(),
+                    blk.Equations()
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                var vals = new List<Equation>
+                {
+                    bal.ax == 0,
+
+                    bal.m == m1,
+
+                    bal.F1 == T,            bal.th1 == (90).ToRadians(),                // force 1 is straight up
+                    bal.F2 == m1 * g,       bal.th2 == (270).ToRadians(),               // force 2 is straight down
+
+                    blk.ay == 0,
+
+                    blk.m == m2,
+
+                    blk.F1 == n,            blk.th1 == (90).ToRadians(),                // force 1 is straight up
+                    blk.F2 == T,            blk.th2 == (180).ToRadians(),               // force 2 is straight down
+                    blk.F3 == m2 * g,       blk.th3 == (270).ToRadians() + th           // force 3 direction
+                };
+
+                // a
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        bal.ΣFx, bal.F1x, bal.F2x,
+                        bal.ΣFy, bal.F1y, bal.F2y,
+
+                        blk.ΣFx, blk.F1x, blk.F2x, blk.F3x,
+                        blk.ΣFy, blk.F1y, blk.F2y, blk.F3y,
+
+                        blk.ax, bal.ay,
+
+                        T, n
+                    )
+
+                    .IsolateVariable(a)
+
+                    .AssertEqTo(
+
+                        a == (g * m1 - g * m2 * sin(th)) / (-m1 - m2)
+
+                    );
+
+                // T
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        bal.ΣFx, bal.F1x, bal.F2x,
+                        bal.ΣFy, bal.F1y, bal.F2y,
+
+                        blk.ΣFx, blk.F1x, blk.F2x, blk.F3x,
+                        blk.ΣFy, blk.F1y, blk.F2y, blk.F3y,
+
+                        blk.ax, bal.ay,
+
+                        a, n
+                    )
+
+                .IsolateVariable(T)
+
+                .RationalizeExpression()
+
+                .AssertEqTo(
+
+                    T == m1 * (-g * m2 - g * m2 * sin(th)) / (-m1 - m2)
+
+                );
+            }
+
+            #endregion
+
             #region PSE 5E E5.12 - Experimental Determination of μs and μk
 
             {
@@ -3736,7 +3851,7 @@ namespace Tests
                 // The incline angle is increased until the block starts to move. 
                 // Let us show that by measuring the critical angle θ_c at which this
                 // slipping just occurs, we can obtain μs.
-                
+
                 ////////////////////////////////////////////////////////////////////////////////
 
                 var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
