@@ -1,7 +1,7 @@
 
 # Classes for representing forces on objects 
 
-In this [walkthrough](https://gist.github.com/dharmatech/a14d1a29a7d4c0728d37), one thing you may notice is the large number of `Symbol` objects that are defined. For example, for just the ball, the following are defined:
+In [this walkthrough](https://gist.github.com/dharmatech/a14d1a29a7d4c0728d37), one thing you may notice is the large number of `Symbol` objects that are defined. For example, for just the ball, the following are defined:
 
 ```C#
 var F1_m1 = new Symbol("F1_m1");        // force 1 on mass 1
