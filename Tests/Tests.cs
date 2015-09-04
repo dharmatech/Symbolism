@@ -4509,7 +4509,7 @@ namespace Tests
             }
 
             #endregion
-            
+
             #region PSE 5E P5.31
 
             {
@@ -4706,6 +4706,128 @@ namespace Tests
 
             #endregion
 
+            #region PSE 5E P5.31 Obj
+
+            {
+                // Two people pull as hard as they can on ropes attached
+                // to a boat that has a mass of 200 kg. If they pull in the
+                // same direction, the boat has an acceleration of
+                // 1.52 m/s^2 to the right. If they pull in opposite directions,
+                // the boat has an acceleration of 0.518 m/s^2 to the
+                // left.
+                // 
+                // What is the force exerted by each person on the
+                // boat? (Disregard any other forces on the boat.)
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var b1 = new Obj2("b1");            // boat in scenario 1 (same direction)
+                var b2 = new Obj2("b2");            // boat in scenario 2 (opposite directions)
+
+                var m = new Symbol("m");
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+                var Pi = new Symbol("Pi");
+
+                var T1 = new Symbol("T1");
+                var T2 = new Symbol("T2");
+
+                var eqs = new And(
+
+                    b1.Equations(),
+                    b2.Equations()
+
+                    );
+
+                DoubleFloat.tolerance = 0.00001;
+
+                var vals = new List<Equation>()
+                {
+                    b1.m == m,
+
+                    b1.ay == 0,
+
+                    b1.F1 == T1, b1.th1 == 0,
+                    b1.F2 == T2, b1.th2 == 0,
+
+                    b2.m == m,
+
+                    b2.ay == 0,
+
+                    b2.F1 == T1, b2.th1 == (180).ToRadians(),
+                    b2.F2 == T2, b2.th2 == 0
+
+                };
+
+                var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                var numerical_vals = new List<Equation>()
+                {
+                    m == 200,
+
+                    b1.ax == 1.52,
+                    b2.ax == -0.518
+                };
+
+                // T1
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        b1.ΣFx, b1.F1x, b1.F2x,
+                        b1.ΣFy, b1.F1y, b1.F2y,
+
+                        b2.ΣFx, b2.F1x, b2.F2x,
+                        b2.ΣFy, b2.F1y, b2.F2y,
+
+                        T2
+                    )
+
+                    .IsolateVariable(T1)
+
+                    .AssertEqTo(
+
+                        T1 == -(b2.ax * m - b1.ax * m) / 2
+
+                    )
+
+                    .SubstituteEqLs(numerical_vals)
+
+                    .AssertEqTo(T1 == 203.8);
+
+                // T2
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        b1.ΣFx, b1.F1x, b1.F2x,
+                        b1.ΣFy, b1.F1y, b1.F2y,
+
+                        b2.ΣFx, b2.F1x, b2.F2x,
+                        b2.ΣFy, b2.F1y, b2.F2y,
+
+                        T1
+                    )
+
+                    .IsolateVariable(T2)
+
+                    .AssertEqTo(
+
+                        T2 == (b1.ax * m + b2.ax * m) / 2
+
+                    )
+
+                    .SubstituteEqLs(numerical_vals)
+
+                    .AssertEqTo(T2 == 100.19999999999999);
+
+            }
+
+            #endregion
+            
             #region PSE 5E P5.55 
 
             {
