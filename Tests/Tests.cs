@@ -4509,7 +4509,66 @@ namespace Tests
             }
 
             #endregion
+            
+            #region PSE 5E P5.25 Obj
 
+            {
+                // A bag of cement of weight F_g hangs from three wires as
+                // shown in http://i.imgur.com/f5JpLjY.png
+                //  
+                // Two of the wires make angles th1 and th2 with the horizontal.
+                // If the system is in equilibrium, show that the tension in the
+                // left -hand wire is:
+                //
+                //          T1 == F_g cos(th2) / sin(th1 + th2)
+                
+                var bag = new Obj3("bag");
+                
+                var T1 = new Symbol("T1");
+                var T2 = new Symbol("T2");
+                var T3 = new Symbol("T3");
+
+                var F_g = new Symbol("F_g");
+
+                var th1 = new Symbol("th1");
+                var th2 = new Symbol("th2");
+
+                var eqs = bag.Equations();
+
+                var vals = new List<Equation>()
+                {
+                    bag.ax == 0,
+                    bag.ay == 0,
+
+                    bag.F1 == T1,       bag.th1 == (180).ToRadians() - th1,
+                    bag.F2 == T2,       bag.th2 == th2,
+                    bag.F3 == F_g,      bag.th3 == (270).ToRadians()
+                };
+
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        bag.ΣFx, bag.F1x, bag.F2x, bag.F3x,
+                        bag.ΣFy, bag.F1y, bag.F2y, bag.F3y,
+
+                        T2
+                    
+                    )
+
+                    .IsolateVariable(T1)
+
+                    .RationalizeExpression()
+
+                    .DeepSelect(SumDifferenceFormulaAFunc)
+
+                    .AssertEqTo(    T1 == cos(th2) * F_g / sin(th1 + th2)   );
+                
+            }
+
+            #endregion
+            
             #region PSE 5E P5.31
 
             {
