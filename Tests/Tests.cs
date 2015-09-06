@@ -5150,6 +5150,103 @@ namespace Tests
 
             #endregion
             
+            #region PSE 5E P5.69
+            {
+                // What horizontal force must be applied to the cart shown:
+
+                // http://i.imgur.com/fpkzsYI.png
+
+                // so that the blocks remain stationary relative to the cart?
+                // Assume all surfaces, wheels, and pulley are frictionless.
+                // (Hint:Note that the force exerted by the string accelerates m1.)
+
+                var blk1 = new Obj3("blk1");
+                var blk2 = new Obj3("blk2");
+
+                var sys = new Obj3("sys");
+                
+                var m1 = new Symbol("m1");
+                var m2 = new Symbol("m2");
+                
+                var T = new Symbol("T");
+                var F = new Symbol("F");
+                var M = new Symbol("M");
+                var g = new Symbol("g");
+                var a = new Symbol("a");
+                
+                var eqs = new And(
+
+                    blk1.Equations(),
+                    blk2.Equations(),
+
+                    sys.Equations()
+                    
+                    );
+
+                var vals = new List<Equation>()
+                {
+                    blk1.ax == a,
+                    blk1.ay == 0,
+
+                    blk1.m == m1,
+
+                    blk1.F1 == T,   blk1.th1 == 0,
+
+                    blk1.th2 == (90).ToRadians(),
+                    blk1.th3 == (270).ToRadians(),
+
+
+                    blk2.ax == a,
+                    blk2.ay == 0,
+
+                    blk2.m == m2,
+
+                    blk2.th1 == 0,
+
+                    blk2.F2 == T,       blk2.th2 == (90).ToRadians(),
+                    blk2.F3 == m2 * g,  blk2.th3 == (270).ToRadians(),
+
+
+                    sys.ax == a,
+                    sys.ay == 0,
+
+                    sys.m == M + m1 + m2,
+
+                    sys.F1 == F,        sys.th1 == 0,
+
+                    sys.th2 == (90).ToRadians(),
+                    sys.th3 == (270).ToRadians()
+
+                };
+
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+
+                        blk1.ΣFx, blk1.F1x, blk1.F2x, blk1.F3x,
+                        blk1.ΣFy, blk1.F1y, blk1.F2y, blk1.F3y,
+
+                        blk1.F2,
+
+                        blk2.ΣFx, blk2.F1x, blk2.F2x, blk2.F3x,
+                        blk2.ΣFy, blk2.F1y, blk2.F2y, blk2.F3y,
+
+                        blk2.F1,
+
+                        sys.ΣFx, sys.F1x, sys.F2x, sys.F3x,
+                        sys.ΣFy, sys.F1y, sys.F2y, sys.F3y,
+
+                        sys.F2,
+
+                        T, a
+
+                    )
+
+                    .AssertEqTo(   F == g * m2 / m1 * (M + m1 + m2)   );
+            }
+            #endregion
+
             #region PSE 5E Example 4.3
             {
                 var thA = new Symbol("thA"); // angle at point A
