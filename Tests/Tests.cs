@@ -304,7 +304,103 @@ namespace Tests
                 );
         }
     }
+    
+    public class KinematicObjectABC
+    {
+        public Symbol xA, yA, vxA, vyA, vA, thA;
+        public Symbol xB, yB, vxB, vyB, vB, thB;
+        public Symbol xC, yC, vxC, vyC, vC, thC;
 
+        public Symbol tAB, tBC, tAC;
+
+        public Symbol ax, ay;
+
+        public KinematicObjectABC(string name)
+        {
+            xA = new Symbol($"{name}.xA");
+            yA = new Symbol($"{name}.yA");
+
+            vxA = new Symbol($"{name}.vxA");
+            vyA = new Symbol($"{name}.vyA");
+
+            vA = new Symbol($"{name}.vA");
+            thA = new Symbol($"{name}.thA");
+
+
+            xB = new Symbol($"{name}.xB");
+            yB = new Symbol($"{name}.yB");
+
+            vxB = new Symbol($"{name}.vxB");
+            vyB = new Symbol($"{name}.vyB");
+
+            vB = new Symbol($"{name}.vB");
+            thB = new Symbol($"{name}.thB");
+
+
+            xC = new Symbol($"{name}.xC");
+            yC = new Symbol($"{name}.yC");
+
+            vxC = new Symbol($"{name}.vxC");
+            vyC = new Symbol($"{name}.vyC");
+
+            vC = new Symbol($"{name}.vC");
+            thC = new Symbol($"{name}.thC");
+
+            tAB = new Symbol($"{name}.tAB");
+            tBC = new Symbol($"{name}.tBC");
+            tAC = new Symbol($"{name}.tAC");
+
+            ax = new Symbol($"{name}.ax");
+            ay = new Symbol($"{name}.ay");
+        }
+
+        public And EquationsAB() =>
+
+            new And(
+
+                vxB == vxA + ax * tAB,
+                vyB == vyA + ay * tAB,
+
+                xB == xA + vxA * tAB + ax * (tAB ^ 2) / 2,
+                yB == yA + vyA * tAB + ay * (tAB ^ 2) / 2
+                
+                );
+
+        public And EquationsBC() =>
+
+            new And(
+
+                vxC == vxB + ax * tBC,
+                vyC == vyB + ay * tBC,
+
+                xC == xB + vxB * tBC + ax * (tBC ^ 2) / 2,
+                yC == yB + vyB * tBC + ay * (tBC ^ 2) / 2
+
+                );
+
+        public And EquationsAC() =>
+
+            new And(
+
+                vxC == vxA + ax * tAC,
+                vyC == vyA + ay * tAC,
+
+                xC == xA + vxA * tAC + ax * (tAC ^ 2) / 2,
+                yC == yA + vyA * tAC + ay * (tAC ^ 2) / 2
+
+                );
+
+        public And TrigEquationsA() =>
+        
+            new And(
+
+                vxA == vA * cos(thA),
+                vyA == vA * sin(thA)
+
+                );
+        
+    }
+    
     class Program
     {
         static void AssertEqual(DoubleFloat a, DoubleFloat b, double tolerance = 0.00000001)
@@ -1351,7 +1447,7 @@ namespace Tests
             }
 
             #endregion
-
+            
             #region PSE Example 4.3
 
             {
@@ -1423,7 +1519,97 @@ namespace Tests
             }
 
             #endregion
+            
+            #region PSE Example 4.3 KinematicObjectABC
+            {
+                // A long-jumper leaves the ground at an angle of 20.0° above
+                // the horizontal and at a speed of 11.0 m/s.
 
+                // (a) How far does he jump in the horizontal direction?
+                // (Assume his motion is equivalent to that of a particle.)
+
+                var obj = new KinematicObjectABC("obj");
+
+                var yB = new Symbol("yB");
+                var xC = new Symbol("xC");
+                var ay = new Symbol("ay");
+                var thA = new Symbol("thA");
+                var vA = new Symbol("vA");
+
+                var Pi = new Symbol("Pi");
+
+                var eqs = new And(
+
+                    obj.TrigEquationsA(),
+
+                    obj.tAC == 2 * obj.tAB,
+
+                    obj.EquationsAB(),
+                    obj.EquationsAC()
+                    
+                    );
+
+                var vals = new List<Equation>()
+                {
+                    obj.xA == 0,
+                    obj.yA == 0,
+
+                    obj.vA == vA,
+                    obj.thA == thA,
+
+                    obj.yB == yB,
+                    obj.vyB == 0,
+
+                    obj.xC == xC,
+
+                    obj.ax == 0,
+                    obj.ay == ay
+                };
+
+                var numerical_vals = new List<Equation>()
+                {
+                    thA == (20).ToRadians(),
+                    vA == 11,
+                    ay == -9.8,
+                    Pi == Math.PI
+                    
+                };
+
+                // xC
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+                        obj.vxA, obj.vyA, obj.vyC, obj.vxC, obj.vxB,
+                        obj.xB, yB, obj.yC,
+                        obj.tAC, obj.tAB
+                    )
+                    
+                    .AssertEqTo(xC == -2 * cos(thA) * sin(thA) * (vA ^ 2) / ay)
+
+                    .SubstituteEqLs(numerical_vals)
+
+                    .AssertEqTo(xC == 7.9364592624562507);
+
+                // yB
+                eqs
+                    .SubstituteEqLs(vals)
+
+                    .EliminateVariables(
+                        obj.tAB, obj.tAC,
+                        obj.vxA, obj.vxB, obj.vxC, obj.vyC, obj.vyA,
+                        obj.xB, xC, obj.yC
+                    )
+                    
+                    .AssertEqTo(yB == -(sin(thA) ^ 2) * (vA ^ 2) / (2 * ay))
+
+                    .SubstituteEqLs(numerical_vals)
+
+                    .AssertEqTo(yB == 0.72215873425009314);
+
+            }
+            #endregion
+            
             #region PSE 5E Example 4.5
 
             {
@@ -1929,9 +2115,7 @@ namespace Tests
             }
 
             #endregion
-
-
-
+            
             #region SumDifferenceFormulaFunc 
 
             // sin(u) cos(v) + cos(u) sin(v) -> sin(u + v)
@@ -1988,9 +2172,7 @@ namespace Tests
             }
 
             #endregion
-
-
-
+            
             #region DoubleAngleFormulaFunc
 
             // sin(u) cos(u) -> sin(2 u) / 2
