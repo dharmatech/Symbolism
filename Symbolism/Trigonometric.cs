@@ -458,4 +458,17 @@ namespace Symbolism.Trigonometric
         public static MathObject asin(MathObject obj) => new Asin(obj).Simplify();
         public static MathObject atan(MathObject obj) => new Atan(obj).Simplify();
     }
+
+    public static class Extensions
+    {
+        public static Symbol Pi = new Symbol("Pi");
+
+        public static MathObject ToRadians(this MathObject n) { return n * Pi / 180; }
+
+        public static MathObject ToDegrees(this MathObject n) { return 180 * n / Pi; }
+
+        public static MathObject ToRadians(this int n) { return new Integer(n) * Pi / 180; }
+
+        public static MathObject ToDegrees(this int n) { return 180 * new Integer(n) / Pi; }
+    }
 }
