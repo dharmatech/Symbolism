@@ -5435,6 +5435,77 @@ namespace Tests
                     .AssertEqTo(   F == g * m2 / m1 * (M + m1 + m2)   );
             }
             #endregion
+                        
+            #region PSE 5E E7.7
+            {
+                // A  6.0-kg block initially at rest is pulled to the right along a
+                // horizontal, frictionless surface by a constant horizontal force
+                // of 12 N. Find the speed of the block after it has moved 3.0 m.
+                
+                var W = new Symbol("W");
+                var F = new Symbol("F");
+                var d = new Symbol("d");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+
+                var m = new Symbol("m");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var eqs = new And(
+
+                    W == F * d,
+
+                    W == Kf - Ki,
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+
+                    m != 0
+
+                    );
+
+                var vals = new List<Equation>() { m == 6.0, vi == 0, F == 12, d == 3 };
+
+                // vf
+                eqs
+                    .EliminateVariables(Kf, Ki, W)
+                    .IsolateVariable(vf)
+                    .LogicalExpand().CheckVariable(m).SimplifyEquation().SimplifyLogical()
+
+                    .AssertEqTo(
+
+                        new Or(
+                            new And(
+                                vf == sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2)) / m,
+                                m != 0),
+                            new And(
+                                vf == -sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2)) / m,
+                                m != 0)))
+                                
+                    .SubstituteEq(vi == 0)
+                                        
+                    .AssertEqTo(
+
+                        new Or(
+                            new And(
+                                vf == sqrt(2 * d * F * m) / m,
+                                m != 0),
+                            new And(
+                                vf == -sqrt(2 * d * F * m) / m,
+                                m != 0)))
+                    
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(
+                        new Or(
+                            vf == 3.4641016151377544,
+                            vf == -3.4641016151377544));
+
+            }
+            #endregion
             
             Console.WriteLine("Testing complete");
             
