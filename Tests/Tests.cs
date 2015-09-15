@@ -5506,7 +5506,84 @@ namespace Tests
 
             }
             #endregion
-            
+                        
+            #region PSE 5E E7.8
+            {
+                // Find the final speed of the block described in Example 7.7 if
+                // the surface is not frictionless but instead has a coefficient of
+                // kinetic friction of 0.15.
+
+                var W = new Symbol("W");
+                var F = new Symbol("F");
+                var d = new Symbol("d");
+                var n = new Symbol("n");
+
+                var g = new Symbol("g");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+
+                var m = new Symbol("m");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+                                
+                var μk = new Symbol("μk");
+
+                var eqs = new And(
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+
+                    W == F * d,
+
+                    n == m * g,
+
+                    fk == n * μk,
+
+                    W - fk * d == Kf - Ki,
+
+                    m != 0
+
+                    );
+
+                var vals = new List<Equation>()
+                {
+                    vi == 0,
+                    F == 12.0,
+                    d == 3.0,
+
+                    m == 6.0,
+                    
+                    μk == 0.15,
+
+                    g == 9.8,
+                };
+
+                // vf
+                eqs
+                    .EliminateVariables(Kf, Ki, W, n, fk)
+                    .IsolateVariable(vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                    .SubstituteEq(vi == 0)
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vf == -sqrt(2 * m * (d * F - d * g * m * μk)) / m,
+                                m != 0),
+                            new And(
+                                vf == sqrt(2 * m * (d * F - d * g * m * μk)) / m,
+                                m != 0)))
+
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(new Or(vf == -1.7832554500127007, vf == 1.7832554500127007));
+
+            }
+            #endregion
+
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
