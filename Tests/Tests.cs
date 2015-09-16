@@ -5583,6 +5583,96 @@ namespace Tests
 
             }
             #endregion
+            
+            #region PSE 5E E7.11
+            {
+                // A block of mass 1.6 kg is attached to a horizontal spring that
+                // has a force constant of 1.0 x 10^3 N/m, as shown in Figure
+                // 7.10. The spring is compressed 2.0 cm and is then released
+                // from  rest.
+                
+                // (a) Calculate the  speed of  the block  as it  passes
+                // through the equilibrium position x = 0 if the surface is frictionless.
+
+                // (b) Calculate the speed of the block as it passes through
+                // the equilibrium position if a constant frictional force of 4.0 N
+                // retards its motion from the moment it is released.
+
+                var ΣW = new Symbol("ΣW");
+                                
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+
+                var m = new Symbol("m");
+                var d = new Symbol("d");
+                var k = new Symbol("k");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+                
+                var W_s = new Symbol("W_s");
+                var W_f = new Symbol("W_f");
+                
+                var x_max = new Symbol("x_max");
+
+                var eqs = new And(
+
+                    W_s == k * (x_max ^ 2) / 2,
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+                    
+                    W_f == -fk * d,
+
+                    ΣW == Kf - Ki,
+
+                    ΣW == W_s + W_f,
+
+                    m != 0
+
+                    );
+
+                // vf
+                {
+                    var vals = new List<Equation>() { m == 1.6, vi == 0, fk == 0, k == 1000, x_max == -0.02 };
+
+                    eqs
+                        .EliminateVariables(ΣW, Kf, Ki, W_f, W_s)
+                        .IsolateVariable(vf)
+                        .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                        
+                        .AssertEqTo(
+                            new Or(
+                                new And(
+                                    vf == sqrt(-2 * m * (d * fk - m * (vi ^ 2) / 2 - k * (x_max ^ 2) / 2)) / m,
+                                    m != 0),
+                                new And(
+                                    vf == -sqrt(-2 * m * (d * fk - m * (vi ^ 2) / 2 - k * (x_max ^ 2) / 2)) / m,
+                                    m != 0)))
+                                              
+                        .SubstituteEqLs(vals)
+                        
+                        .AssertEqTo(new Or(vf == 0.5, vf == -0.5));
+                }
+
+                // vf
+                {
+                    var vals = new List<Equation>() { m == 1.6, vi == 0, fk == 4, k == 1000, x_max == -0.02, d == 0.02 };
+
+                    eqs
+                        .EliminateVariables(ΣW, Kf, Ki, W_f, W_s)
+                        .IsolateVariable(vf)
+                        .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                        
+                        .SubstituteEqLs(vals)
+                        
+                        .AssertEqTo(new Or(vf == 0.3872983346207417, vf == -0.3872983346207417));
+                }
+                
+            }
+            #endregion
 
             Console.WriteLine("Testing complete");
             
