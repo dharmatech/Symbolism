@@ -1448,8 +1448,15 @@ namespace Tests
             #endregion
             
             #region PSE Example 4.3
-
             {
+                // A long-jumper leaves the ground at an angle of 20.0° above
+                // the horizontal and at a speed of 11.0 m/s.
+
+                // (a) How far does he jump in the horizontal direction?
+                // (Assume his motion is equivalent to that of a particle.)
+
+                // (b) What is the maximum height reached?
+
                 var xA = new Symbol("xA");
                 var xB = new Symbol("xB");
                 var xC = new Symbol("xC");
@@ -1528,6 +1535,8 @@ namespace Tests
 
                 // (a) How far does he jump in the horizontal direction?
                 // (Assume his motion is equivalent to that of a particle.)
+
+                // (b) What is the maximum height reached?
 
                 var obj = new KinematicObjectABC("obj");
 
