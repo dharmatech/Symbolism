@@ -5673,6 +5673,58 @@ namespace Tests
                 
             }
             #endregion
+                        
+            #region PSE 6E P7.3
+            {
+                // Batman, whose mass is 80.0kg, is dangling on the free end
+                // of a 12.0m rope, the other end of which is fixed to a tree
+                // limb above. He is able to get the rope in motion as only
+                // Batman knows how, eventually getting it to swing enough
+                // that he can reach a ledge when the rope makes a 60.0°
+                // angle with the vertical. How much work was done by the
+                // gravitational force on Batman in this maneuver?
+
+                var m = new Symbol("m");
+                var a = new Symbol("a");
+
+                var W = new Symbol("W");
+                var F = new Symbol("F");
+                var d = new Symbol("d");
+
+                var yA = new Symbol("yA");
+                var yB = new Symbol("yB");
+
+                var th = new Symbol("th");
+
+                var len = new Symbol("len");
+                
+                var eqs = new And(
+
+                    yA == -len,
+
+                    yB == -len * cos(th),
+
+                    d == yB - yA,
+
+                    F == m * a,
+
+                    W == F * d
+                              
+                    );
+
+                var vals = new List<Equation>()
+                { m == 80, len == 12, th == (60).ToRadians(), a == -9.8 };
+
+                eqs
+                    .EliminateVariables(F, d, yA, yB)
+
+                    .AssertEqTo(W == a * (len - cos(th) * len) * m)
+
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(W == -4704.0);
+            }
+            #endregion
 
             Console.WriteLine("Testing complete");
             
