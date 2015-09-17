@@ -25,11 +25,30 @@ In action:
 
 [Unit test](https://github.com/dharmatech/Symbolism/blob/ff09e2c20e026091225f4f303bbb06487a08f58d/Tests/Tests.cs#L2732) for that example.
 
-References:
+# Physics Examples
+
+## Motion in Two Dimensions
+
+[PSE 5E E4.3](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L1450)
+[PSE 5E P4.9](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L5686)
+[PSE 5E P4.11](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L5686)
+
+## The Laws of Motion
+
+[PSE 5E E5.1](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L3124)
+[PSE 5E E5.4](https://github.com/dharmatech/Symbolism/blob/450ece65ce4ca4f196b512cba0f5ddeabd024690/Tests/Tests.cs#L3308)
+[PSE 5E E5.6](https://github.com/dharmatech/Symbolism/blob/450ece65ce4ca4f196b512cba0f5ddeabd024690/Tests/Tests.cs#L3424)
+
+## Work and Kinetic Energy
+
+[PSE 5E E7.8](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L5519)
+[PSE 5E E7.11](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L5596)
+[PSE 6E P7.3](https://github.com/dharmatech/Symbolism/blob/e6cf94395a92127b7b25c97748ced065433f00b1/Tests/Tests.cs#L5686)
+
+# References
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
 by Joel S. Cohen
 
 Computer Algebra and Symbolic Computation: Mathematical Methods 
 by Joel S. Cohen 
-
