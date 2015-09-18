@@ -5734,7 +5734,51 @@ namespace Tests
                     .AssertEqTo(W == -4704.0);
             }
             #endregion
+                        
+            #region PSE 6E P7.23
+            {
+                // If it takes 4.00J of work to stretch a Hooke’s-law spring
+                // 10.0cm from its unstressed length, determine the extra
+                // work required to stretch it an additional 10.0cm.
 
+                var WsAB = new Symbol("WsAB");
+                
+                var WsA = new Symbol("WsA");
+                var WsB = new Symbol("WsB");
+
+                var k = new Symbol("k");
+
+                var xA = new Symbol("xA");
+                var xB = new Symbol("xB");
+                                
+                var eqs = new And(
+                    
+                    WsA == k * (xA ^ 2) / 2,
+                    WsB == k * (xB ^ 2) / 2,
+
+                    WsAB == WsB - WsA
+                                        
+                    );
+
+                var vals = new List<Equation>() { xA == 0.1, xB == 0.2, WsA == 4 };
+
+                eqs
+
+                    .EliminateVariables(WsB, k)
+
+                    .AssertEqTo(
+                    
+                        WsAB == WsA * (xB ^ 2) / (xA ^ 2) - WsA     
+                        
+                        )
+                        
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(WsAB == 12.0);
+                
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
