@@ -5735,7 +5735,7 @@ namespace Tests
             }
             #endregion
                         
-            #region PSE 6E P7.23
+            #region PSE 5E P7.23
             {
                 // If it takes 4.00J of work to stretch a Hooke’s-law spring
                 // 10.0cm from its unstressed length, determine the extra
@@ -5779,6 +5779,117 @@ namespace Tests
             }
             #endregion
             
+            #region PSE 5E 7.33
+            {
+                // A 40.0-kg box initially at rest is pushed 5.00m along a
+                // rough, horizontal floor with a constant applied horizontal
+                // force of 130 N. If the coefficient of friction between
+                // the box and the floor is 0.300, find
+
+                // (a) the work done by the applied force
+                // (b) the energy loss due to friction
+                // (c) the work done by the normal force
+                // (d) the work done by gravity
+                // (e) the change in kinetic energy of the box
+                // (f) the final speed of the box
+
+                var ΣW = new Symbol("ΣW");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+
+                var F = new Symbol("F");
+
+                var m = new Symbol("m");
+                var d = new Symbol("d");
+
+                var n = new Symbol("n");
+                var g = new Symbol("g");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+
+                var W_F = new Symbol("W_F"); 
+                var W_f = new Symbol("W_f");
+
+                var μk = new Symbol("μk");
+
+                var eqs = new And(
+
+                    n == m * g,
+
+                    fk == μk * n,
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+                    
+                    W_F == F * d,
+
+                    W_f == -fk * d,
+
+                    ΣW == Kf - Ki,
+                                        
+                    ΣW == W_F + W_f,
+
+                    m != 0
+
+                    );
+
+                var vals = new List<Equation>()
+                { m == 40, vi == 0, d == 5, F == 130, μk == 0.3, g == 9.8 };
+                
+                // W_F, W_f
+                eqs
+                    .EliminateVariables(fk, n, Kf, Ki, ΣW, vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                    
+                    .AssertEqTo(
+                        new And(
+                            m != 0,
+                            W_F == d * F,
+                            W_f == -d * g * m * μk))
+                            
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(new And(W_F == 650, W_f == -588.0));
+
+                // ΣW
+                eqs
+                    .EliminateVariables(W_F, W_f, fk, n, Ki, Kf)
+
+                    .AssertEqTo(
+                        new And(
+                            ΣW == m * (vf ^ 2) / 2 - m * (vi ^ 2) / 2,
+                            ΣW == d * F - d * g * m * μk,
+                            m != 0))
+                                                
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(new And(ΣW == 20 * (vf ^ 2), ΣW == 62.0));
+                
+                // vf
+                eqs
+                    .EliminateVariables(Kf, Ki, ΣW, W_F, W_f, fk, n)
+                    .IsolateVariable(vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vf == sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2 + d * g * m * μk)) / m,
+                                m != 0),
+                            new And(
+                                vf == -sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2 + d * g * m * μk)) / m,
+                                m != 0)))
+                                
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(new Or(vf == 1.7606816861659009, vf == -1.7606816861659009));
+            }
+            #endregion 
+
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
