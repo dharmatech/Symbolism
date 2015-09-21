@@ -5888,8 +5888,141 @@ namespace Tests
                     
                     .AssertEqTo(new Or(vf == 1.7606816861659009, vf == -1.7606816861659009));
             }
-            #endregion 
+            #endregion
+            
+            #region PSE 5E P7.35
+            {
+                // A crate of mass 10.0kg is pulled up a rough incline with
+                // an initial speed of 1.50 m/s.The pulling force is 100 N
+                // parallel to the incline, which makes an angle of 20.0°
+                // with the horizontal. The coefficient of kinetic friction is
+                // 0.400, and the crate is pulled 5.00 m.
 
+                // (a) How much work is done by gravity?
+                // (b) How much energy is lost because of friction?
+                // (c) How much work is done by the 100-N force?
+                // (d) What is the change in kinetic energy of the crate?
+                // (e) What is the speed of the crate after it has been pulled 5.00 m?
+
+                var ΣW = new Symbol("ΣW");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+
+                var F = new Symbol("F");
+
+                var m = new Symbol("m");
+                var d = new Symbol("d");
+
+                var n = new Symbol("n");
+                var g = new Symbol("g");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+
+                var W_F = new Symbol("W_F");
+                var W_f = new Symbol("W_f");
+                var W_g = new Symbol("W_g");
+
+                var μk = new Symbol("μk");
+                                
+                var th = new Symbol("th");
+
+                var F_g = new Symbol("F_g");
+
+                var Pi = new Symbol("Pi");
+                
+                var eqs = new And(
+
+                    F_g == m * g,
+
+                    n == F_g * cos(th),
+
+                    fk == μk * n,
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+
+                    W_F == F * d,
+
+                    W_f == -fk * d,
+                                                                                
+                    W_g == - F_g * sin(th) * d,
+
+                    ΣW == Kf - Ki,
+
+                    ΣW == W_F + W_f + W_g,
+
+                    m != 0
+                    
+                    );
+
+                var vals = new List<Equation>()
+                {
+                    m == 10.0, g == 9.8, d == 5.0, th == (20).ToRadians(), μk == 0.4, F == 100.0,
+                    vi == 1.5, Pi == Math.PI
+                };
+
+                // W_g, W_f, W_F
+                eqs
+                    .EliminateVariables(F_g, fk, n)
+
+                    .AssertEqTo(
+                        new And(
+                            Kf == m * (vf ^ 2) / 2,
+                            Ki == m * (vi ^ 2) / 2,
+                            W_F == d * F,
+                            W_f == -cos(th) * d * g * m * μk,
+                            W_g == -d * g * m * sin(th),
+                            ΣW == Kf - Ki,
+                            ΣW == W_f + W_F + W_g,
+                            m != 0
+                        ))
+                    
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(
+                        new And(
+                            Kf == 5.0 * (vf ^ 2),
+                            Ki == 11.25,
+                            W_F == 500.0,
+                            W_f == -184.17975367403804,
+                            W_g == -167.58987022957766,
+                            ΣW == Kf - Ki,
+                            ΣW == W_f + W_F + W_g
+                        ));
+                
+                // ΣW
+                eqs
+                    .EliminateVariables(F_g, fk, n, W_F, W_f, W_g)
+                    
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(
+                        new And(
+                            Kf == 5.0 * (vf ^ 2),
+                            Ki == 11.25,
+                            ΣW == Kf - Ki,
+                            ΣW == 148.23037609638431
+                        ));
+
+                // vf
+                eqs
+                    .EliminateVariables(F_g, fk, n, W_F, W_f, W_g, ΣW, Kf, Ki)
+
+                    .IsolateVariable(vf)
+
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                                                                                 
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(new Or(vf == 5.6476610396939435, vf == -5.6476610396939435));
+
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
