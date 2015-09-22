@@ -6091,6 +6091,95 @@ namespace Tests
             }
             #endregion
             
+            #region PSE 5E P7.41
+            {
+                // A 2.00-kg block is attached to a spring of force constant
+                // 500 N/m, as shown in Figure 7.10. The block is pulled
+                // 5.00 cm to the right of equilibrium and is then released
+                // from rest. Find the speed of the block as it passes
+                // through equilibrium if
+
+                // (a) the horizontal surface is frictionless
+
+                // (b) the coefficient of friction between the block and the surface is 0.350.
+
+                var ΣW = new Symbol("ΣW");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+                                
+                var m = new Symbol("m");
+                var d = new Symbol("d");
+
+                var n = new Symbol("n");
+                var g = new Symbol("g");
+                var k = new Symbol("k");
+
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+                                
+                var W_f = new Symbol("W_f");
+                var W_s = new Symbol("W_s");
+
+                var μk = new Symbol("μk");
+                                
+                var xi = new Symbol("xi");
+                var xf = new Symbol("xf");
+                
+                var eqs = new And(
+                    
+                    n == m * g,
+
+                    fk == μk * n,
+
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+
+                    W_f == -fk * d,
+                                                            
+                    W_s == k * (xi ^ 2) / 2 - k * (xf ^ 2) / 2,                    
+
+                    ΣW == Kf - Ki,
+
+                    ΣW == W_f + W_s,
+
+                    m != 0
+                    
+                    );
+
+                var vals = new List<Equation>()
+                { m == 2.0, k == 500, xi == 0.05, xf == 0.0, vi == 0, d == 0.05, g == 9.8 };
+
+                eqs
+                    .EliminateVariables(Kf, Ki, ΣW, W_f, W_s, n, fk)
+                    .IsolateVariable(vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vf == sqrt(-2 * m * (-m * (vi ^ 2) / 2 + k * (xf ^ 2) / 2 - k * (xi ^ 2) / 2 + d * g * m * μk)) / m,
+                                m != 0
+                            ),
+                            new And(
+                                vf == -sqrt(-2 * m * (-m * (vi ^ 2) / 2 + k * (xf ^ 2) / 2 - k * (xi ^ 2) / 2 + d * g * m * μk)) / m,
+                                m != 0)))
+
+                    .SubstituteEqLs(vals).SubstituteEq(μk == 0)
+
+                    .AssertEqTo(new Or(vf == 0.79056941504209488, vf == -0.79056941504209488));
+
+                eqs
+                    .EliminateVariables(Kf, Ki, ΣW, W_f, W_s, n, fk)
+                    .IsolateVariable(vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                    .SubstituteEqLs(vals).SubstituteEq(μk == 0.35)
+                    .AssertEqTo(new Or(vf == 0.53103672189407025, vf == -0.53103672189407025));
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
