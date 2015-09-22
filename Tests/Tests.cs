@@ -6023,6 +6023,74 @@ namespace Tests
             }
             #endregion
             
+            #region PSE 5E P7.39
+            {
+                // A bullet with a mass of 5.00 g and a speed of 600 m/s
+                // penetrates a tree to a depth of 4.00 cm.
+
+                // (a) Use work and energy considerations to find the average
+                // frictional force that stops the bullet.
+
+                // (b) Assuming that the frictional force is constant,
+                // determine how much time elapsed between the moment
+                // the bullet entered the tree and the moment it stopped.
+
+                var ΣW = new Symbol("ΣW");
+
+                var Kf = new Symbol("Kf");
+                var Ki = new Symbol("Ki");
+                
+                var m = new Symbol("m");
+                var d = new Symbol("d");
+                
+                var vf = new Symbol("vf");
+                var vi = new Symbol("vi");
+
+                var fk = new Symbol("fk");
+                                
+                var W_f = new Symbol("W_f");
+
+                var t = new Symbol("t");
+
+                var eqs = new And(
+                    
+                    Kf == m * (vf ^ 2) / 2,
+                    Ki == m * (vi ^ 2) / 2,
+
+                    W_f == -fk * d,
+
+                    ΣW == Kf - Ki,
+
+                    ΣW == W_f
+                    
+                    );
+
+                var vals = new List<Equation>() { m == 0.005, vi == 600.0, vf == 0.0, d == 0.04 };
+
+                // fk
+                eqs
+                    .EliminateVariables(W_f, ΣW, Ki, Kf)
+                    .IsolateVariable(fk)
+                    .AssertEqTo(
+                    
+                        fk == (m * (vi ^ 2) / 2 - m * (vf ^ 2) / 2) / d
+                        
+                        )
+                    
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(fk == 22500.0);
+                
+                // t
+                (d == (vi + vf) * t / 2)
+                    .IsolateVariable(t)
+                    .AssertEqTo(t == 2 * d / (vf + vi))
+                    .SubstituteEqLs(vals)
+                    .AssertEqTo(t == 1.3333333333333334e-4);
+                
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
