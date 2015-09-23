@@ -6180,6 +6180,41 @@ namespace Tests
             }
             #endregion
             
+            #region PSE 5E 7.55
+            {
+                // A baseball outfielder throws a 0.150-kg baseball at a
+                // speed of 40.0 m/s and an initial angle of 30.0°. What is
+                // the kinetic energy of the baseball at the highest point of
+                // the trajectory?
+
+                var vx = new Symbol("vx");
+                var vi = new Symbol("vi");
+                var th = new Symbol("th");
+
+                var m = new Symbol("m");
+                var K = new Symbol("K");
+
+                var vals = new List<Equation>() { m == 0.15, vi == 40.0, th == (30).ToRadians() };
+
+                var eqs = new And(
+
+                    vx == vi * cos(th),
+                    
+                    K == m * (vx ^ 2) / 2
+                    
+                    );
+
+                eqs
+                    .EliminateVariables(vx)
+                    
+                    .AssertEqTo(K == (cos(th) ^ 2) * m * (vi ^ 2) / 2)
+                    
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(K == 90.0);
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
