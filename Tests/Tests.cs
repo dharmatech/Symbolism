@@ -94,6 +94,8 @@ namespace Tests
             if (obj is Equation)
                 return (obj as Equation).a * item == (obj as Equation).b * item;
 
+            if (obj is And) return (obj as And).Map(elt => elt.MultiplyBothSidesBy(item));
+
             throw new Exception();
         }
 
@@ -6214,7 +6216,92 @@ namespace Tests
                     .AssertEqTo(K == 90.0);
             }
             #endregion
-            
+
+            #region PSE 5E E8.2
+            {
+                // A ball  of mass m is dropped from a height h above the
+                // ground, as shown in Figure 8.6.
+
+                // (a) Neglecting air resistance, determine the speed of
+                // the ball when it is at a height ya bove the ground.
+
+                // (b) Determine the speed of the ball at y if at the instant of
+                // release it already has an initial speed vi at the initial altitude h.
+
+                var m = new Symbol("m");
+
+                var yi = new Symbol("yi");
+                var yf = new Symbol("yf");
+
+                var vi = new Symbol("vi");
+                var vf = new Symbol("vf");
+
+                var Ki = new Symbol("Ki");
+                var Kf = new Symbol("Kf");
+
+                var Ugi = new Symbol("Ugi");
+                var Ugf = new Symbol("Ugf");
+
+                var ΣUi = new Symbol("ΣUi");
+                var ΣUf = new Symbol("ΣUf");
+
+                var Ei = new Symbol("Ei");
+                var Ef = new Symbol("Ef");
+
+                var g = new Symbol("g");
+
+                var h = new Symbol("h");
+                var y = new Symbol("y");
+
+                var eqs = new And(
+                    Ki == m * (vi^2) / 2,
+                    Kf == m * (vf^2) / 2,
+
+                    Ugi == m * g * yi,
+                    Ugf == m * g * yf,
+
+                    ΣUi == Ugi,
+                    ΣUf == Ugf,
+
+                    Ei == Ki + ΣUi,
+                    Ef == Kf + ΣUf,
+
+                    Ei == Ef
+                );
+
+                var vals = new List<Equation>() { yi == h, yf == y };
+
+                // vf, vi == 0
+                eqs
+                    .EliminateVariables(Ugi, Ugf, ΣUi, ΣUf, Ki, Kf, Ei, Ef)
+                    .MultiplyBothSidesBy(1 / m)
+                    .AlgebraicExpand()
+                    .IsolateVariable(vf)
+                    .SubstituteEqLs(vals)
+                    .SubstituteEq(vi == 0)
+
+                    .AssertEqTo(
+                        new Or(
+                            vf == -sqrt(2 * (g * h - g * y)),
+                            vf == sqrt(2 * (g * h - g * y))
+                        ));
+
+                // vf
+                eqs
+                    .EliminateVariables(Ugi, Ugf, ΣUi, ΣUf, Ki, Kf, Ei, Ef)
+                    .MultiplyBothSidesBy(1 / m)
+                    .AlgebraicExpand()
+                    .IsolateVariable(vf)
+                    .SubstituteEqLs(vals)
+                    
+                    .AssertEqTo(
+                        new Or(
+                            vf == -sqrt(2 * (g * h + (vi ^ 2) / 2 - g * y)),
+                            vf == sqrt(2 * (g * h + (vi ^ 2) / 2 - g * y))
+                        ));
+                
+            }
+
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
