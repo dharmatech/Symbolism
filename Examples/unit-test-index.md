@@ -33,3 +33,7 @@ Index of examples in unit tests.
 * [PSE 5E P7.41](https://github.com/dharmatech/Symbolism/blob/531deeccc941bfa891302fd1e02090780c52d49b/Tests/Tests.cs#L6094)
 * [PSE 5E P7.55](https://github.com/dharmatech/Symbolism/blob/531deeccc941bfa891302fd1e02090780c52d49b/Tests/Tests.cs#L6183)
 
+## Potential Energy and Conservation of Energy
+
+* [PSE 5E E8.2](https://github.com/dharmatech/Symbolism/blob/39d80bcee6ed96f14bc5cf6b787f62a326e9f410/Tests/Tests.cs#L6220)
+* [PSE 5E E8.3](https://github.com/dharmatech/Symbolism/blob/39d80bcee6ed96f14bc5cf6b787f62a326e9f410/Tests/Tests.cs#L6306)
