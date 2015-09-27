@@ -6302,7 +6302,138 @@ namespace Tests
                 
             }
             #endregion
+                                    
+            #region PSE 5E E8.3
+            {
+                // A pendulum consists of a sphere of mass mattached to a light
+                // cord of length L, as shown in Figure 8.7. The sphere is released
+                // from rest when the cord makes an angle thA with the vertical,
+                // and the pivot at P is frictionless.
 
+                // (a) Find the speed of the sphere when it is at the lowest point B.
+
+                // (b) What is the tension T_B in the cord at B?
+
+                // (c) A pendulum of length 2.00 m and mass 0.500 kg
+                // is released from rest when the cord makes an angle of 30.0°
+                // with the vertical. Find the speed of the sphere and the tension
+                // in the cord when the sphere is at its lowest point.
+                
+                var m = new Symbol("m");
+
+                var yi = new Symbol("yi");
+                var yf = new Symbol("yf");
+
+                var vi = new Symbol("vi");
+                var vf = new Symbol("vf");
+
+                var Ki = new Symbol("Ki");
+                var Kf = new Symbol("Kf");
+
+                var Ugi = new Symbol("Ugi");
+                var Ugf = new Symbol("Ugf");
+
+                var ΣUi = new Symbol("ΣUi");
+                var ΣUf = new Symbol("ΣUf");
+
+                var Ei = new Symbol("Ei");
+                var Ef = new Symbol("Ef");
+
+                var g = new Symbol("g");
+
+                var L = new Symbol("L");
+
+                var thA = new Symbol("thA");
+
+                var ar_f = new Symbol("ar_f");
+
+                var r = new Symbol("r");
+
+                var ΣFr = new Symbol("ΣFr");
+
+                var T_f = new Symbol("T_f");
+
+                var vf_sq = new Symbol("vf_sq");
+
+                var eqs = new And(
+                    
+                    Ki == m * (vi^2) / 2,
+                    Kf == m * (vf^2) / 2,
+                
+                    Ugi == m * g * yi,
+                    Ugf == m * g * yf,
+                
+                    ΣUi == Ugi,
+                    ΣUf == Ugf,
+
+                    Ei == Ki + ΣUi,
+                    Ef == Kf + ΣUf,
+
+                    Ei == Ef,
+
+                    ar_f == (vf ^ 2) / r,
+
+                    ΣFr == T_f - m * g,
+
+                    ΣFr == m * ar_f
+
+                    );
+
+                var vals = new List<Equation>()
+                {
+                    yi == -L * cos(thA),
+                    yf == -L,
+                    vi == 0,
+
+                    r == L
+                };
+
+                var numerical_vals = new List<Equation>() { L == 2.0, m == 0.5, thA == (30).ToRadians(), g == 9.8 };
+
+                // vf
+                eqs
+                    .SubstituteEqLs(vals)
+                    .EliminateVariables(ar_f, ΣFr, T_f, Ki, Kf, Ugi, Ugf, ΣUi, ΣUf, Ei, Ef)
+                    .MultiplyBothSidesBy(1 / m)
+                    .AlgebraicExpand()
+                    .IsolateVariable(vf)
+
+                    .AssertEqTo(
+
+                        new Or(
+                            vf == -sqrt(2 * (g * L - cos(thA) * g * L)),
+                            vf == sqrt(2 * (g * L - cos(thA) * g * L))
+                        )
+
+                    )
+                    
+                    .SubstituteEqLs(numerical_vals).Substitute(3, 3.0)
+
+                    .AssertEqTo(
+                        new Or(
+                            vf == -2.2916815161906787,
+                            vf == 2.2916815161906787
+                        )
+                    );
+
+                // T_f
+                eqs
+                    .SubstituteEqLs(vals)
+                    .Substitute(vf ^ 2, vf_sq)
+                    .EliminateVariables(Ki, Kf, Ugi, Ugf, ΣUi, ΣUf, Ei, Ef, ar_f, ΣFr, vf_sq)
+                    .MultiplyBothSidesBy(1 / m)
+                    .AlgebraicExpand()
+                    .IsolateVariable(T_f)
+
+                    .AssertEqTo(
+                        
+                        T_f == (3 * g - 2 * cos(thA) * g) * m
+                        
+                    );
+                
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
