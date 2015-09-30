@@ -6434,6 +6434,99 @@ namespace Tests
             }
             #endregion
             
+            #region PSE 5E E8.4
+            {
+                // A 3.00-kg crate slides down a ramp. The ramp is 1.00 m in
+                // length and inclined at an angle of 30.0°, as shown in Figure
+                // 8.8. The crate starts from rest at the top, experiences a
+                // constant frictional force of magnitude 5.00 N, and continues to
+                // move a short distance on the flat floor after it leaves the
+                // ramp. Use energy methods to determine the speed of the
+                // crate at the bottom of the ramp.
+
+                var m = new Symbol("m");
+
+                var yi = new Symbol("yi");
+                var yf = new Symbol("yf");
+
+                var vi = new Symbol("vi");
+                var vf = new Symbol("vf");
+                                
+                var Ki = new Symbol("Ki");
+                var Kf = new Symbol("Kf");
+
+                var Ugi = new Symbol("Ugi");
+                var Ugf = new Symbol("Ugf");
+
+                var ΣUi = new Symbol("ΣUi");
+                var ΣUf = new Symbol("ΣUf");
+
+                var Ei = new Symbol("Ei");
+                var Ef = new Symbol("Ef");
+
+                var fk = new Symbol("fk");
+
+                var W_f = new Symbol("W_f");
+
+                var delta_E = new Symbol("delta_E");
+
+                var g = new Symbol("g");
+
+                var d = new Symbol("d");
+
+                var th = new Symbol("th");
+                                
+                var eqs = new And(
+
+                    yi == d * sin(th),
+
+                    Ki == m * (vi ^ 2) / 2,
+                    Kf == m * (vf ^ 2) / 2,
+
+                    Ugi == m * g * yi,
+                    Ugf == m * g * yf,
+
+                    ΣUi == Ugi,
+                    ΣUf == Ugf,
+
+                    W_f == -fk * d,
+
+                    delta_E == W_f,
+
+                    Ei == Ki + ΣUi,
+                    Ef == Kf + ΣUf,
+
+                    Ei + delta_E == Ef,
+
+                    m != 0
+
+                    );
+
+                var vals = new List<Equation>()
+                { m == 3.0, d == 1.0, th == (30).ToRadians(), fk == 5.0, vi == 0.0, g == 9.8, yf == 0.0 };
+
+                eqs
+                    .EliminateVariables(Ei, Ef, delta_E, Ki, Kf, ΣUi, ΣUf, W_f, Ugi, Ugf, yi)                     
+                    .IsolateVariable(vf)
+                    .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
+                                        
+                    .AssertEqTo(
+                        new Or(
+                            new And(
+                                vf == -sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(th))) / m,
+                                m != 0
+                            ),
+                            new And(
+                                vf == sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(th))) / m,
+                                m != 0
+                            )))
+
+                    .SubstituteEqLs(vals)
+
+                    .AssertEqTo(new Or(vf == -2.54296414970142, vf == 2.54296414970142));
+            }
+            #endregion
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
