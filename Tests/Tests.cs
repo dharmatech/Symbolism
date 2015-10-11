@@ -441,6 +441,8 @@ namespace Tests
 
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+
             Action<Equation> AssertIsTrue = (eq) =>
             {
                 if (!eq) Console.WriteLine(eq.ToString());
@@ -6433,7 +6435,7 @@ namespace Tests
                 
             }
             #endregion
-            
+                        
             #region PSE 5E E8.4
             {
                 // A 3.00-kg crate slides down a ramp. The ramp is 1.00 m in
@@ -6451,7 +6453,7 @@ namespace Tests
 
                 var vi = new Symbol("vi");
                 var vf = new Symbol("vf");
-                                
+
                 var Ki = new Symbol("Ki");
                 var Kf = new Symbol("Kf");
 
@@ -6468,17 +6470,17 @@ namespace Tests
 
                 var W_f = new Symbol("W_f");
 
-                var delta_E = new Symbol("delta_E");
+                var ΔE = new Symbol("ΔE");
 
                 var g = new Symbol("g");
 
                 var d = new Symbol("d");
 
-                var th = new Symbol("th");
-                                
+                var θ = new Symbol("θ");
+
                 var eqs = new And(
 
-                    yi == d * sin(th),
+                    yi == d * sin(θ),
 
                     Ki == m * (vi ^ 2) / 2,
                     Kf == m * (vf ^ 2) / 2,
@@ -6491,33 +6493,33 @@ namespace Tests
 
                     W_f == -fk * d,
 
-                    delta_E == W_f,
+                    ΔE == W_f,
 
                     Ei == Ki + ΣUi,
                     Ef == Kf + ΣUf,
 
-                    Ei + delta_E == Ef,
+                    Ei + ΔE == Ef,
 
                     m != 0
 
                     );
 
                 var vals = new List<Equation>()
-                { m == 3.0, d == 1.0, th == (30).ToRadians(), fk == 5.0, vi == 0.0, g == 9.8, yf == 0.0 };
-
+                { m == 3.0, d == 1.0, θ == (30).ToRadians(), fk == 5.0, vi == 0.0, g == 9.8, yf == 0.0 };
+                    
                 eqs
-                    .EliminateVariables(Ei, Ef, delta_E, Ki, Kf, ΣUi, ΣUf, W_f, Ugi, Ugf, yi)                     
+                    .EliminateVariables(Ei, Ef, ΔE, Ki, Kf, ΣUi, ΣUf, W_f, Ugi, Ugf, yi)
                     .IsolateVariable(vf)
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
-                                        
+
                     .AssertEqTo(
                         new Or(
                             new And(
-                                vf == -sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(th))) / m,
+                                vf == -sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(θ))) / m,
                                 m != 0
                             ),
                             new And(
-                                vf == sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(th))) / m,
+                                vf == sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(θ))) / m,
                                 m != 0
                             )))
 
@@ -6526,7 +6528,7 @@ namespace Tests
                     .AssertEqTo(new Or(vf == -2.54296414970142, vf == 2.54296414970142));
             }
             #endregion
-            
+                        
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
