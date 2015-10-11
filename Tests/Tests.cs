@@ -634,6 +634,20 @@ namespace Tests
                 (sqrt(a * b) * (sqrt(a * b) / a) / c)
                     .AssertEqTo(b / c);
                 
+                Assert((x + y + z).ToString() == "x + y + z", "(x + y + z).ToString()");
+
+                Assert((x + y * z).ToString() == "x + y * z", "(x + y * z).ToString()");
+
+                Assert(((x + y) * z).ToString() == "(x + y) * z", "((x + y) * z).ToString()");
+
+                Assert((sin(x) * cos(y)).ToString() == "cos(y) * sin(x)", "(sin(x) * cos(y)).ToString()");
+
+                Assert(new And(x, y, z).ToString() == "And(x, y, z)", "new And(x, y, z).ToString()");
+
+                Assert((x ^ y).ToString() == "x ^ y", "(x ^ y).ToString()");
+
+                Assert(((x * y) ^ (x + z)).ToString() == "(x * y) ^ (x + z)", "((x * y) ^ (x + z)).ToString()");
+                
                 #region Equation.ToString
 
                 Assert((x == y).ToString() == "x == y", "x == y");

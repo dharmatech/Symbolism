@@ -604,23 +604,8 @@ namespace Symbolism
             return this;
         }
 
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-
-            str.Append(name);
-            str.Append("(");
-
-            for (var i = 0; i < args.Count - 1; i++)
-                str.Append(args[i] + ", ");
-
-            if (args.Count - 1 >= 0) str.Append(args[args.Count - 1]);
-
-            str.Append(")");
-
-            return str.ToString();
-        }
-
+        public override string ToString() => $"{name}({string.Join(", ", args)})";
+        
         public MathObject Clone() => MemberwiseClone() as MathObject;
     }
 
@@ -908,23 +893,11 @@ namespace Symbolism
 
         public Power(MathObject a, MathObject b) { bas = a; exp = b; }
 
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-
-            if (bas.Precedence() < Precedence()) str.Append("(");
-            str.Append(bas);
-            if (bas.Precedence() < Precedence()) str.Append(")");
-
-            str.Append(" ^ ");
-
-            if (exp.Precedence() < Precedence()) str.Append("(");
-            str.Append(exp);
-            if (exp.Precedence() < Precedence()) str.Append(")");
-
-            return str.ToString();
-        }
-
+        public override string ToString() =>
+            string.Format("{0} ^ {1}",
+                bas.Precedence() < Precedence() ? $"({bas})" : $"{bas}",
+                exp.Precedence() < Precedence() ? $"({exp})" : $"{exp}");
+        
         public override bool Equals(object obj)
         {
             if (obj is Power)
@@ -997,26 +970,9 @@ namespace Symbolism
         public Product(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
 
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-
-            for (var i = 0; i < elts.Count - 1; i++)
-            {
-                if (elts[i].Precedence() < Precedence()) str.Append("(");
-                str.Append(elts[i]);
-                if (elts[i].Precedence() < Precedence()) str.Append(")");
-
-                str.Append(" * ");
-            }
-
-            if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append("(");
-            str.Append(elts[elts.Count - 1]);
-            if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append(")");
-
-            return str.ToString();
-        }
-
+        public override string ToString() =>
+            string.Join(" * ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
+        
         //////////////////////////////////////////////////////////////////////
         public override int GetHashCode() { return elts.GetHashCode(); }
 
@@ -1295,26 +1251,8 @@ namespace Symbolism
             return new Sum() { elts = res };
         }
 
-        //////////////////////////////////////////////////////////////////////
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-
-            for (var i = 0; i < elts.Count - 1; i++)
-            {
-                if (elts[i].Precedence() < Precedence()) str.Append("(");
-                str.Append(elts[i]);
-                if (elts[i].Precedence() < Precedence()) str.Append(")");
-
-                str.Append(" + ");
-            }
-
-            if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append("(");
-            str.Append(elts[elts.Count - 1]);
-            if (elts[elts.Count - 1].Precedence() < Precedence()) str.Append(")");
-
-            return str.ToString();
-        }
+        public override string ToString() => 
+            String.Join(" + ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
     }
 
     class Difference : MathObject
