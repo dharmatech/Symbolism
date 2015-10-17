@@ -123,6 +123,11 @@ namespace Symbolism
         public virtual MathObject Numerator() => this;
 
         public virtual MathObject Denominator() => 1;
+
+        public override bool Equals(object obj)
+        { throw new Exception("MathObject.Equals called - abstract class"); }
+
+        public override int GetHashCode() => base.GetHashCode();        
     }
 
     public class Equation : MathObject
@@ -211,6 +216,9 @@ namespace Symbolism
 
             return this;
         }
+
+        public override int GetHashCode() => new { a, b }.GetHashCode();
+        
     }
 
     public class Bool : MathObject
@@ -223,8 +231,7 @@ namespace Symbolism
         
         public override bool Equals(object obj) => val == (obj as Bool)?.val;
         
-        public override int GetHashCode()
-        { return val.GetHashCode(); }
+        public override int GetHashCode() => val.GetHashCode();
     }
 
     //public class NotEqual
@@ -254,11 +261,9 @@ namespace Symbolism
         
         public override bool Equals(object obj) => val == (obj as Integer)?.val;
         
-        public override int GetHashCode()
-        { return val.GetHashCode(); }
+        public override int GetHashCode() => val.GetHashCode();
 
-        public override DoubleFloat ToDouble() => new DoubleFloat(val);
-        
+        public override DoubleFloat ToDouble() => new DoubleFloat(val);        
     }
 
     public class DoubleFloat : Number
@@ -289,8 +294,7 @@ namespace Symbolism
             return false;
         }
         
-        public override int GetHashCode()
-        { return val.GetHashCode(); }
+        public override int GetHashCode() => val.GetHashCode();
 
         public override DoubleFloat ToDouble() => this;
     }
@@ -313,11 +317,8 @@ namespace Symbolism
             &&
             denominator == (obj as Fraction)?.denominator;            
         
-        public override int GetHashCode()
-        {
-            return numerator.val.GetHashCode() + denominator.val.GetHashCode();
-        }
-
+        public override int GetHashCode() => new { numerator, denominator }.GetHashCode();
+        
         public override MathObject Numerator() => numerator;
 
         public override MathObject Denominator() => denominator;   
@@ -559,7 +560,7 @@ namespace Symbolism
 
         public override string FullForm() => name;
 
-        public override int GetHashCode() { return name.GetHashCode(); }
+        public override int GetHashCode() => name.GetHashCode();
 
         public override bool Equals(Object obj)
         {
@@ -630,6 +631,8 @@ namespace Symbolism
         public override string FullForm() => $"{name}({string.Join(", ", args)})";
         
         public MathObject Clone() => MemberwiseClone() as MathObject;
+
+        public override int GetHashCode() => new { name, args }.GetHashCode();
     }
 
     public static class FunctionExtensions
@@ -1015,6 +1018,8 @@ namespace Symbolism
 
             return 1;
         }
+
+        public override int GetHashCode() => new { bas, exp }.GetHashCode();
     }
 
     public class Product : MathObject
@@ -1050,7 +1055,7 @@ namespace Symbolism
         }
 
         //////////////////////////////////////////////////////////////////////
-        public override int GetHashCode() { return elts.GetHashCode(); }
+        public override int GetHashCode() => elts.GetHashCode();
 
         public override bool Equals(object obj)
         {
@@ -1200,7 +1205,7 @@ namespace Symbolism
         public Sum(params MathObject[] ls) { elts = new List<MathObject>(ls); }
 
         //////////////////////////////////////////////////////////////////////
-        public override int GetHashCode() { return elts.GetHashCode(); }
+        public override int GetHashCode() => elts.GetHashCode();
 
         public override bool Equals(object obj)
         {
