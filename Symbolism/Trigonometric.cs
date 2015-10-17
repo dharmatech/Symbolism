@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Symbolism.Numerator;
-using Symbolism.Denominator;
-
 using static Symbolism.ListConstructor;
 
 using static Symbolism.Trigonometric.Constructors;

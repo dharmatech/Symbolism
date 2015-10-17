@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Symbolism.Numerator;
-using Symbolism.Denominator;
-
 namespace Symbolism
 {
     namespace RationalizeExpression

@@ -102,6 +102,27 @@ namespace Symbolism
 
             throw new Exception();
         }
+
+        public enum ToStringForms { Full, Standard }
+
+        public static ToStringForms ToStringForm = ToStringForms.Full;
+
+        public virtual string FullForm() => base.ToString();
+
+        public virtual string StandardForm() => FullForm();
+
+        public override string ToString()
+        {
+            if (ToStringForm == ToStringForms.Full) return FullForm();
+
+            if (ToStringForm == ToStringForms.Standard) return StandardForm();
+
+            throw new Exception();
+        }
+
+        public virtual MathObject Numerator() => this;
+
+        public virtual MathObject Denominator() => 1;
     }
 
     public class Equation : MathObject
@@ -118,16 +139,16 @@ namespace Symbolism
 
         public Equation(MathObject x, MathObject y, Operators op)
         { a = x; b = y; Operator = op; }
-
-        public override string ToString()
-        { 
+        
+        public override string FullForm()
+        {
             if (Operator == Operators.Equal) return a + " == " + b;
             if (Operator == Operators.NotEqual) return a + " != " + b;
             if (Operator == Operators.LessThan) return a + " < " + b;
             if (Operator == Operators.GreaterThan) return a + " > " + b;
             throw new Exception();
         }
-
+        
         public override bool Equals(object obj)
         {
             return
@@ -197,8 +218,8 @@ namespace Symbolism
         public bool val;
 
         public Bool(bool b) { val = b; }
-
-        public override string ToString() => val.ToString();
+        
+        public override string FullForm() => val.ToString();
         
         public override bool Equals(object obj) => val == (obj as Bool)?.val;
         
@@ -229,7 +250,7 @@ namespace Symbolism
 
         public Integer(int n) { val = n; }
         
-        public override string ToString() => val.ToString();
+        public override string FullForm() => val.ToString();
         
         public override bool Equals(object obj) => val == (obj as Integer)?.val;
         
@@ -248,7 +269,7 @@ namespace Symbolism
 
         public DoubleFloat(double n) { val = n; }
 
-        public override string ToString() => val.ToString("R");
+        public override string FullForm() => val.ToString("R");
 
         //public bool EqualWithinTolerance(DoubleFloat obj)
         //{
@@ -282,7 +303,7 @@ namespace Symbolism
         public Fraction(Integer a, Integer b)
         { numerator = a; denominator = b; }
         
-        public override string ToString() => numerator + "/" + denominator;
+        public override string FullForm() => numerator + "/" + denominator;
 
         public override DoubleFloat ToDouble() => new DoubleFloat((double)numerator.val / (double)denominator.val);
         //////////////////////////////////////////////////////////////////////
@@ -297,7 +318,9 @@ namespace Symbolism
             return numerator.val.GetHashCode() + denominator.val.GetHashCode();
         }
 
-        //////////////////////////////////////////////////////////////////////
+        public override MathObject Numerator() => numerator;
+
+        public override MathObject Denominator() => denominator;   
     }
 
     public static class Rational
@@ -534,7 +557,7 @@ namespace Symbolism
 
         public Symbol(String str) { name = str; }
 
-        public override string ToString() => name;
+        public override string FullForm() => name;
 
         public override int GetHashCode() { return name.GetHashCode(); }
 
@@ -604,7 +627,7 @@ namespace Symbolism
             return this;
         }
 
-        public override string ToString() => $"{name}({string.Join(", ", args)})";
+        public override string FullForm() => $"{name}({string.Join(", ", args)})";
         
         public MathObject Clone() => MemberwiseClone() as MathObject;
     }
@@ -650,12 +673,12 @@ namespace Symbolism
 
         public And(params MathObject[] ls)
         {
-            name = "And";
+            name = "and";
             args = new List<MathObject>(ls);
             proc = AndProc;
         }
 
-        public And() { name = "And"; args = new List<MathObject>(); proc = AndProc; }
+        public And() { name = "and"; args = new List<MathObject>(); proc = AndProc; }
 
         public MathObject Add(MathObject obj)
         {
@@ -705,12 +728,12 @@ namespace Symbolism
 
         public Or(params MathObject[] ls)
         {
-            name = "Or";
+            name = "or";
             args = new List<MathObject>(ls);
             proc = OrProc;
         }
 
-        public Or() { name = "Or"; args = new List<MathObject>(); proc = OrProc; }
+        public Or() { name = "or"; args = new List<MathObject>(); proc = OrProc; }
     }
    
     public static class OrderRelation
@@ -893,11 +916,24 @@ namespace Symbolism
 
         public Power(MathObject a, MathObject b) { bas = a; exp = b; }
 
-        public override string ToString() =>
+        public override string FullForm() =>
             string.Format("{0} ^ {1}",
                 bas.Precedence() < Precedence() ? $"({bas})" : $"{bas}",
                 exp.Precedence() < Precedence() ? $"({exp})" : $"{exp}");
-        
+
+
+        public override string StandardForm()
+        {
+            // x ^ 1/2   ->   sqrt(x)
+            
+            if (exp == new Integer(1) / new Integer(2)) return $"sqrt({bas})";
+
+            return string.Format("{0} ^ {1}",
+                bas.Precedence() < Precedence() ? $"({bas})" : $"{bas}",
+                exp.Precedence() < Precedence() ? $"({exp})" : $"{exp}");
+        }
+
+
         public override bool Equals(object obj)
         {
             if (obj is Power)
@@ -961,6 +997,24 @@ namespace Symbolism
 
             return new Power(v, w);
         }
+
+        public override MathObject Numerator()
+        {
+            if (exp is Integer && exp < 0) return 1;
+
+            if (exp is Fraction && exp < 0) return 1;
+
+            return this;
+        }
+
+        public override MathObject Denominator()
+        {
+            if (exp is Integer && exp < 0) return this ^ -1;
+
+            if (exp is Fraction && exp < 0) return this ^ -1;
+
+            return 1;
+        }
     }
 
     public class Product : MathObject
@@ -970,9 +1024,31 @@ namespace Symbolism
         public Product(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
 
-        public override string ToString() =>
+        public override string FullForm() =>
             string.Join(" * ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
-        
+
+        public override string StandardForm()
+        {
+            if (this.Denominator() == 1)
+            {
+                if (OrderRelation.Const(this) < 0) return $"-{(this * -1)}";
+
+                // return string.Join(" * ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
+
+                return string.Join(" * ", 
+                    elts.ConvertAll(elt => elt.Precedence() < Precedence() || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt})" : $"{elt}"));
+            }
+
+            var expr_a = this.Numerator();
+            var expr_b = this.Denominator();
+
+            var expr_a_ = expr_a is Sum || (expr_a is Power && (expr_a as Power).exp != new Integer(1) / 2) ? $"({expr_a})" : $"{expr_a}";
+
+            var expr_b_ = expr_b is Sum || expr_b is Product || (expr_b is Power && (expr_b as Power).exp != new Integer(1) / 2) ? $"({expr_b})" : $"{expr_b}";
+            
+            return $"{expr_a_} / {expr_b_}";
+        }
+
         //////////////////////////////////////////////////////////////////////
         public override int GetHashCode() { return elts.GetHashCode(); }
 
@@ -1109,18 +1185,22 @@ namespace Symbolism
 
             return new Product() { elts = res };
         }
+
+        public override MathObject Numerator() => 
+            new Product() { elts = elts.Select(elt => elt.Numerator()).ToList() }.Simplify();
+
+        public override MathObject Denominator() =>
+            new Product() { elts = elts.Select(elt => elt.Denominator()).ToList() }.Simplify();
     }
 
     public class Sum : MathObject
     {
         public List<MathObject> elts;
 
-        public Sum(params MathObject[] ls)
-        { elts = new List<MathObject>(ls); }
+        public Sum(params MathObject[] ls) { elts = new List<MathObject>(ls); }
 
         //////////////////////////////////////////////////////////////////////
-        public override int GetHashCode()
-        { return elts.GetHashCode(); }
+        public override int GetHashCode() { return elts.GetHashCode(); }
 
         public override bool Equals(object obj)
         {
@@ -1251,8 +1331,28 @@ namespace Symbolism
             return new Sum() { elts = res };
         }
 
-        public override string ToString() => 
+        public override string FullForm() => 
             String.Join(" + ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
+
+        public override string StandardForm()
+        {
+            var result = string.Join(" ",
+                elts
+                    .ConvertAll(elt =>
+                    {
+                        var elt_ = OrderRelation.Const(elt) < 0 ? elt * -1 : elt;
+                                                                                                
+                        var elt__ = OrderRelation.Const(elt) < 0 && elt_ is Sum || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt_})" : $"{elt_}";
+
+                        return OrderRelation.Const(elt) < 0 ? $"- {elt__}" : $"+ {elt__}";
+                    }));
+            
+            if (result.StartsWith("+ ")) return result.Remove(0, 2); // "+ x + y"   ->   "x + y"
+
+            if (result.StartsWith("- ")) return result.Remove(1, 1); // "- x + y"   ->   "-x + y"
+
+            return result;
+        }
     }
 
     class Difference : MathObject
@@ -1285,5 +1385,9 @@ namespace Symbolism
     public static class Constructors
     {
         public static MathObject sqrt(MathObject obj) => obj ^ (new Integer(1) / new Integer(2));
+
+        public static MathObject and(params MathObject[] ls) => new And() { args = ls.ToList() }.Simplify();
+
+        public static MathObject or(params MathObject[] ls) => new Or() { args = ls.ToList() }.Simplify();
     }
 }

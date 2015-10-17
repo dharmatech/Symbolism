@@ -25,8 +25,6 @@ using Symbolism.Trigonometric;
 using Symbolism.Has;
 using Symbolism.Substitute;
 
-using Symbolism.Denominator;
-
 using Symbolism.LogicalExpand;
 using Symbolism.SimplifyEquation;
 using Symbolism.SimplifyLogical;
@@ -70,22 +68,29 @@ namespace Tests
             return a;
         }
 
-        public static MathObject DispLong(this MathObject obj, int indent = 0)
+        public static MathObject DispLong(this MathObject obj, int indent = 0, bool comma = false)
         {
             if (obj is Or || obj is And)
             {
                 Console.WriteLine(new String(' ', indent) + (obj as Function).name + "(");
+                                
+                var i = 0;
 
-                foreach (var elt in (obj as Function).args) elt.DispLong(indent + 2);
-                
-                Console.WriteLine(new String(' ', indent) + ")");
+                foreach (var elt in (obj as Function).args)
+                {
+                    if (i < (obj as Function).args.Count - 1)
+                        elt.DispLong(indent + 2, comma: true);
+                    else
+                        elt.DispLong(indent + 2);
+
+                    i++;
+                }
+
+                Console.WriteLine(new String(' ', indent) + ")" + (comma ? "," : ""));
             }
 
-            else
-            {
-                Console.WriteLine(new String(' ', indent) + obj);
-            }
-
+            else Console.WriteLine(new String(' ', indent) + obj + (comma ? "," : ""));
+            
             return obj;
         }
 
@@ -633,20 +638,108 @@ namespace Tests
                 
                 (sqrt(a * b) * (sqrt(a * b) / a) / c)
                     .AssertEqTo(b / c);
+
+
+                Action<MathObject, string> AssertToStringMatch = 
+                    (MathObject obj, string str) => Assert(obj.ToString() == str, $"({str}).ToString()");
                 
-                Assert((x + y + z).ToString() == "x + y + z", "(x + y + z).ToString()");
-
-                Assert((x + y * z).ToString() == "x + y * z", "(x + y * z).ToString()");
-
-                Assert(((x + y) * z).ToString() == "(x + y) * z", "((x + y) * z).ToString()");
-
+                MathObject.ToStringForm = MathObject.ToStringForms.Full;
+                                
+                AssertToStringMatch(x + y + z, "x + y + z");
+                                
+                AssertToStringMatch(x + y * z, "x + y * z");
+                                                
+                AssertToStringMatch((x + y) * z, "(x + y) * z");
+                
                 Assert((sin(x) * cos(y)).ToString() == "cos(y) * sin(x)", "(sin(x) * cos(y)).ToString()");
+                                
+                AssertToStringMatch(and(x, y, z), "and(x, y, z)");
+                                
+                AssertToStringMatch(x ^ y, "x ^ y");
+                                
+                AssertToStringMatch((x * y) ^ (x + z), "(x * y) ^ (x + z)");
 
-                Assert(new And(x, y, z).ToString() == "And(x, y, z)", "new And(x, y, z).ToString()");
 
-                Assert((x ^ y).ToString() == "x ^ y", "(x ^ y).ToString()");
+                
+                Assert((x - y).ToString() == "x + -1 * y", "(x - y).ToString()");
 
-                Assert(((x * y) ^ (x + z)).ToString() == "(x * y) ^ (x + z)", "((x * y) ^ (x + z)).ToString()");
+                Assert((x - y - z).ToString() == "x + -1 * y + -1 * z", "(x - y - z).ToString()");
+
+                Assert((x / y).ToString() == "x * y ^ -1", "(x / y).ToString()");
+                
+                Assert((x - (y - z)).ToString() == "x + -1 * (y + -1 * z)", "(x - (y - z)).ToString()");
+
+
+                MathObject.ToStringForm = MathObject.ToStringForms.Standard;
+                
+                Assert((x + y).ToString() == "x + y", "(x + y).ToString()");
+
+                Assert((x - y).ToString() == "x - y", "(x - y).ToString()");
+                    
+                Assert((x - y - z).ToString() == "x - y - z", "(x - y - z).ToString()");
+                    
+                Assert((-x - y - z).ToString() == "-x - y - z", "(x - y - z).ToString()");
+                    
+                Assert((2 * x - 3 * y - 4 * z).ToString() == "2 * x - 3 * y - 4 * z", "(2 * x - 3 * y - 4 * z).ToString()");
+                    
+                Assert((x - (y - z)).ToString() == "x - (y - z)", "(x - (y - z)).ToString()");
+                
+                Assert((x - y + z).ToString() == "x - y + z", "(x - y + z).ToString()");
+                    
+                Assert((-x).ToString() == "-x", "(-x).ToString()");
+                    
+                Assert((x / y).ToString() == "x / y", "(x / y).ToString()");
+                    
+                Assert((x / (y + z)).ToString() == "x / (y + z)", "(x / (y + z)).ToString()");
+                                        
+                Assert(((x + y) / (x + z)).ToString() == "(x + y) / (x + z)", "((x + y) / (x + z)).ToString()");
+                                        
+                Assert((-x * y).ToString() == "-x * y", "(-x * y).ToString()");
+
+                Assert((x * -y).ToString() == "-x * y", "(x * -y).ToString()");
+
+
+                Assert(sin(x / y).ToString() == "sin(x / y)", "sin(x / y).ToString()");
+                                                
+                Assert(
+                    (x == -sqrt(2 * y * (-z * a + y * (b ^ 2) / 2 - c * y * d + c * y * z * sin(x))) / y).ToString() ==
+                    "x == -sqrt(2 * y * ((b ^ 2) * y / 2 - c * d * y - a * z + c * sin(x) * y * z)) / y",
+                    "(x == -sqrt(2 * y * (-z * a + y * (b ^ 2) / 2 - c * y * d + c * y * z * sin(x))) / y).ToString()");
+                
+                Assert((x * (y ^ z)).ToString() == "x * (y ^ z)", "(x * (y ^ z)).ToString()");
+
+                Assert((x + (y ^ z)).ToString() == "x + (y ^ z)", "((x + (y ^ z)).ToString()");
+                
+                Assert(sqrt(x).ToString() == "sqrt(x)", "sqrt(x).ToString()");
+                
+                Assert(sqrt(x).FullForm().ToString() == "x ^ 1/2", "sqrt(x).FullForm()");
+                
+                Assert((x ^ (new Integer(1) / 3)).ToString() == "x ^ 1/3", "(x ^ (new Integer(1) / 3)).ToString()");
+
+                Assert(and(and(x, y), and(x, z)).SimplifyLogical().ToString() == "and(x, y, z)", 
+                    "and(and(x, y), and(x, z)).SimplifyLogical().ToString()");
+
+                AssertToStringMatch(x == sqrt(2 * (y * z - cos(a) * y * z)), "x == sqrt(2 * (y * z - cos(a) * y * z))");
+                                
+                AssertToStringMatch(
+                     a == (-c * cos(d) - b * c * sin(d) + x * y + b * x * z) / (-y - z),
+                    "a == (-c * cos(d) - b * c * sin(d) + x * y + b * x * z) / (-y - z)");
+                
+                AssertToStringMatch(
+                     x == -(sin(y) / cos(y) + sqrt((sin(y) ^ 2) / (cos(y) ^ 2))) * (z ^ 2) / a,
+                    "x == -(sin(y) / cos(y) + sqrt((sin(y) ^ 2) / (cos(y) ^ 2))) * (z ^ 2) / a");
+                                
+                AssertToStringMatch(x * sqrt(y), "x * sqrt(y)");
+                                
+                AssertToStringMatch(x / sqrt(y), "x / sqrt(y)");
+
+                AssertToStringMatch(sqrt(y) / x, "sqrt(y) / x");
+                
+                AssertToStringMatch((x ^ 2) / (y ^ 3), "(x ^ 2) / (y ^ 3)");
+                                                               
+                AssertToStringMatch(
+                     x == y * sqrt(-8 * a / (y * (z ^ 2))) * (z ^ 2) / (4 * a),
+                    "x == y * sqrt(-8 * a / (y * (z ^ 2))) * (z ^ 2) / (4 * a)");
                 
                 #region Equation.ToString
 
@@ -658,7 +751,7 @@ namespace Tests
 
                 #region Function.ToString
 
-                Assert(new And().ToString() == "And()", "And()");
+                Assert(new And().ToString() == "and()", "and()");
 
                 #endregion
 
@@ -748,7 +841,11 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
+                var half = new Integer(1) / 2;
+
                 #region Sin
+
+
 
                 {
                     sin(0).AssertEqTo(0);
@@ -795,7 +892,7 @@ namespace Tests
                     sin( 9 * Pi / 4).AssertEqTo( 1/sqrt(2));
                     sin(11 * Pi / 4).AssertEqTo( 1/sqrt(2));
 
-                    var half = new Integer(1) / 2;
+                    // var half = new Integer(1) / 2;
 
                     sin(-5 * Pi / 6).AssertEqTo(-half);
                     sin(-1 * Pi / 6).AssertEqTo(-half);
@@ -918,8 +1015,21 @@ namespace Tests
 
                 #endregion
 
+                // Symbolism.Numerator.Extensions.Numerator(x ^ -2).Disp();
+
+                #region Numerator
+
+                AssertIsTrue((x ^ -1).Numerator() == 1);
+
+                AssertIsTrue((x ^ -half).Numerator() == 1);
+                
+
+                #endregion
+
                 #region Denominator
                 {
+
+
                     ((new Integer(2) / 3) * ((x * (x + 1)) / (x + 2)) * (y ^ z))
                         .Denominator()
                         .AssertEqTo(3 * (x + 2));
@@ -6527,19 +6637,19 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
 
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == -sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(θ))) / m,
                                 m != 0
                             ),
-                            new And(
+                            and(
                                 vf == sqrt(2 * m * (-d * fk + m * (vi ^ 2) / 2 - g * m * yf + g * m * d * sin(θ))) / m,
                                 m != 0
                             )))
-
+                            
                     .SubstituteEqLs(vals)
 
-                    .AssertEqTo(new Or(vf == -2.54296414970142, vf == 2.54296414970142));
+                    .AssertEqTo(or(vf == -2.54296414970142, vf == 2.54296414970142));
             }
             #endregion
                         
