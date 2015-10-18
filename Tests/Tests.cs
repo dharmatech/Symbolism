@@ -484,6 +484,18 @@ namespace Tests
                     DoubleFloat.tolerance = null;
                 }
 
+                #region Const
+
+                AssertIsTrue((2 * x * y).Const() == 2);
+
+                AssertIsTrue((x * y / 2).Const() == new Integer(1) / 2);
+
+                AssertIsTrue((0.1 * x * y).Const() == 0.1);
+
+                AssertIsTrue((x * y).Const() == 1);
+
+                #endregion
+            
                 #region Simplify
 
                 AssertIsTrue(x + x == 2 * x);

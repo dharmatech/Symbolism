@@ -154,15 +154,12 @@ namespace Symbolism
             throw new Exception();
         }
         
-        public override bool Equals(object obj)
-        {
-            return
-                obj is Equation &&
-                a.Equals((obj as Equation).a) &&
-                b.Equals((obj as Equation).b) &&
-                Operator == (obj as Equation).Operator;
-        }
-
+        public override bool Equals(object obj) =>
+            obj is Equation &&
+            a.Equals((obj as Equation).a) &&
+            b.Equals((obj as Equation).b) &&
+            Operator == (obj as Equation).Operator;
+    
         Boolean ToBoolean()
         {
             if (a is Bool && b is Bool) return (a as Bool).Equals(b);
@@ -190,7 +187,7 @@ namespace Symbolism
 
             throw new Exception();
         }
-
+        
         public static implicit operator Boolean(Equation eq)
         {
             if (eq.Operator == Operators.Equal)
@@ -562,12 +559,8 @@ namespace Symbolism
 
         public override int GetHashCode() => name.GetHashCode();
 
-        public override bool Equals(Object obj)
-        {
-            if (obj is Symbol) return name == (obj as Symbol).name;
-
-            return false;
-        }
+        public override bool Equals(Object obj) => 
+            obj is Symbol ? name == (obj as Symbol).name : false;        
     }
 
     public static class ListConstructor
@@ -612,22 +605,13 @@ namespace Symbolism
 
         public Proc proc;
 
-        public override bool Equals(object obj)
-        {
-            if ((GetType() == obj.GetType()) &&
-                (name == ((Function)obj).name) &&
-                (ListUtils.equal(args, ((Function)obj).args)))
-                return true;
-            return false;
-        }
-
-        public MathObject Simplify()
-        {
-            if (proc != null) return proc(args.ToArray());
-
-            return this;
-        }
-
+        public override bool Equals(object obj) =>
+            GetType() == obj.GetType() &&
+            name == (obj as Function).name &&
+            ListUtils.equal(args, ((Function)obj).args);
+        
+        public MathObject Simplify() => proc == null ? this : proc(args.ToArray());
+        
         public override string FullForm() => $"{name}({string.Join(", ", args)})";
         
         public MathObject Clone() => MemberwiseClone() as MathObject;
@@ -741,47 +725,22 @@ namespace Symbolism
    
     public static class OrderRelation
     {
-        public static MathObject Base(MathObject u)
-        {
-            if (u is Power) return ((Power)u).bas;
-
-            return u;
-        }
-
-        public static MathObject Exponent(MathObject u)
-        {
-            if (u is Power) return ((Power)u).exp;
-
-            return new Integer(1);
-        }
-
-        public static MathObject Term(MathObject u)
+        public static MathObject Base(MathObject u) => u is Power ? (u as Power).bas : u;
+        
+        public static MathObject Exponent(MathObject u) => u is Power ? (u as Power).exp : 1;
+        
+        public static MathObject Term(this MathObject u)
         {
             if (u is Product && ((Product)u).elts[0] is Number)
                 return new Product() { elts = ((Product)u).elts.Cdr() };
 
             if (u is Product) return u;
-            
+
             return new Product(u);
         }
 
-        public static MathObject Const(MathObject u)
-        {
-            if (u is Product)
-            {
-                var res = (Product)u;
-
-                if (res.elts[0] is Integer) return res.elts[0];
-
-                if (res.elts[0] is Fraction) return res.elts[0];
-
-                if (res.elts[0] is DoubleFloat) return res.elts[0];
-
-                return new Integer(1);
-            }
-
-            return new Integer(1);
-        }
+        public static MathObject Const(this MathObject u) =>
+            (u is Product && (u as Product).elts[0] is Number) ? (u as Product).elts[0] : 1;
 
         public static bool O3(List<MathObject> uElts, List<MathObject> vElts)
         {
@@ -851,18 +810,10 @@ namespace Symbolism
             }
 
             if (u is Sum && v is Sum)
-            {
-                // var a = new List<MathObject>(((Sum)u).elts.Cdr());
-                var a = new List<MathObject>(((Sum)u).elts);
-                a.Reverse();
-
-                // var b = new List<MathObject>(((Sum)v).elts.Cdr());
-                var b = new List<MathObject>(((Sum)v).elts);
-                b.Reverse();
-
-                return O3(a, b);
-            }
-
+                return O3(
+                    (u as Sum).elts.Reverse<MathObject>().ToList(),
+                    (v as Sum).elts.Reverse<MathObject>().ToList());
+                
             if (u is Power && v is Power)
             {
                 var u_ = (Power)u;
@@ -883,10 +834,7 @@ namespace Symbolism
                     String.Compare(u_.name, v_.name) < 0;
             }
 
-            if ((u is Integer || u is Fraction || u is DoubleFloat)
-                &&
-                !(v is Integer || v is Fraction || v is DoubleFloat))
-                return true;
+            if (u is Number && !(v is Number)) return true;
 
             if (u is Product &&
                 (v is Power || v is Sum || v is Function || v is Symbol))
@@ -935,15 +883,10 @@ namespace Symbolism
                 bas.Precedence() < Precedence() ? $"({bas})" : $"{bas}",
                 exp.Precedence() < Precedence() ? $"({exp})" : $"{exp}");
         }
-
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Power)
-                return bas == ((Power)obj).bas && exp == ((Power)obj).exp;
-            return false;
-        }
-
+        
+        public override bool Equals(object obj) => 
+            obj is Power && bas == (obj as Power).bas && exp == (obj as Power).exp;
+        
         public MathObject Simplify()
         {
             var v = bas;
@@ -1036,10 +979,8 @@ namespace Symbolism
         {
             if (this.Denominator() == 1)
             {
-                if (OrderRelation.Const(this) < 0) return $"-{(this * -1)}";
-
-                // return string.Join(" * ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
-
+                if (this.Const() < 0) return $"-{(this * -1)}";
+                
                 return string.Join(" * ", 
                     elts.ConvertAll(elt => elt.Precedence() < Precedence() || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt})" : $"{elt}"));
             }
@@ -1053,18 +994,12 @@ namespace Symbolism
             
             return $"{expr_a_} / {expr_b_}";
         }
-
-        //////////////////////////////////////////////////////////////////////
+        
         public override int GetHashCode() => elts.GetHashCode();
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Product) return ListUtils.equal(elts, ((Product)obj).elts);
-
-            return false;
-        }
-        //////////////////////////////////////////////////////////////////////
-
+        public override bool Equals(object obj) => 
+            obj is Product && ListUtils.equal(elts, (obj as Product).elts);
+        
         static List<MathObject> MergeProducts(List<MathObject> pElts, List<MathObject> qElts)
         {
             if (pElts.Count == 0) return qElts;
@@ -1203,18 +1138,12 @@ namespace Symbolism
         public List<MathObject> elts;
 
         public Sum(params MathObject[] ls) { elts = new List<MathObject>(ls); }
-
-        //////////////////////////////////////////////////////////////////////
+        
         public override int GetHashCode() => elts.GetHashCode();
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Sum) return ListUtils.equal(elts, ((Sum)obj).elts);
-
-            return false;
-        }
-        //////////////////////////////////////////////////////////////////////
-
+        public override bool Equals(object obj) => 
+            obj is Sum && ListUtils.equal(elts, (obj as Sum).elts);
+        
         static List<MathObject> MergeSums(List<MathObject> pElts, List<MathObject> qElts)
         {
             if (pElts.Count == 0) return qElts;
@@ -1301,9 +1230,9 @@ namespace Symbolism
                 var p = elts[0];
                 var q = elts[1];
 
-                if (OrderRelation.Term(p) == OrderRelation.Term(q))
+                if (p.Term() == q.Term())
                 {
-                    var res = OrderRelation.Term(p) * (OrderRelation.Const(p) + OrderRelation.Const(q));
+                    var res = p.Term() * (p.Const() + q.Const());
 
                     if (res == 0) return new List<MathObject>() { };
                     
@@ -1345,11 +1274,11 @@ namespace Symbolism
                 elts
                     .ConvertAll(elt =>
                     {
-                        var elt_ = OrderRelation.Const(elt) < 0 ? elt * -1 : elt;
+                        var elt_ = elt.Const() < 0 ? elt * -1 : elt;
                                                                                                 
-                        var elt__ = OrderRelation.Const(elt) < 0 && elt_ is Sum || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt_})" : $"{elt_}";
+                        var elt__ = elt.Const() < 0 && elt_ is Sum || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt_})" : $"{elt_}";
 
-                        return OrderRelation.Const(elt) < 0 ? $"- {elt__}" : $"+ {elt__}";
+                        return elt.Const() < 0 ? $"- {elt__}" : $"+ {elt__}";
                     }));
             
             if (result.StartsWith("+ ")) return result.Remove(0, 2); // "+ x + y"   ->   "x + y"
