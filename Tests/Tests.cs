@@ -425,25 +425,18 @@ namespace Tests
         }
 
         static void Assert(bool val, string str) { if (!val) Console.WriteLine(str); }
-
-        static List<Equation> Kinematic(Symbol s, Symbol u, Symbol v, Symbol a, Symbol t)
-        {
-            return new List<Equation>()
-            {
+        
+        static And Kinematic(Symbol s, Symbol u, Symbol v, Symbol a, Symbol t) =>
+            new And(
                 v == u + a * t,
                 s == (u + v) * t / 2
-            };
-        }
+            );
 
-        static List<Equation> Kinematic(Symbol sA, Symbol sB, Symbol vA, Symbol vB, Symbol a, Symbol tA, Symbol tB)
-        {
-            return new List<Equation>()
-            {
+        static And Kinematic(Symbol sA, Symbol sB, Symbol vA, Symbol vB, Symbol a, Symbol tA, Symbol tB) =>
+            new And(
                 vB == vA + a * (tB - tA),
-                sB - sA == (vA + vB) * (tB - tA) / 2
-            };
-        }
-
+                sB - sA == (vA + vB) * (tB - tA) / 2);
+        
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -764,7 +757,7 @@ namespace Tests
                 #region Function.ToString
 
                 Assert(new And().ToString() == "and()", "and()");
-
+               
                 #endregion
 
                 #region Equation.Simplify
@@ -781,61 +774,61 @@ namespace Tests
 
                 #region And
 
-                new And().Simplify().AssertEqTo(true);
+                and().AssertEqTo(true);
 
-                new And(10).Simplify().AssertEqTo(10);
+                and(10).AssertEqTo(10);
 
-                new And(true).Simplify().AssertEqTo(true);
+                and(true).AssertEqTo(true);
 
-                new And(false).Simplify().AssertEqTo(false);
+                and(false).AssertEqTo(false);
 
-                new And(10, 20, 30).Simplify().AssertEqTo(new And(10, 20, 30));
+                and(10, 20, 30).AssertEqTo(and(10, 20, 30));
 
-                new And(10, false, 20).Simplify().AssertEqTo(false);
+                and(10, false, 20).AssertEqTo(false);
 
-                new And(10, true, 20).Simplify().AssertEqTo(new And(10, 20));
+                and(10, true, 20).AssertEqTo(and(10, 20));
 
-                new And(10, new And(20, 30), 40)
-                    .Simplify()
-                    .AssertEqTo(new And(10, 20, 30, 40));
+                and(10, and(20, 30), 40)
+                    
+                    .AssertEqTo(and(10, 20, 30, 40));
 
                 #endregion
 
                 #region Or
 
-                new Or(10).Simplify().AssertEqTo(10);
+                or(10).AssertEqTo(10);
 
-                new Or(true).Simplify().AssertEqTo(true);
+                or(true).AssertEqTo(true);
 
-                new Or(false).Simplify().AssertEqTo(false);
+                or(false).AssertEqTo(false);
 
-                new Or(10, 20, false).Simplify().AssertEqTo(new Or(10, 20));
+                or(10, 20, false).AssertEqTo(or(10, 20));
 
-                new Or(false, false).Simplify().AssertEqTo(false);
+                or(false, false).AssertEqTo(false);
 
-                new Or(10, true, 20, false).Simplify().AssertEqTo(true);
+                or(10, true, 20, false).AssertEqTo(true);
 
-                new Or(10, false, 20).Simplify().AssertEqTo(new Or(10, 20));
+                or(10, false, 20).AssertEqTo(or(10, 20));
 
-                new Or(10, new Or(20, 30), 40)
-                    .Simplify()
-                    .AssertEqTo(new Or(10, 20, 30, 40));
+                or(10, or(20, 30), 40)
+                    
+                    .AssertEqTo(or(10, 20, 30, 40));
 
                 #endregion
 
                 #region Function.Map
 
                 new And(1, 2, 3, 4, 5, 6).Map(elt => elt * 2)
-                    .AssertEqTo(new And(2, 4, 6, 8, 10, 12));
+                    .AssertEqTo(and(2, 4, 6, 8, 10, 12));
 
                 new And(1, 2, 3, 4, 5, 6).Map(elt => (elt is Integer) && (elt as Integer).val % 2 == 0 ? elt : false)
                     .AssertEqTo(false);
 
                 new Or(1, 2, 3).Map(elt => elt * 2)
-                    .AssertEqTo(new Or(2, 4, 6));
+                    .AssertEqTo(or(2, 4, 6));
 
                 new Or(1, 2, 3, 4, 5, 6).Map(elt => (elt is Integer) && (elt as Integer).val % 2 == 0 ? elt : false)
-                    .AssertEqTo(new Or(2, 4, 6));
+                    .AssertEqTo(or(2, 4, 6));
 
                 #endregion Function.Map
 
@@ -1050,42 +1043,42 @@ namespace Tests
                 
                 #region LogicalExpand
 
-                new And(new Or(a, b), c)
+                and(or(a, b), c)
                     .LogicalExpand()
                     .AssertEqTo(
-                        new Or(
-                            new And(a, c),
-                            new And(b, c)));
+                        or(
+                            and(a, c),
+                            and(b, c)));
 
-                new And(a, new Or(b, c))
+                and(a, or(b, c))
                     .LogicalExpand()
-                    .AssertEqTo(new Or(new And(a, b), new And(a, c)));
+                    .AssertEqTo(or(and(a, b), and(a, c)));
 
-                new And(a, new Or(b, c), d)
-                    .LogicalExpand()
-                    .AssertEqTo(
-                        new Or(
-                            new And(a, b, d),
-                            new And(a, c, d)));
-
-                new And(new Or(a == b, b == c), x == y)
+                and(a, or(b, c), d)
                     .LogicalExpand()
                     .AssertEqTo(
-                        new Or(
-                            new And(a == b, x == y),
-                            new And(b == c, x == y)));
+                        or(
+                            and(a, b, d),
+                            and(a, c, d)));
 
-                new And(
-                    new Or(a == b, b == c),
-                    new Or(c == d, d == a),
+                and(or(a == b, b == c), x == y)
+                    .LogicalExpand()
+                    .AssertEqTo(
+                        or(
+                            and(a == b, x == y),
+                            and(b == c, x == y)));
+
+                and(
+                    or(a == b, b == c),
+                    or(c == d, d == a),
                     x == y)
                     .LogicalExpand()
                     .AssertEqTo(
-                        new Or(
-                            new And(a == b, c == d, x == y),
-                            new And(a == b, d == a, x == y),
-                            new And(b == c, c == d, x == y),
-                            new And(b == c, d == a, x == y)));
+                        or(
+                            and(a == b, c == d, x == y),
+                            and(a == b, d == a, x == y),
+                            and(b == c, c == d, x == y),
+                            and(b == c, d == a, x == y)));
 
                 #endregion
 
@@ -1107,9 +1100,9 @@ namespace Tests
 
                 #region SimplifyLogical
 
-                new And(a, b, c, a)
+                and(a, b, c, a)
                     .SimplifyLogical()
-                    .AssertEqTo(new And(a, b, c));
+                    .AssertEqTo(and(a, b, c));
 
                 #endregion SimplifyLogical
 
@@ -1203,13 +1196,13 @@ namespace Tests
                     .IsolateVariable(x)
                     .AssertEqTo(x == c);
 
-                new And(x == y, a == b)
+                and(x == y, a == b)
                     .IsolateVariable(b)
-                    .AssertEqTo(new And(x == y, b == a));
+                    .AssertEqTo(and(x == y, b == a));
 
-                new Or(new And(y == x, z == x), new And(b == x, c == x))
+                or(and(y == x, z == x), and(b == x, c == x))
                     .IsolateVariable(x)
-                    .AssertEqTo(new Or(new And(x == y, x == z), new And(x == b, x == c)));
+                    .AssertEqTo(or(and(x == y, x == z), and(x == b, x == c)));
 
                 Assert((0 == x - y).IsolateVariableEq(x).Equals(x == y), "(0 == x - y).IsolateVariable(x).Equals(x == y)");
 
@@ -1219,21 +1212,21 @@ namespace Tests
                     .IsolateVariable(x)
                     .AssertEqTo(
 
-                        new Or(
+                        or(
 
-                            new And(
+                            and(
                                 x == (-b + sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(
+                            and(
                                 x == (-b - sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(x == -c / b, a == 0, b != 0),
+                            and(x == -c / b, a == 0, b != 0),
 
-                            new And(a == 0, b == 0, c == 0)
+                            and(a == 0, b == 0, c == 0)
                         )
                     );
 
@@ -1241,18 +1234,18 @@ namespace Tests
                     .IsolateVariable(x)
                     .AssertEqTo(
 
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 x == sqrt(-4 * a * c) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(
+                            and(
                                 x == -sqrt(-4 * a * c) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(a == 0, c == 0)
+                            and(a == 0, c == 0)
                         )
                     );
 
@@ -1264,21 +1257,21 @@ namespace Tests
                     .IsolateVariable(x)
                     .AssertEqTo(
 
-                    new Or(
+                    or(
 
-                            new And(
+                            and(
                                 x == (-b + sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(
+                            and(
                                 x == (-b - sqrt((b ^ 2) + -4 * a * c)) / (2 * a),
                                 a != 0
                             ),
 
-                            new And(x == -c / b, a == 0, b != 0),
+                            and(x == -c / b, a == 0, b != 0),
 
-                            new And(a == 0, b == 0, c == 0)
+                            and(a == 0, b == 0, c == 0)
                         )
                 );
 
@@ -1313,16 +1306,16 @@ namespace Tests
                     .AssertEqTo(sqrt(2 + x) * sqrt(3 + x) == y);
 
                 #endregion
-
+                
                 #region EliminateVariable
 
-                new And((x ^ 3) == (y ^ 5), z == x)
+                and((x ^ 3) == (y ^ 5), z == x)
                 .EliminateVariable(x)
                 .AssertEqTo((z ^ 3) == (y ^ 5));
 
-                new And((x ^ 3) == (y ^ 5), z == (x ^ 7))
+                and((x ^ 3) == (y ^ 5), z == (x ^ 7))
                 .EliminateVariable(x)
-                .AssertEqTo(new And((x ^ 3) == (y ^ 5), z == (x ^ 7)));
+                .AssertEqTo(and((x ^ 3) == (y ^ 5), z == (x ^ 7)));
 
                 #endregion
             }
@@ -1330,45 +1323,35 @@ namespace Tests
             #region EliminateVariable
             
             {
-
                 var x = new Symbol("x");
                 var y = new Symbol("y");
                 var z = new Symbol("z");
-
-                var eqs = new And()
-                {
-                    args = 
-                    {
-                        (x ^ 2) - 4 == 0,
-                        y + x == 0,
-                        x + z == 10
-                    }
-                }
-                .Simplify();
-
+                                
+                var eqs = and(
+                    (x ^ 2) - 4 == 0,
+                    y + x == 0,
+                    x + z == 10
+                );
+                
                 var half = new Integer(1) / 2;
-
-                // Func<MathObject, MathObject> sqrt = obj => obj ^ half;
-
+                                
                 ((x ^ 2) - 4 == 0)
                     .IsolateVariableEq(x)
-                    .AssertEqTo(new Or(x == half * sqrt(16), x == -half * sqrt(16)));
+                    .AssertEqTo(or(x == half * sqrt(16), x == -half * sqrt(16)));
 
                 eqs.EliminateVariable(x)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 half * sqrt(16) + y == 0,
                                 half * sqrt(16) + z == 10
                             ),
-                            new And(
+                            and(
                                 -half * sqrt(16) + y == 0,
                                 -half * sqrt(16) + z == 10
                             )
                         )
                     );
-
-
             }
             
             {
@@ -1377,19 +1360,18 @@ namespace Tests
                 var y = new Symbol("y");
                 var z = new Symbol("z");
 
-                new Or(
-                    new And(x == y, x == z, x == a),
-                    new And(x == -y, x == z, x == a)
-                    )
+                or(
+                    and(x == y, x == z, x == a),
+                    and(x == -y, x == z, x == a))
                     .EliminateVariable(x)
                     .AssertEqTo(
-                        new Or(
-                            new And(y == z, y == a),
-                            new And(-y == z, -y == a)
+                        or(
+                            and(y == z, y == a),
+                            and(-y == z, -y == a)
                         )
                     )
                     .EliminateVariable(y)
-                    .AssertEqTo(new Or(z == a, z == a));
+                    .AssertEqTo(or(z == a, z == a));
             }
             
             {
@@ -1397,9 +1379,9 @@ namespace Tests
                 var y = new Symbol("y");
                 var z = new Symbol("z");
 
-                new And(y != z, y == x, y == 10)
+                and(y != z, y == x, y == 10)
                     .EliminateVariable(y)
-                    .AssertEqTo(new And(x != z, x == 10));
+                    .AssertEqTo(and(x != z, x == 10));
             }
 
             #endregion
@@ -1418,12 +1400,13 @@ namespace Tests
 
                 var tAC = new Symbol("tAC");
                 var tAB = new Symbol("tAB");
-
-                var eqs = new And(tAB == tAC / 2);
-
-                eqs.args.AddRange(Kinematic(sAC, vA, vC, a, tAC));
-                eqs.args.AddRange(Kinematic(sAB, vA, vB, a, tAB));
-
+                
+                var eqs = and(
+                    tAB == tAC / 2,
+                    Kinematic(sAC, vA, vC, a, tAC),
+                    Kinematic(sAB, vA, vB, a, tAB)
+                    );
+                
                 var vals = new List<Equation>() { vA == 10, vC == 30, tAC == 10 };
 
                 eqs
@@ -1455,11 +1438,9 @@ namespace Tests
                 var v = new Symbol("v");
                 var a = new Symbol("a");
                 var t = new Symbol("t");
-
-                var eqs = new And();
-
-                eqs.args.AddRange(Kinematic(s, u, v, a, t));
-
+                
+                var eqs = Kinematic(s, u, v, a, t);
+                
                 var vals = new List<Equation>() { u == 63, v == 0, t == 2.0 };
 
                 eqs
@@ -1506,15 +1487,14 @@ namespace Tests
                 var v2 = new Symbol("v2");
                 var a2 = new Symbol("a2");
                 var t2 = new Symbol("t2");
-
-                var eqs = new And(
+                                                
+                var eqs = and(
                     u1 == v1,
                     s1 == s2,
-                    t2 == t1 - 1);
-
-                eqs.args.AddRange(Kinematic(s1, u1, v1, a1, t1));
-                eqs.args.AddRange(Kinematic(s2, u2, v2, a2, t2));
-
+                    t2 == t1 - 1,
+                    Kinematic(s1, u1, v1, a1, t1),
+                    Kinematic(s2, u2, v2, a2, t2));
+                
                 var vals = new List<Equation>() 
                 {
                     v1 == 45.0,
@@ -1526,7 +1506,7 @@ namespace Tests
                     .EliminateVariables(s2, t1, a1, s1, v2, u1)
                     .IsolateVariable(t2)
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(t2 == -0.96871942267131317, t2 == 30.968719422671313));
+                    .AssertEqTo(or(t2 == -0.96871942267131317, t2 == 30.968719422671313));
             }
             #endregion
 
@@ -1549,13 +1529,12 @@ namespace Tests
                 var vD = new Symbol("vD");
 
                 var a = new Symbol("a");
-
-                var eqs = new And();
-
-                eqs.args.AddRange(Kinematic(yA, yB, vA, vB, a, tA, tB));
-                eqs.args.AddRange(Kinematic(yB, yC, vB, vC, a, tB, tC));
-                eqs.args.AddRange(Kinematic(yC, yD, vC, vD, a, tC, tD));
-
+                                                
+                var eqs = and(
+                    Kinematic(yA, yB, vA, vB, a, tA, tB),
+                    Kinematic(yB, yC, vB, vC, a, tB, tC),
+                    Kinematic(yC, yD, vC, vD, a, tC, tD));
+                
                 var vals = new List<Equation>()
                 {
                     yA == 50,
@@ -1574,13 +1553,13 @@ namespace Tests
                 eqs
                     .EliminateVariables(tB, tC, vC, yB, yD)
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(vD == -29.000000000000004, vD == -29.000000000000007));
+                    .AssertEqTo(or(vD == -29.000000000000004, vD == -29.000000000000007));
 
                 eqs
                     .EliminateVariables(tB, tC, vC, yB, vD)
                     .IsolateVariable(yD)
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(yD == 27.499999999, yD == 27.499999999));
+                    .AssertEqTo(or(yD == 27.499999999, yD == 27.499999999));
 
                 DoubleFloat.tolerance = null;
             }
@@ -1624,7 +1603,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
@@ -1688,7 +1667,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     obj.TrigEquationsA(),
 
@@ -1792,7 +1771,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
@@ -1827,16 +1806,16 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical()
                     .CheckVariable(ay)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 tAC == -(sin(thA) * vA + sqrt((sin(thA) ^ 2) * (vA ^ 2) + 2 * ay * (yC - yA))) / ay,
                                 ay != 0),
-                            new And(
+                            and(
                                 tAC == -(sin(thA) * vA - sqrt((sin(thA) ^ 2) * (vA ^ 2) + 2 * ay * (yC - yA))) / ay,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(tAC == 4.2180489012229376, tAC == -2.1772325746923267));
+                    .AssertEqTo(or(tAC == 4.2180489012229376, tAC == -2.1772325746923267));
 
                 eqs
                     .SubstituteEqLs(zeros)
@@ -1844,15 +1823,15 @@ namespace Tests
                     .SimplifyEquation().SimplifyLogical()
                     .CheckVariable(ay)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 ay != 0,
                                 vC == sqrt((cos(thA) ^ 2) * (vA ^ 2) + ((sin(thA) * vA - (sin(thA) * vA + sqrt((sin(thA) ^ 2) * (vA ^ 2) + -2 * ay * yA))) ^ 2))),
-                            new And(
+                            and(
                                 ay != 0,
                                 vC == sqrt((cos(thA) ^ 2) * (vA ^ 2) + ((sin(thA) * vA - (sin(thA) * vA - sqrt((sin(thA) ^ 2) * (vA ^ 2) + -2 * ay * yA))) ^ 2)))))
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(vC == 35.805027579936315, vC == 35.805027579936322));
+                    .AssertEqTo(or(vC == 35.805027579936315, vC == 35.805027579936322));
 
                 DoubleFloat.tolerance = null;
             }
@@ -1881,7 +1860,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     vxB == vxA + ax * tAB,
                     vyB == vyA + ay * tAB,
@@ -1908,32 +1887,32 @@ namespace Tests
                     .CheckVariable(vxA).SimplifyLogical()
                     .SubstituteEq(ax == 0)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vxA != 0,
                                 xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
                                 ay * (vxA ^ -2) != 0,
                                 ay != 0),
-                            new And(
+                            and(
                                 vxA != 0,
                                 xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + -1 * sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
                                 ay * (vxA ^ -2) != 0,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vxA != 0,
                                 xB == -1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
                                 ay / (vxA ^ 2) != 0,
                                 ay != 0),
-                            new And(
+                            and(
                                 vxA != 0,
                                 xB == 1 / ay * (vxA ^ 2) * sqrt(-2 * ay * (vxA ^ -2) * yA),
                                 ay / (vxA ^ 2) != 0,
                                 ay != 0)))
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(xB == 180.70158058105022, xB == -180.70158058105022));
+                    .AssertEqTo(or(xB == 180.70158058105022, xB == -180.70158058105022));
 
                 eqs
                     .EliminateVariables(vxB, xB, tAB)
@@ -1941,32 +1920,32 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation()
                     .CheckVariable(ay)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vyB == -1 * ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
                     // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0),
-                            new And(
+                            and(
                                 vyB == ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
                     // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
                     .AssertEqTo(
-                        new Or(
-                          new And(
+                        or(
+                          and(
                               vyB == -ay * sqrt(-2 / ay * yA),
                     // 1 / ay != 0,
                               vxA != 0,
                               ay != 0),
-                          new And(
+                          and(
                               vyB == ay * sqrt(-2 / ay * yA),
                     // 1 / ay != 0,
                               vxA != 0,
                               ay != 0)))
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(vyB == 44.271887242357309, vyB == -44.271887242357309));
+                    .AssertEqTo(or(vyB == 44.271887242357309, vyB == -44.271887242357309));
 
                 DoubleFloat.tolerance = null;
             }
@@ -1998,7 +1977,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     cos(th) == (xB - xA) / d,
                     sin(th) == (yA - yB) / d,
@@ -2028,13 +2007,13 @@ namespace Tests
                     .CheckVariable(ay)
                     .SimplifyEquation()
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 xB == -(sin(th) / cos(th) + sqrt((cos(th) ^ -2) * (sin(th) ^ 2))) * (vxA ^ 2) / ay,
                                 ay / (vxA ^ 2) != 0,
                                 sin(th) / cos(th) * xB != 0,
                                 ay != 0),
-                            new And(
+                            and(
                                 xB == -(sin(th) / cos(th) - sqrt((cos(th) ^ -2) * (sin(th) ^ 2))) * (vxA ^ 2) / ay,
                                 ay / (vxA ^ 2) != 0,
                                 sin(th) / cos(th) * xB != 0,
@@ -2042,11 +2021,11 @@ namespace Tests
                     .SubstituteEqLs(vals)
                     .SimplifyEquation()
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 xB == 89.312185996136435,
                                 xB != 0),
-                            new And(
+                            and(
                                 xB == 7.0805039835788038E-15,
                                 xB != 0)));
 
@@ -2057,14 +2036,14 @@ namespace Tests
                     .LogicalExpand()
                     .CheckVariable(yB)
                     .AssertEqTo(
-                        new And(
+                        and(
                             yB == 2 * (sin(th) ^ 2) * (vxA ^ 2) / ay / (cos(th) ^ 2),
                             -ay * (cos(th) ^ 2) / (sin(th) ^ 2) / (vxA ^ 2) / 2 != 0,
                             yB != 0,
                             ay != 0))
                     .SubstituteEqLs(vals)
                     .AssertEqTo(
-                        new And(
+                        and(
                             yB == -62.537065888482395,
                             yB != 0));
 
@@ -2074,19 +2053,19 @@ namespace Tests
                     .IsolateVariable(tAB)
                     .LogicalExpand().CheckVariable(ay).SimplifyEquation().SimplifyLogical()
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 tAB == -(sin(th) * vxA / cos(th) + sqrt((sin(th) ^ 2) * (vxA ^ 2) / (cos(th) ^ 2))) / ay,
                                 ay != 0,
                                 sin(th) * tAB * vxA / cos(th) != 0),
-                            new And(
+                            and(
                                 tAB == -(sin(th) * vxA / cos(th) - sqrt((sin(th) ^ 2) * (vxA ^ 2) / (cos(th) ^ 2))) / ay,
                                 ay != 0,
                                 sin(th) * tAB * vxA / cos(th) != 0)))
                     .SubstituteEqLs(vals)
                     .CheckVariable(tAB).SimplifyEquation()
                     .AssertEqTo(
-                        new And(
+                        and(
                             tAB == 3.5724874398454571,
                             tAB != 0));
 
@@ -2099,12 +2078,12 @@ namespace Tests
                     .SimplifyEquation()
                     .CheckVariable(ay)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vyB == -ay * (sin(th) * vxA / (ay * cos(th)) + sqrt((sin(th) ^ 2) * (vxA ^ 2) / ((ay ^ 2) * (cos(th) ^ 2)))),
                                 sin(th) * vxA * vyB / (ay * cos(th)) != 0,
                                 ay != 0),
-                            new And(
+                            and(
                                 vyB == -ay * (sin(th) * vxA / (ay * cos(th)) - sqrt((sin(th) ^ 2) * (vxA ^ 2) / ((ay ^ 2) * (cos(th) ^ 2)))),
                                 sin(th) * vxA * vyB / (ay * cos(th)) != 0,
                                 ay != 0)))
@@ -2113,7 +2092,7 @@ namespace Tests
                     .SimplifyEquation()
                     .CheckVariable(vyB)
                     .AssertEqTo(
-                        new And(
+                        and(
                             vyB == -35.010376910485483,
                             vyB != 0));
 
@@ -2154,7 +2133,7 @@ namespace Tests
                 var thB = new Symbol("thB");
                 var vB = new Symbol("vB");
 
-                var eqs = new And(
+                var eqs = and(
 
                     vxB == vxA + ax * tAB,
                     vyB == vyA + ay * tAB,
@@ -2179,17 +2158,17 @@ namespace Tests
                     .IsolateVariable(vxA)
                     .LogicalExpand()
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vxA == ay * (xB ^ 2) / yA / 4 * sqrt(-8 / ay * (xB ^ -2) * yA),
                                 2 / ay * (xB ^ -2) * yA != 0,
                                 xB != 0),
-                            new And(
+                            and(
                                 vxA == -ay * (xB ^ 2) / yA / 4 * sqrt(-8 / ay * (xB ^ -2) * yA),
                                 2 / ay * (xB ^ -2) * yA != 0,
                                 xB != 0)))
                     .SubstituteEqLs(vals)
-                    .AssertEqTo(new Or(vxA == -3.3417722634053204, vxA == 3.3417722634053204));
+                    .AssertEqTo(or(vxA == -3.3417722634053204, vxA == 3.3417722634053204));
 
                 eqs
                     .SubstituteEqLs(zeros)
@@ -2199,13 +2178,13 @@ namespace Tests
                     .SimplifyLogical()
                     .IsolateVariable(thB)
                     .AssertEqTo(
-                        new And(
+                        and(
                             -tan(thB) / ay != 0,
                             thB == new Atan(-2 * yA / xB),
                             xB != 0))
                     .SubstituteEqLs(vals)
                     .AssertEqTo(
-                        new And(
+                        and(
                             0.1020408163265306 * tan(thB) != 0,
                             thB == -0.88760488150470185));
 
@@ -2531,20 +2510,20 @@ namespace Tests
                             .EliminateVariables(yB, vxA, vyA, vxB, xB)
                             .IsolateVariable(tAB);
 
-                        new And(
-                            new Or(thA == (20).ToRadians(), thA == (70).ToRadians()),
+                        and(
+                            or(thA == (20).ToRadians(), thA == (70).ToRadians()),
                             tAB_eq,
                             tAC == tAB * 2)
                             .LogicalExpand()
                             .EliminateVariables(thA, tAB)
 
-                            .AssertEqTo(new Or(
+                            .AssertEqTo(or(
                                 tAC == -2 * sin(Pi / 9) * vA / ay,
                                 tAC == -2 * sin(7 * Pi / 18) * vA / ay))
 
                             .SubstituteEqLs(vals)
                             .AssertEqTo(
-                                new Or(
+                                or(
                                     tAC == 1.7450007312534115,
                                     tAC == 4.794350106050552));
                     }
@@ -2587,7 +2566,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
 
@@ -2612,7 +2591,7 @@ namespace Tests
                             .EliminateVariable(vyA)
 
                             .AssertEqTo(
-                                new And(
+                                and(
                                     vxB == cos(thA) * vA,
                                     vyB == ay * tAB + sin(thA) * vA,
                                     xB == cos(thA) * tAB * vA,
@@ -2621,7 +2600,7 @@ namespace Tests
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
-                                new And(
+                                and(
                                     vxB == 172.07293090531385,
                                     vyB == -165.85438671330249,
                                     xB == 7227.0630980231817,
@@ -2677,7 +2656,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     xC - xA == 3 * yB,
 
@@ -2771,7 +2750,7 @@ namespace Tests
 
                 var phi = new Symbol("phi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
@@ -2820,14 +2799,14 @@ namespace Tests
                             .Substitute(phi, new Atan(yB / xB).Simplify())
 
                             .AssertEqTo(
-                                new Or(
+                                or(
                                     thA == -(asin(ay * cos(atan(yB / xB)) * (vA ^ -2) * xB + -1 * cos(atan(yB / xB)) * yB / xB) - atan(yB / xB)) / 2,
                                     thA == -(-asin(ay * cos(atan(yB / xB)) * (vA ^ -2) * xB - cos(atan(yB / xB)) * yB / xB) - atan(yB / xB) + Pi) / 2))
 
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
-                                new Or(
+                                or(
                                     thA == 0.39034573609628065,
                                     thA == -1.5806356857788124))
                             ;
@@ -2883,7 +2862,7 @@ namespace Tests
 
                 var goal_height = new Symbol("goal_height");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
@@ -2982,7 +2961,7 @@ namespace Tests
                 var vi = new Symbol("vi");
                 var h = new Symbol("h");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     vxA == vA * cos(thA),
                     vyA == vA * sin(thA),
@@ -3088,7 +3067,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     //vxA == vA * cos(thA),
                     //vyA == vA * sin(thA),
@@ -3144,17 +3123,17 @@ namespace Tests
 
                             .AssertEqTo(
 
-                                new Or(
-                                    new And(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
-                                    new And(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
-                                    new And(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
-                                    new And(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC)))))
+                                or(
+                                    and(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    and(ay != 0, tAC == (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    and(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))),
+                                    and(ay != 0, tAC == -1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC)))))
 
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
 
-                                new Or(
+                                or(
                                     tAC == 0.028747849043843032,
                                     tAC == -0.85188272280886768,
                                     tAC == 0.85188272280886768,
@@ -3179,17 +3158,17 @@ namespace Tests
 
                             .AssertEqTo(
 
-                                new Or(
-                                    new And(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
-                                    new And(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
-                                    new And(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
-                                    new And(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1))))
+                                or(
+                                    and(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    and(ay != 0, vxA == xC * ((-1 * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    and(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + -1 * (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1)),
+                                    and(ay != 0, vxA == xC * ((sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)) + (ay ^ -1) * sqrt(2 * ay * (-1 * yB + yC))) ^ -1))))
 
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
 
-                                new Or(
+                                or(
                                     vxA == 97.398591307814215,
                                     vxA == -3.286837407346058,
                                     vxA == 3.286837407346058,
@@ -3209,14 +3188,14 @@ namespace Tests
                             .LogicalExpand().SimplifyEquation().CheckVariable(ay)
 
                             .AssertEqTo(
-                                new Or(
-                                    new And(ay != 0, vyA == ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB))),
-                                    new And(ay != 0, vyA == -1 * ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)))))
+                                or(
+                                    and(ay != 0, vyA == ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB))),
+                                    and(ay != 0, vyA == -1 * ay * sqrt(-2 * (ay ^ -1) * (-1 * yA + yB)))))
 
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
-                                new Or(
+                                or(
                                     vyA == -4.0333608814486217,
                                     vyA == 4.0333608814486217));
                     }
@@ -3234,11 +3213,11 @@ namespace Tests
 
                             .AssertEqTo(
 
-                                new Or(
-                                    new And(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
-                                    new And(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
-                                    new And(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
-                                    new And(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC))))
+                                or(
+                                    and(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    and(ay != 0, tan(thA) == -1 * (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * ((ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    and(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + -1 * sqrt(2 * (ay ^ -1) * (-1 * yB + yC)))),
+                                    and(ay != 0, tan(thA) == (xC ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) * (-1 * (ay ^ -1) * sqrt(-2 * ay * (-1 * yA + yB)) + sqrt(2 * (ay ^ -1) * (-1 * yB + yC))))
 
                                     ))
 
@@ -3247,7 +3226,7 @@ namespace Tests
                             .SubstituteEqLs(vals)
 
                             .AssertEqTo(
-                                new Or(
+                                or(
                                     thA == 0.88702813023277882,
                                     thA == -0.041387227947930878,
                                     thA == -0.041387227947930878,
@@ -3311,7 +3290,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     Fx == F * cos(th),
                     Fy == F * sin(th),
@@ -3499,7 +3478,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     Fx == F * cos(th),
                     Fy == F * sin(th),
@@ -3645,7 +3624,7 @@ namespace Tests
                 
                 var d = new Symbol("d");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     Fx == F * cos(th),
                     Fy == F * sin(th),
@@ -3703,7 +3682,7 @@ namespace Tests
                             .IsolateVariable(ax)
 
                             .AssertEqTo(
-                                new And(
+                                and(
                                     ax == g * sin(incline),
                                     d != 0));
                     }
@@ -3720,12 +3699,12 @@ namespace Tests
                             .IsolateVariable(tAB).LogicalExpand().CheckVariable(d)
                             
                             .AssertEqTo(
-                                new Or(
-                                    new And(
+                                or(
+                                    and(
                                         tAB == - sqrt(2 * d * g * sin(incline)) / sin(incline) / g,
                                         - g * sin(incline) / 2 != 0,
                                         d != 0),
-                                    new And(
+                                    and(
                                         tAB == sqrt(2 * d * g * sin(incline)) / sin(incline) / g,
                                         -g * sin(incline) / 2 != 0,
                                         d != 0))
@@ -3744,13 +3723,13 @@ namespace Tests
                             .EliminateVariable(n)
 
                             .AssertEqTo(
-                                new Or(
-                                    new And(
+                                or(
+                                    and(
                                         -g * sin(incline) / 2 != 0,
                                         vxB == -sqrt(2 * d * g * sin(incline)),
                                         d != 0
                                     ),
-                                    new And(
+                                    and(
                                         -g * sin(incline) / 2 != 0,
                                         vxB == sqrt(2 * d * g * sin(incline)),
                                         d != 0))
@@ -3792,7 +3771,7 @@ namespace Tests
                 var g = new Symbol("g");
 
 
-                var eqs = new And(
+                var eqs = and(
 
                     F_m1 == F1_m1 - F2_m1,
                     F_m2 == F2_m2 - F1_m2,
@@ -3930,7 +3909,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     ax_m2 == ay_m1,                     // the block moves right as the ball moves up
 
@@ -4094,7 +4073,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     blk.ax == bal.ay,                   // the block moves right as the ball moves up
 
@@ -4232,7 +4211,7 @@ namespace Tests
 
                 var mu_s = new Symbol("mu_s");          // coefficient of static friction
 
-                var eqs = new And(
+                var eqs = and(
                     
                     F1x_m1 == F1_m1 * cos(th1_m1),
                     F2x_m1 == F2_m1 * cos(th2_m1),
@@ -4353,7 +4332,7 @@ namespace Tests
 
                 var mu_k = new Symbol("mu_k");          // coefficient of kinetic friction
                 
-                var eqs = new And(
+                var eqs = and(
 
                     a == ax_m1,
 
@@ -4528,7 +4507,7 @@ namespace Tests
                 
                 var mu_k = new Symbol("mu_k");          // coefficient of kinetic friction
 
-                var eqs = new And(
+                var eqs = and(
                     
                     ax_m1 == ay_m2,                     // the block moves right as the ball moves up
 
@@ -4662,7 +4641,7 @@ namespace Tests
                 var m1 = new Symbol("m1");
                 var m2 = new Symbol("m2");
 
-                var eqs = new And(
+                var eqs = and(
 
                     blk.ax == bal.ay,                   // the block moves right as the ball moves up
 
@@ -4781,7 +4760,7 @@ namespace Tests
                 var th1 = new Symbol("th1");
                 var th2 = new Symbol("th2");
                 
-                var eqs = new And(
+                var eqs = and(
                     
                     F1x_m1 == F1_m1 * cos(th1_m1),
                     F2x_m1 == F2_m1 * cos(th2_m1),
@@ -4971,7 +4950,7 @@ namespace Tests
                 var T1 = new Symbol("T1");
                 var T2 = new Symbol("T2");
 
-                var eqs = new And(
+                var eqs = and(
 
                     m1 == m2,
                                         
@@ -5130,7 +5109,7 @@ namespace Tests
                 var T1 = new Symbol("T1");
                 var T2 = new Symbol("T2");
 
-                var eqs = new And(
+                var eqs = and(
 
                     b1.Equations(),
                     b2.Equations()
@@ -5262,7 +5241,7 @@ namespace Tests
                 var Pi = new Symbol("Pi");
                 var g = new Symbol("g");
 
-                var eqs = new And(
+                var eqs = and(
 
                     Fg_b == b.m * g,
                     Fg_c == c.m * g,
@@ -5273,7 +5252,7 @@ namespace Tests
                     s.Equations(),
                     c.Equations()
 
-                    ).Simplify();
+                    );
 
                 var vals = new List<Equation>()
                 {
@@ -5416,7 +5395,7 @@ namespace Tests
 
                 var g = new Symbol("g");
 
-                var eqs = new And(
+                var eqs = and(
 
                      T1 == F,
                      T2 == T3,
@@ -5512,7 +5491,7 @@ namespace Tests
                 var g = new Symbol("g");
                 var a = new Symbol("a");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     blk1.Equations(),
                     blk2.Equations(),
@@ -5603,7 +5582,7 @@ namespace Tests
                 var vf = new Symbol("vf");
                 var vi = new Symbol("vi");
 
-                var eqs = new And(
+                var eqs = and(
 
                     W == F * d,
 
@@ -5626,11 +5605,11 @@ namespace Tests
 
                     .AssertEqTo(
 
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2)) / m,
                                 m != 0),
-                            new And(
+                            and(
                                 vf == -sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2)) / m,
                                 m != 0)))
                                 
@@ -5638,18 +5617,18 @@ namespace Tests
                                         
                     .AssertEqTo(
 
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == sqrt(2 * d * F * m) / m,
                                 m != 0),
-                            new And(
+                            and(
                                 vf == -sqrt(2 * d * F * m) / m,
                                 m != 0)))
                     
                     .SubstituteEqLs(vals)
 
                     .AssertEqTo(
-                        new Or(
+                        or(
                             vf == 3.4641016151377544,
                             vf == -3.4641016151377544));
 
@@ -5681,7 +5660,7 @@ namespace Tests
                                 
                 var μk = new Symbol("μk");
 
-                var eqs = new And(
+                var eqs = and(
 
                     Kf == m * (vf ^ 2) / 2,
                     Ki == m * (vi ^ 2) / 2,
@@ -5718,17 +5697,17 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
                     .SubstituteEq(vi == 0)
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == -sqrt(2 * m * (d * F - d * g * m * μk)) / m,
                                 m != 0),
-                            new And(
+                            and(
                                 vf == sqrt(2 * m * (d * F - d * g * m * μk)) / m,
                                 m != 0)))
 
                     .SubstituteEqLs(vals)
 
-                    .AssertEqTo(new Or(vf == -1.7832554500127007, vf == 1.7832554500127007));
+                    .AssertEqTo(or(vf == -1.7832554500127007, vf == 1.7832554500127007));
 
             }
             #endregion
@@ -5766,7 +5745,7 @@ namespace Tests
                 
                 var x_max = new Symbol("x_max");
 
-                var eqs = new And(
+                var eqs = and(
 
                     W_s == k * (x_max ^ 2) / 2,
 
@@ -5793,17 +5772,17 @@ namespace Tests
                         .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
                         
                         .AssertEqTo(
-                            new Or(
-                                new And(
+                            or(
+                                and(
                                     vf == sqrt(-2 * m * (d * fk - m * (vi ^ 2) / 2 - k * (x_max ^ 2) / 2)) / m,
                                     m != 0),
-                                new And(
+                                and(
                                     vf == -sqrt(-2 * m * (d * fk - m * (vi ^ 2) / 2 - k * (x_max ^ 2) / 2)) / m,
                                     m != 0)))
                                               
                         .SubstituteEqLs(vals)
                         
-                        .AssertEqTo(new Or(vf == 0.5, vf == -0.5));
+                        .AssertEqTo(or(vf == 0.5, vf == -0.5));
                 }
 
                 // vf
@@ -5817,7 +5796,7 @@ namespace Tests
                         
                         .SubstituteEqLs(vals)
                         
-                        .AssertEqTo(new Or(vf == 0.3872983346207417, vf == -0.3872983346207417));
+                        .AssertEqTo(or(vf == 0.3872983346207417, vf == -0.3872983346207417));
                 }
                 
             }
@@ -5847,7 +5826,7 @@ namespace Tests
 
                 var len = new Symbol("len");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     yA == -len,
 
@@ -5891,7 +5870,7 @@ namespace Tests
                 var xA = new Symbol("xA");
                 var xB = new Symbol("xB");
                                 
-                var eqs = new And(
+                var eqs = and(
                     
                     WsA == k * (xA ^ 2) / 2,
                     WsB == k * (xB ^ 2) / 2,
@@ -5956,7 +5935,7 @@ namespace Tests
 
                 var μk = new Symbol("μk");
 
-                var eqs = new And(
+                var eqs = and(
 
                     n == m * g,
 
@@ -5986,28 +5965,28 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
                     
                     .AssertEqTo(
-                        new And(
+                        and(
                             m != 0,
                             W_F == d * F,
                             W_f == -d * g * m * μk))
                             
                     .SubstituteEqLs(vals)
                     
-                    .AssertEqTo(new And(W_F == 650, W_f == -588.0));
+                    .AssertEqTo(and(W_F == 650, W_f == -588.0));
 
                 // ΣW
                 eqs
                     .EliminateVariables(W_F, W_f, fk, n, Ki, Kf)
 
                     .AssertEqTo(
-                        new And(
+                        and(
                             ΣW == m * (vf ^ 2) / 2 - m * (vi ^ 2) / 2,
                             ΣW == d * F - d * g * m * μk,
                             m != 0))
                                                 
                     .SubstituteEqLs(vals)
                     
-                    .AssertEqTo(new And(ΣW == 20 * (vf ^ 2), ΣW == 62.0));
+                    .AssertEqTo(and(ΣW == 20 * (vf ^ 2), ΣW == 62.0));
                 
                 // vf
                 eqs
@@ -6016,17 +5995,17 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
 
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2 + d * g * m * μk)) / m,
                                 m != 0),
-                            new And(
+                            and(
                                 vf == -sqrt(-2 * m * (-d * F - m * (vi ^ 2) / 2 + d * g * m * μk)) / m,
                                 m != 0)))
                                 
                     .SubstituteEqLs(vals)
                     
-                    .AssertEqTo(new Or(vf == 1.7606816861659009, vf == -1.7606816861659009));
+                    .AssertEqTo(or(vf == 1.7606816861659009, vf == -1.7606816861659009));
             }
             #endregion
             
@@ -6074,7 +6053,7 @@ namespace Tests
 
                 var Pi = new Symbol("Pi");
                 
-                var eqs = new And(
+                var eqs = and(
 
                     F_g == m * g,
 
@@ -6110,7 +6089,7 @@ namespace Tests
                     .EliminateVariables(F_g, fk, n)
 
                     .AssertEqTo(
-                        new And(
+                        and(
                             Kf == m * (vf ^ 2) / 2,
                             Ki == m * (vi ^ 2) / 2,
                             W_F == d * F,
@@ -6124,7 +6103,7 @@ namespace Tests
                     .SubstituteEqLs(vals)
                     
                     .AssertEqTo(
-                        new And(
+                        and(
                             Kf == 5.0 * (vf ^ 2),
                             Ki == 11.25,
                             W_F == 500.0,
@@ -6141,7 +6120,7 @@ namespace Tests
                     .SubstituteEqLs(vals)
                     
                     .AssertEqTo(
-                        new And(
+                        and(
                             Kf == 5.0 * (vf ^ 2),
                             Ki == 11.25,
                             ΣW == Kf - Ki,
@@ -6158,7 +6137,7 @@ namespace Tests
                                                                                  
                     .SubstituteEqLs(vals)
                     
-                    .AssertEqTo(new Or(vf == 5.6476610396939435, vf == -5.6476610396939435));
+                    .AssertEqTo(or(vf == 5.6476610396939435, vf == -5.6476610396939435));
 
             }
             #endregion
@@ -6192,7 +6171,7 @@ namespace Tests
 
                 var t = new Symbol("t");
 
-                var eqs = new And(
+                var eqs = and(
                     
                     Kf == m * (vf ^ 2) / 2,
                     Ki == m * (vi ^ 2) / 2,
@@ -6268,7 +6247,7 @@ namespace Tests
                 var xi = new Symbol("xi");
                 var xf = new Symbol("xf");
                 
-                var eqs = new And(
+                var eqs = and(
                     
                     n == m * g,
 
@@ -6298,25 +6277,25 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
 
                     .AssertEqTo(
-                        new Or(
-                            new And(
+                        or(
+                            and(
                                 vf == sqrt(-2 * m * (-m * (vi ^ 2) / 2 + k * (xf ^ 2) / 2 - k * (xi ^ 2) / 2 + d * g * m * μk)) / m,
                                 m != 0
                             ),
-                            new And(
+                            and(
                                 vf == -sqrt(-2 * m * (-m * (vi ^ 2) / 2 + k * (xf ^ 2) / 2 - k * (xi ^ 2) / 2 + d * g * m * μk)) / m,
                                 m != 0)))
 
                     .SubstituteEqLs(vals).SubstituteEq(μk == 0)
 
-                    .AssertEqTo(new Or(vf == 0.79056941504209488, vf == -0.79056941504209488));
+                    .AssertEqTo(or(vf == 0.79056941504209488, vf == -0.79056941504209488));
 
                 eqs
                     .EliminateVariables(Kf, Ki, ΣW, W_f, W_s, n, fk)
                     .IsolateVariable(vf)
                     .LogicalExpand().SimplifyEquation().SimplifyLogical().CheckVariable(m)
                     .SubstituteEqLs(vals).SubstituteEq(μk == 0.35)
-                    .AssertEqTo(new Or(vf == 0.53103672189407025, vf == -0.53103672189407025));
+                    .AssertEqTo(or(vf == 0.53103672189407025, vf == -0.53103672189407025));
             }
             #endregion
             
@@ -6336,7 +6315,7 @@ namespace Tests
 
                 var vals = new List<Equation>() { m == 0.15, vi == 40.0, th == (30).ToRadians() };
 
-                var eqs = new And(
+                var eqs = and(
 
                     vx == vi * cos(th),
                     
@@ -6365,7 +6344,7 @@ namespace Tests
 
                 // (b) Determine the speed of the ball at y if at the instant of
                 // release it already has an initial speed vi at the initial altitude h.
-
+                
                 var m = new Symbol("m");
 
                 var yi = new Symbol("yi");
@@ -6391,7 +6370,7 @@ namespace Tests
                 var h = new Symbol("h");
                 var y = new Symbol("y");
 
-                var eqs = new And(
+                var eqs = and(
                     Ki == m * (vi^2) / 2,
                     Kf == m * (vf^2) / 2,
 
@@ -6419,7 +6398,7 @@ namespace Tests
                     .SubstituteEq(vi == 0)
 
                     .AssertEqTo(
-                        new Or(
+                        or(
                             vf == -sqrt(2 * (g * h - g * y)),
                             vf == sqrt(2 * (g * h - g * y))
                         ));
@@ -6433,7 +6412,7 @@ namespace Tests
                     .SubstituteEqLs(vals)
                     
                     .AssertEqTo(
-                        new Or(
+                        or(
                             vf == -sqrt(2 * (g * h + (vi ^ 2) / 2 - g * y)),
                             vf == sqrt(2 * (g * h + (vi ^ 2) / 2 - g * y))
                         ));
@@ -6493,7 +6472,7 @@ namespace Tests
 
                 var vf_sq = new Symbol("vf_sq");
 
-                var eqs = new And(
+                var eqs = and(
                     
                     Ki == m * (vi^2) / 2,
                     Kf == m * (vf^2) / 2,
@@ -6538,7 +6517,7 @@ namespace Tests
 
                     .AssertEqTo(
 
-                        new Or(
+                        or(
                             vf == -sqrt(2 * (g * L - cos(thA) * g * L)),
                             vf == sqrt(2 * (g * L - cos(thA) * g * L))
                         )
@@ -6548,7 +6527,7 @@ namespace Tests
                     .SubstituteEqLs(numerical_vals).Substitute(3, 3.0)
 
                     .AssertEqTo(
-                        new Or(
+                        or(
                             vf == -2.2916815161906787,
                             vf == 2.2916815161906787
                         )
@@ -6614,7 +6593,7 @@ namespace Tests
 
                 var θ = new Symbol("θ");
 
-                var eqs = new And(
+                var eqs = and(
 
                     yi == d * sin(θ),
 
