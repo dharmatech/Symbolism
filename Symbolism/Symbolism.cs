@@ -728,7 +728,7 @@ namespace Symbolism
         public static MathObject Base(MathObject u) => u is Power ? (u as Power).bas : u;
         
         public static MathObject Exponent(MathObject u) => u is Power ? (u as Power).exp : 1;
-        
+
         public static MathObject Term(this MathObject u)
         {
             if (u is Product && ((Product)u).elts[0] is Number)
@@ -738,7 +738,7 @@ namespace Symbolism
 
             return new Product(u);
         }
-
+                
         public static MathObject Const(this MathObject u) =>
             (u is Product && (u as Product).elts[0] is Number) ? (u as Product).elts[0] : 1;
 
@@ -979,7 +979,9 @@ namespace Symbolism
         {
             if (this.Denominator() == 1)
             {
-                if (this.Const() < 0) return $"-{(this * -1)}";
+                if (this.Const() < 0 && this / this.Const() is Sum) return $"-({this * -1})";
+
+                if (this.Const() < 0) return $"-{this * -1}";
                 
                 return string.Join(" * ", 
                     elts.ConvertAll(elt => elt.Precedence() < Precedence() || (elt is Power && (elt as Power).exp != new Integer(1) / 2) ? $"({elt})" : $"{elt}"));

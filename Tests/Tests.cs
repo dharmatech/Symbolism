@@ -746,6 +746,8 @@ namespace Tests
                      x == y * sqrt(-8 * a / (y * (z ^ 2))) * (z ^ 2) / (4 * a),
                     "x == y * sqrt(-8 * a / (y * (z ^ 2))) * (z ^ 2) / (4 * a)");
                 
+                AssertToStringMatch(-(-1 + x), "-(-1 + x)");
+                
                 #region Equation.ToString
 
                 Assert((x == y).ToString() == "x == y", "x == y");
@@ -6643,7 +6645,7 @@ namespace Tests
                     .AssertEqTo(or(vf == -2.54296414970142, vf == 2.54296414970142));
             }
             #endregion
-                        
+                                    
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();
