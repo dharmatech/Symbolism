@@ -1306,9 +1306,17 @@ namespace Tests
                 (sqrt(2 + x) * sqrt(3 + x) == y)
                     .IsolateVariable(x)
                     .AssertEqTo(sqrt(2 + x) * sqrt(3 + x) == y);
+                
+                ((x + 1) / (x + 2) == 3)
+                    .IsolateVariable(x)
+                    .AssertEqTo(x == -new Integer(5) / 2);
+
+                ((1 + 2 * x) / (3 * x - 4) == 5)
+                    .IsolateVariable(x)
+                    .AssertEqTo(x == new Integer(21) / 13);
 
                 #endregion
-                
+
                 #region EliminateVariable
 
                 and((x ^ 3) == (y ^ 5), z == x)
@@ -1840,6 +1848,8 @@ namespace Tests
 
             #endregion
 
+            //MathObject.ToStringForm = MathObject.ToStringForms.Full;
+
             #region PSE 5E Example 4.6
 
             {
@@ -1888,6 +1898,9 @@ namespace Tests
                     .CheckVariable(ay)
                     .CheckVariable(vxA).SimplifyLogical()
                     .SubstituteEq(ax == 0)
+
+                    //.DispLong()
+
                     .AssertEqTo(
                         or(
                             and(
@@ -1899,7 +1912,14 @@ namespace Tests
                                 vxA != 0,
                                 xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + -1 * sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
                                 ay * (vxA ^ -2) != 0,
+                                ay != 0),
+                            and(
+                                vxA != 0,
+                                xB == -(vyA * xA / vxA - ay * (xA ^ 2) / (2 * (vxA ^ 2)) - yA + yB) / (-vyA / vxA + ay * xA / (vxA ^ 2)),
+                                ay / (vxA ^ 2) == 0,
+                                -vyA / vxA + ay * xA / (vxA ^ 2) != 0,
                                 ay != 0)))
+                                
                     .SubstituteEqLs(zeros)
                     .AssertEqTo(
                         or(
@@ -6645,7 +6665,7 @@ namespace Tests
                     .AssertEqTo(or(vf == -2.54296414970142, vf == 2.54296414970142));
             }
             #endregion
-                                    
+            
             Console.WriteLine("Testing complete");
             
             Console.ReadLine();

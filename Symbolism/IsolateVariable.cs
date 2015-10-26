@@ -188,7 +188,14 @@ namespace Symbolism.IsolateVariable
             if (eq.a is Sum && eq.AlgebraicExpand().Equals(eq)) return eq;
 
             if (eq.a is Sum) return eq.AlgebraicExpand().IsolateVariable(sym);
+                        
+            // (x + 1) / (x + 2) == 3
 
+            if (eq.a.Numerator().Has(sym) && eq.a.Denominator().Has(sym))
+            {
+                return IsolateVariableEq(eq.a * eq.a.Denominator() == eq.b * eq.a.Denominator(), sym);
+            }
+            
             // sqrt(2 + x) * sqrt(3 + x) == y
 
             if (eq.a is Product && (eq.a as Product).elts.All(elt => elt.Has(sym))) return eq;
