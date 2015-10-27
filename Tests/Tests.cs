@@ -1328,6 +1328,8 @@ namespace Tests
                 .AssertEqTo(and((x ^ 3) == (y ^ 5), z == (x ^ 7)));
 
                 #endregion
+
+                and(x + y == z, x / y == 0, x != 0).CheckVariable(x).AssertEqTo(false);
             }
 
             #region EliminateVariable
@@ -1847,12 +1849,18 @@ namespace Tests
             }
 
             #endregion
-
-            //MathObject.ToStringForm = MathObject.ToStringForms.Full;
-
+            
             #region PSE 5E Example 4.6
-
             {
+                // An Alaskan rescue plane drops a package of emergency rations to 
+                // a stranded party of explorers, as shown in Figure 4.13.
+                // If the plane is traveling horizontally at 40.0 m/s and is
+                // 100 m above the ground, where does the package strike the
+                // ground relative to the point at which it was released?
+
+                // What are the horizontal and vertical components
+                // of the velocity of the package just before it hits the ground?
+                
                 var xA = new Symbol("xA");
                 var xB = new Symbol("xB");
 
@@ -1897,29 +1905,19 @@ namespace Tests
                     .LogicalExpand().SimplifyEquation()
                     .CheckVariable(ay)
                     .CheckVariable(vxA).SimplifyLogical()
-                    .SubstituteEq(ax == 0)
-
-                    //.DispLong()
-
+                    .SubstituteEq(ax == 0)        
                     .AssertEqTo(
                         or(
                             and(
                                 vxA != 0,
-                                xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
-                                ay * (vxA ^ -2) != 0,
+                                xB == -(vxA ^ 2) * (-(- vyA / vxA + ay / (vxA ^ 2) * xA) + sqrt(((- vyA / vxA + ay * xA / (vxA ^ 2)) ^ 2) + 2 * ay * (vyA * xA / vxA - ay / 2 / (vxA ^ 2) * (xA ^ 2) - yA + yB) / (vxA ^ 2))) / ay,
+                                ay / (vxA ^ 2) != 0,
                                 ay != 0),
                             and(
                                 vxA != 0,
-                                xB == -1 * (ay ^ -1) * (vxA ^ 2) * (-1 * (-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) + -1 * sqrt(((-1 * (vxA ^ -1) * vyA + ay * (vxA ^ -2) * xA) ^ 2) + 2 * ay * (vxA ^ -2) * ((vxA ^ -1) * vyA * xA - ay / 2 * (vxA ^ -2) * (xA ^ 2) + -1 * yA + yB))),
-                                ay * (vxA ^ -2) != 0,
-                                ay != 0),
-                            and(
-                                vxA != 0,
-                                xB == -(vyA * xA / vxA - ay * (xA ^ 2) / (2 * (vxA ^ 2)) - yA + yB) / (-vyA / vxA + ay * xA / (vxA ^ 2)),
-                                ay / (vxA ^ 2) == 0,
-                                -vyA / vxA + ay * xA / (vxA ^ 2) != 0,
+                                xB == -(vxA ^ 2) * (-(-vyA / vxA + ay / (vxA ^ 2) * xA) - sqrt(((-vyA / vxA + ay * xA / (vxA ^ 2)) ^ 2) + 2 * ay * (vyA * xA / vxA - ay / 2 / (vxA ^ 2) * (xA ^ 2) - yA + yB) / (vxA ^ 2))) / ay,
+                                ay / (vxA ^ 2) != 0,
                                 ay != 0)))
-                                
                     .SubstituteEqLs(zeros)
                     .AssertEqTo(
                         or(
@@ -1945,12 +1943,10 @@ namespace Tests
                         or(
                             and(
                                 vyB == -1 * ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                    // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0),
                             and(
                                 vyB == ay * sqrt(2 * (ay ^ -1) * ((ay ^ -1) / 2 * (vyA ^ 2) + -1 * yA + yB)),
-                    // (ay ^ -1) != 0,
                                 vxA != 0,
                                 ay != 0)))
                     .SubstituteEqLs(zeros)
@@ -1958,12 +1954,10 @@ namespace Tests
                         or(
                           and(
                               vyB == -ay * sqrt(-2 / ay * yA),
-                    // 1 / ay != 0,
                               vxA != 0,
                               ay != 0),
                           and(
                               vyB == ay * sqrt(-2 / ay * yA),
-                    // 1 / ay != 0,
                               vxA != 0,
                               ay != 0)))
                     .SubstituteEqLs(vals)

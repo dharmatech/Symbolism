@@ -28,7 +28,13 @@ namespace Symbolism.EliminateVariable
                     .Where(eq => (eq.Operator == Equation.Operators.NotEqual && eq.a == 1 / sym && eq.b == 0) == false)
                     .ToList()
                     .CheckVariableEqLs(sym);
+            
+            // x + y == z && x / y == 0 && x != 0   -> false
 
+            if (eqs.Any(eq => eq.Operator == Equation.Operators.Equal && eq.a.Numerator() == sym && eq.a.Denominator().FreeOf(sym) && eq.b == 0) &&
+                eqs.Any(eq => eq == (sym != 0)))
+                return false;
+            
             return new And() { args = eqs.Select(eq => eq as MathObject).ToList() };
         }
 
