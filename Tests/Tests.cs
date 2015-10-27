@@ -1186,6 +1186,10 @@ namespace Tests
                     ==
                     (a * b + a * c == x * y + x * z));
 
+                (5 * x * (500 / (x ^ 2) * (sqrt(3.0) / 4) + 1) + 2 * (x ^ 2) + (sqrt(3.0) / 2) * (x ^ 2))
+                    .AlgebraicExpand()
+                    .AssertEqTo(1082.5317547305483 / x + 5 * x + 2.8660254037844384 * (x ^ 2));
+
                 #endregion
 
                 #region IsolateVariable

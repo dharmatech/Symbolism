@@ -27,6 +27,8 @@ namespace Symbolism
         public static implicit operator MathObject(int n) => new Integer(n); 
 
         public static implicit operator MathObject(bool val) => new Bool(val);
+
+        public static implicit operator MathObject(double val) => new DoubleFloat(val);
         //////////////////////////////////////////////////////////////////////
         #region overloads for 'int'
         public static MathObject operator +(MathObject a, int b) => a + new Integer(b);
