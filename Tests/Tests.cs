@@ -96,9 +96,15 @@ namespace Tests
 
         public static MathObject MultiplyBothSidesBy(this MathObject obj, MathObject item)
         {
+            //if (obj is Equation)
+            //    return (obj as Equation).a * item == (obj as Equation).b * item;
+            
             if (obj is Equation)
-                return (obj as Equation).a * item == (obj as Equation).b * item;
-
+                return new Equation(
+                    (obj as Equation).a * item,
+                    (obj as Equation).b * item,
+                    (obj as Equation).Operator);
+            
             if (obj is And) return (obj as And).Map(elt => elt.MultiplyBothSidesBy(item));
 
             throw new Exception();
@@ -6661,6 +6667,115 @@ namespace Tests
                     .SubstituteEqLs(vals)
 
                     .AssertEqTo(or(vf == -2.54296414970142, vf == 2.54296414970142));
+            }
+            #endregion
+
+            #region PSE 5E Example 8.5
+            {
+                // A child of mass mrides on an irregularly curved slide of
+                // height as shown in  Figure 8.9.The child starts
+                // from rest at the top.
+
+                // (a) Determine his speed at the bottom, assuming no friction is present.
+
+                // (b) If a force of kinetic friction acts on the child, how
+                // much mechanical energy does the system lose? Assume that
+                // vf = 3.0 m/s and m = 20.0 kg.
+
+                var m = new Symbol("m");
+
+                var yi = new Symbol("yi");
+                var yf = new Symbol("yf");
+
+                var vi = new Symbol("vi");
+                var vf = new Symbol("vf");
+
+                var Ki = new Symbol("Ki");
+                var Kf = new Symbol("Kf");
+
+                var Ugi = new Symbol("Ugi");
+                var Ugf = new Symbol("Ugf");
+
+                var ΣUi = new Symbol("ΣUi");
+                var ΣUf = new Symbol("ΣUf");
+
+                var Ei = new Symbol("Ei");
+                var Ef = new Symbol("Ef");
+
+                var fk = new Symbol("fk");
+
+                var W_f = new Symbol("W_f");
+
+                var ΔE = new Symbol("ΔE");
+
+                var g = new Symbol("g");
+
+                var d = new Symbol("d");
+
+                var eqs = and(
+
+                    Ki == m * (vi ^ 2) / 2,
+                    Kf == m * (vf ^ 2) / 2,
+
+                    Ugi == m * g * yi,
+                    Ugf == m * g * yf,
+
+                    ΣUi == Ugi,
+                    ΣUf == Ugf,
+
+                    W_f == -fk * d,
+
+                    ΔE == W_f,
+
+                    Ei == Ki + ΣUi,
+                    Ef == Kf + ΣUf,
+
+                    Ei + ΔE == Ef);
+
+                {
+                    var vals = new List<Equation>()
+                    { yi == 2.0, yf == 0, vi == 0, fk == 0, g == 9.8 };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // vf
+                    eqs
+                        .SubstituteEqLs(zeros)
+                        .EliminateVariables(Ei, Ef, ΔE, Ki, Kf, ΣUi, ΣUf, W_f, Ugi, Ugf)
+                        .MultiplyBothSidesBy(1 / m)
+                        .IsolateVariable(vf)
+
+                        .AssertEqTo(
+                            or(
+                                vf == -sqrt(2 * g * yi),
+                                vf == sqrt(2 * g * yi)))
+
+                        .SubstituteEqLs(vals)
+
+                        .AssertEqTo(
+                            or(
+                                vf == -6.2609903369994111,
+                                vf == 6.2609903369994111));
+                }
+
+                {
+                    var vals = new List<Equation>()
+                    { m == 20.0, yi == 2.0, yf == 0, vi == 0, vf == 3.0, g == 9.8 };
+
+                    var zeros = vals.Where(eq => eq.b == 0).ToList();
+
+                    // ΔE
+                    eqs
+                        .SubstituteEqLs(zeros)
+                        .EliminateVariables(fk, Ei, Ef, Ki, Kf, ΣUi, ΣUf, Ugi, Ugf, W_f)
+                        .IsolateVariable(ΔE)
+                        
+                        .AssertEqTo(ΔE == m * (vf ^ 2) / 2 - g * m * yi)
+                        
+                        .SubstituteEqLs(vals)
+                        
+                        .AssertEqTo(ΔE == -302.0);
+                }
             }
             #endregion
             
