@@ -37,6 +37,7 @@ using Symbolism.EliminateVariable;
 using Symbolism.DeepSelect;
 
 using Symbolism.RationalizeExpression;
+using Symbolism.RationalExpand;
 
 using static Symbolism.Constructors;
 
@@ -1340,10 +1341,38 @@ namespace Tests
                 #endregion
 
                 and(x + y == z, x / y == 0, x != 0).CheckVariable(x).AssertEqTo(false);
+
+                #region RationalExpand
+
+                // EA: Example 6.62
+
+                AssertIsTrue(
+
+                    (((sqrt(1 / (((x + y) ^ 2) + 1)) + 1)
+                        *
+                     (sqrt(1 / (((x + y) ^ 2) + 1)) - 1))
+                     / (x + 1))
+                    .RationalExpand()
+                    
+                    ==
+
+                    (-(x ^ 2) - 2 * x * y - (y ^ 2)) / (1 + x + (x ^ 2) + (x ^ 3) + 2 * x * y + 2 * (x ^ 2) * y + (y ^ 2) + x * (y ^ 2))
+
+                 );
+
+                // EA: page 269
+
+                AssertIsTrue(
+                    (1 / (1 / a + c / (a * b)) + (a * b * c + a * (c ^ 2)) / ((b + c) ^ 2) - a).RationalExpand()
+                    ==
+                    0);
+
+                #endregion
+
             }
 
             #region EliminateVariable
-            
+
             {
                 var x = new Symbol("x");
                 var y = new Symbol("y");
