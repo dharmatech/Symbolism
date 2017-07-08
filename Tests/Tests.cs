@@ -38,6 +38,7 @@ using Symbolism.DeepSelect;
 
 using Symbolism.RationalizeExpression;
 using Symbolism.RationalExpand;
+using Symbolism.LeadingCoefficientGpe;
 
 using static Symbolism.Constructors;
 
@@ -1367,6 +1368,12 @@ namespace Tests
                     ==
                     0);
 
+                #endregion
+
+                #region LeadingCoefficientGpe
+
+                AssertIsTrue((3 * x * (y ^ 2) + 5 * (x ^ 2) * y + 7 * (x ^ 2) * (y ^ 3) + 9).LeadingCoefficientGpe(x) == 5 * y + 7 * (y ^ 3));
+                
                 #endregion
 
             }
