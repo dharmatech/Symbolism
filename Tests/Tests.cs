@@ -40,6 +40,8 @@ using Symbolism.RationalizeExpression;
 using Symbolism.RationalExpand;
 using Symbolism.LeadingCoefficientGpe;
 
+using static Symbolism.PolynomialDivision.Extensions;
+
 using static Symbolism.Constructors;
 
 using static Symbolism.Trigonometric.Constructors;
@@ -1373,7 +1375,54 @@ namespace Tests
                 #region LeadingCoefficientGpe
 
                 AssertIsTrue((3 * x * (y ^ 2) + 5 * (x ^ 2) * y + 7 * (x ^ 2) * (y ^ 3) + 9).LeadingCoefficientGpe(x) == 5 * y + 7 * (y ^ 3));
-                
+
+                #endregion
+
+                #region PolynomialDivision
+
+                // MM: Example 4.4
+
+                {
+                    var result = PolynomialDivision(5 * (x ^ 2) + 4 * x + 1, 2 * x + 3, x);
+                    
+                    AssertIsTrue(result.quotient == 5 * x / 2 - new Integer(7) / 4);
+                    AssertIsTrue(result.remainder == new Integer(25) / 4);
+                }
+
+                // MM: Example 4.10
+
+                {
+                    var result = PolynomialDivision((x ^ 2) - 4, x + 2, x);
+
+                    AssertIsTrue(result.quotient == x - 2);
+                    AssertIsTrue(result.remainder == 0);
+                }
+
+                {
+                    var result = PolynomialDivision((x ^ 2) + 5 * x + 6, x + 2, x);
+
+                    AssertIsTrue(result.quotient == x + 3);
+                    AssertIsTrue(result.remainder == 0);
+                }
+
+                // MM: Example 4.43
+
+                {
+                    var result = PolynomialDivision(3 * (x ^ 3) + (x ^ 2) - 4, (x ^ 2) - 4 * x + 2, x);
+
+                    AssertIsTrue(result.remainder == 46 * x - 30);
+                }
+
+                // MM: Example 4.45
+
+                {
+                    var i = new Symbol("i");
+
+                    var result = PolynomialDivision(2 + 3 * i + 4 * (i ^ 2) + 5 * (i ^ 3) + 6 * (i ^ 4), (i ^ 2) + 1, i);
+
+                    AssertIsTrue(result.remainder == 4 - 2 * i);
+                }
+
                 #endregion
 
             }
