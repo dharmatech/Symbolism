@@ -41,6 +41,7 @@ using Symbolism.RationalExpand;
 using Symbolism.LeadingCoefficientGpe;
 
 using static Symbolism.PolynomialDivision.Extensions;
+using static Symbolism.PolynomialGcd.Extensions;
 
 using static Symbolism.Constructors;
 
@@ -1422,6 +1423,30 @@ namespace Tests
 
                     AssertIsTrue(result.remainder == 4 - 2 * i);
                 }
+
+                #endregion
+
+                #region PolynomialGcd
+
+                // MM: Example 4.20
+
+                AssertIsTrue(
+                    PolynomialGcd(
+                        2 * (x ^ 3) + 12 * (x ^ 2) + 22 * x + 12, 
+                        2 * (x ^ 3) + 18 * (x ^ 2) + 52 * x + 48, 
+                        x)
+                    ==
+                    (x ^ 2) + 5 * x + 6);
+
+                // MM: Example 4.24
+
+                AssertIsTrue(
+                    PolynomialGcd(
+                        (x ^ 7) - 4 * (x ^ 5) - (x ^ 2) + 4,
+                        (x ^ 5) - 4 * (x ^ 3) - (x ^ 2) + 4,
+                        x)
+                    ==
+                    (x ^ 3) - (x ^ 2) - 4 * x + 4);
 
                 #endregion
 

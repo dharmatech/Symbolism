@@ -53,6 +53,7 @@
     <Compile Include="CoefficientGpe.cs" />
     <Compile Include="LeadingCoefficientGpe.cs" />
     <Compile Include="PolynomialDivision.cs" />
+    <Compile Include="PolynomialGcd.cs" />
     <Compile Include="RationalExpand.cs" />
     <Compile Include="RationalizeExpression.cs" />
     <Compile Include="Trigonometric.cs" />
