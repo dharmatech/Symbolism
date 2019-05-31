@@ -1,88 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{067278C5-2A0F-42DE-838B-855EFB652608}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Symbolism</RootNamespace>
-    <AssemblyName>Symbolism</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <PackageId>Symbolism</PackageId>
+    <Version>1.0.2</Version>
+    <Authors>Eduardo Cavazos</Authors>
+    <Company>dharmatech</Company>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Description>Computer Algebra Library for C#</Description>
+    <PackageProjectUrl>https://github.com/dharmatech/Symbolism</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dharmatech/Symbolism</RepositoryUrl>
+    <PackageTags>computer algebra;symbolic mathematics</PackageTags>
+    
+
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AlgebraicExpand.cs" />
-    <Compile Include="CoefficientGpe.cs" />
-    <Compile Include="LeadingCoefficientGpe.cs" />
-    <Compile Include="PolynomialDivision.cs" />
-    <Compile Include="PolynomialGcd.cs" />
-    <Compile Include="RationalExpand.cs" />
-    <Compile Include="RationalizeExpression.cs" />
-    <Compile Include="Trigonometric.cs" />
-    <Compile Include="DeepSelect.cs" />
-    <Compile Include="DegreeGpe.cs" />
-    <Compile Include="EliminateVariable.cs" />
-    <Compile Include="ExpandPower.cs" />
-    <Compile Include="ExpandProduct.cs" />
-    <Compile Include="Has.cs" />
-    <Compile Include="IsolateVariable.cs" />
-    <Compile Include="LogicalExpand.cs" />
-    <Compile Include="SimplifyEquation.cs" />
-    <Compile Include="SimplifyLogical.cs" />
-    <Compile Include="Substitute.cs" />
-    <Compile Include="Symbolism.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

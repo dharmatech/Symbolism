@@ -528,7 +528,7 @@ namespace SymbolismTests
 
         [Fact] public void Test74() => (sqrt(a * b) * (sqrt(a * b) / a) / c).AssertEqTo(b / c);
 
-        public void AssertToStringMatch(MathObject obj, string str) => Assert.True(obj.ToString() == str);
+        void AssertToStringMatch(MathObject obj, string str) => Assert.True(obj.ToString() == str);
 
         [Fact]
         public void Test75()
