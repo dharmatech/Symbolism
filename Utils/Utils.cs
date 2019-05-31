@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Utils
+namespace SymbolismUtils
 {
     public static class Misc
     {
@@ -25,6 +25,7 @@ namespace Utils
         {
             Console.WriteLine(obj);
             return obj;
+
         }
 
         public static T Disp<T>(this T obj, string format)
