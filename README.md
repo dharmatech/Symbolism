@@ -9,6 +9,10 @@ The automatic simplification algorithm comes from the book "Computer Algebra and
 
 The core of the system is in [Symbolism.cs](Symbolism/Symbolism.cs).
 
+Symbolism currently targets .NET Standard 2.0 and thus can be used in .NET projects on Windows, Linux, and Mac.
+
+Nuget package [available here](https://www.nuget.org/packages/Symbolism/).
+
 # Setup on Linux
 
 [Tutorial](Examples/symbolism-linux.md) on how to build and run a simple Symbolism program on Linux.
