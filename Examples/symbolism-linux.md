@@ -25,7 +25,7 @@ Start Visual Studio Code.
 
 Select "File -> Open Folder" from the vscode menu. Select the *symbolism-example* folder.
 
-Select `Program.cs` in the Explorer pane. Replace the code with the following:
+Select `Program.cs` in the Explorer pane. Replace the code with the following which solves a simple physics exercise:
 
 ``` csharp
 using System;
