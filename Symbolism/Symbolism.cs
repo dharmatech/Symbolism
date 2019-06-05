@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Numerics;
 using static Symbolism.ListConstructor;
 
 namespace Symbolism
@@ -40,6 +40,19 @@ namespace Symbolism
         public static MathObject operator *(int a, MathObject b) => new Integer(a) * b;
         public static MathObject operator /(int a, MathObject b) => new Integer(a) / b;
         public static MathObject operator ^(int a, MathObject b) => new Integer(a) ^ b;
+        #endregion
+        //////////////////////////////////////////////////////////////////////
+        #region overloads for 'BigInteger'
+        public static MathObject operator +(MathObject a, BigInteger b) => a + new Integer(b);
+        public static MathObject operator -(MathObject a, BigInteger b) => a - new Integer(b);
+        public static MathObject operator *(MathObject a, BigInteger b) => a * new Integer(b);
+        public static MathObject operator /(MathObject a, BigInteger b) => a / new Integer(b);
+        public static MathObject operator ^(MathObject a, BigInteger b) => a ^ new Integer(b);
+        public static MathObject operator +(BigInteger a, MathObject b) => new Integer(a) + b;
+        public static MathObject operator -(BigInteger a, MathObject b) => new Integer(a) - b;
+        public static MathObject operator *(BigInteger a, MathObject b) => new Integer(a) * b;
+        public static MathObject operator /(BigInteger a, MathObject b) => new Integer(a) / b;
+        public static MathObject operator ^(BigInteger a, MathObject b) => new Integer(a) ^ b;
         #endregion
         //////////////////////////////////////////////////////////////////////
         #region overloads for 'double'
@@ -251,9 +264,11 @@ namespace Symbolism
 
     public class Integer : Number
     {
-        public int val;
+        public BigInteger val;
 
         public Integer(int n) { val = n; }
+
+        public Integer(BigInteger n) { val = n; }
 
         public override string FullForm() => val.ToString();
 
@@ -261,7 +276,7 @@ namespace Symbolism
 
         public override int GetHashCode() => val.GetHashCode();
 
-        public override DoubleFloat ToDouble() => new DoubleFloat(val);
+        public override DoubleFloat ToDouble() => new DoubleFloat((double)val);
     }
 
     public class DoubleFloat : Number
@@ -324,22 +339,22 @@ namespace Symbolism
 
     public static class Rational
     {
-        static int Div(int a, int b)
-        { int rem; return Math.DivRem(a, b, out rem); }
-
-        static int Rem(int a, int b)
-        { int rem; Math.DivRem(a, b, out rem); return rem; }
-
-        static int Gcd(int a, int b)
+        static BigInteger Div(BigInteger a, BigInteger b)
+        { BigInteger rem; return BigInteger.DivRem(a, b, out rem); }
+                
+        static BigInteger Rem(BigInteger a, BigInteger b)
+        { BigInteger rem; BigInteger.DivRem(a, b, out rem); return rem; }
+                
+        static BigInteger Gcd(BigInteger a, BigInteger b)
         {
-            int r;
+            BigInteger r;
             while (b != 0)
             {
                 r = Rem(a, b);
                 a = b;
                 b = r;
             }
-            return Math.Abs(a);
+            return BigInteger.Abs(a);
         }
 
         public static MathObject SimplifyRationalNumber(MathObject u)
@@ -441,7 +456,7 @@ namespace Symbolism
                     new Integer(Numerator(w).val * Denominator(v).val));
         }
 
-        public static MathObject EvaluatePower(MathObject v, int n)
+        public static MathObject EvaluatePower(MathObject v, BigInteger n)
         {
             if (Numerator(v).val != 0)
             {
@@ -760,12 +775,14 @@ namespace Symbolism
         {
             if (u is DoubleFloat && v is DoubleFloat) return ((DoubleFloat)u).val < ((DoubleFloat)v).val;
 
-            if (u is DoubleFloat && v is Integer) return ((DoubleFloat)u).val < ((Integer)v).val;
+            // if (u is DoubleFloat && v is Integer) return ((DoubleFloat)u).val < ((Integer)v).val;
+
+            if (u is DoubleFloat && v is Integer) return ((DoubleFloat)u).val < ((double)((Integer)v).val);
 
             if (u is DoubleFloat && v is Fraction) return
                 ((DoubleFloat)u).val < ((double)((Fraction)v).numerator.val) / ((double)((Fraction)v).denominator.val);
 
-            if (u is Integer && v is DoubleFloat) return ((Integer)u).val < ((DoubleFloat)v).val;
+            if (u is Integer && v is DoubleFloat) return ((double)((Integer)u).val) < ((DoubleFloat)v).val;
 
             if (u is Fraction && v is DoubleFloat) return
                 ((double)((Fraction)u).numerator.val) / ((double)((Fraction)u).denominator.val) < ((DoubleFloat)v).val;
@@ -919,13 +936,13 @@ namespace Symbolism
                 return Rational.SimplifyRNE(new Power(v, n));
 
             if (v is DoubleFloat && w is Integer)
-                return new DoubleFloat(Math.Pow(((DoubleFloat)v).val, ((Integer)w).val));
+                return new DoubleFloat(Math.Pow(((DoubleFloat)v).val, (double) ((Integer)w).val));
 
             if (v is DoubleFloat && w is Fraction)
                 return new DoubleFloat(Math.Pow(((DoubleFloat)v).val, ((Fraction)w).ToDouble().val));
 
             if (v is Integer && w is DoubleFloat)
-                return new DoubleFloat(Math.Pow(((Integer)v).val, ((DoubleFloat)w).val));
+                return new DoubleFloat(Math.Pow((double)((Integer)v).val, ((DoubleFloat)w).val));
 
             if (v is Fraction && w is DoubleFloat)
                 return new DoubleFloat(Math.Pow(((Fraction)v).ToDouble().val, ((DoubleFloat)w).val));
@@ -1033,7 +1050,7 @@ namespace Symbolism
 
             if (b is DoubleFloat) val = a.val * ((DoubleFloat)b).val;
 
-            if (b is Integer) val = a.val * ((Integer)b).val;
+            if (b is Integer) val = a.val * (double)((Integer)b).val;
 
             if (b is Fraction) val = a.val * ((Fraction)b).ToDouble().val;
 
@@ -1177,7 +1194,7 @@ namespace Symbolism
 
             if (b is DoubleFloat) val = a.val + ((DoubleFloat)b).val;
 
-            if (b is Integer) val = a.val + ((Integer)b).val;
+            if (b is Integer) val = a.val + (double)((Integer)b).val;
 
             if (b is Fraction) val = a.val + ((Fraction)b).ToDouble().val;
 

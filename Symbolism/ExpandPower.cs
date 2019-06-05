@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Numerics;
+
 using Symbolism.ExpandProduct;
 
 namespace Symbolism
@@ -11,9 +13,9 @@ namespace Symbolism
     {
         public static class Extensions
         {
-            static int Factorial(int n)
+            static BigInteger Factorial(BigInteger n)
             {
-                var result = 1;
+                var result = (BigInteger) 1;
 
                 for (var i = 1; i <= n; i++)
                 {
@@ -24,7 +26,7 @@ namespace Symbolism
                 // return Enumerable.Range(1, n).Aggregate((acc, elt) => acc * elt);
             }
 
-            public static MathObject ExpandPower(this MathObject u, int n)
+            public static MathObject ExpandPower(this MathObject u, BigInteger n)
             {
                 if (u is Sum)
                 {

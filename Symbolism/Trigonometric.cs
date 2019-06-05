@@ -420,20 +420,20 @@ namespace Symbolism.Trigonometric
             if (ls[0] is Integer && ls[1] is DoubleFloat)
                 return new DoubleFloat(
                     Math.Atan2(
-                        ((Integer)ls[0]).val,
+                        (double)((Integer)ls[0]).val,
                         ((DoubleFloat)ls[1]).val));
 
             if (ls[0] is DoubleFloat && ls[1] is Integer)
                 return new DoubleFloat(
                     Math.Atan2(
                         ((DoubleFloat)ls[0]).val,
-                        ((Integer)ls[1]).val));
+                        (double)((Integer)ls[1]).val));
 
             if (ls[0] is Integer && ls[1] is Integer)
                 return new DoubleFloat(
                     Math.Atan2(
-                        ((Integer)ls[0]).val,
-                        ((Integer)ls[1]).val));
+                        (double)((Integer)ls[0]).val,
+                        (double)((Integer)ls[1]).val));
 
             return new Atan2(ls[0], ls[1]);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 using Symbolism.Has;
@@ -11,9 +12,9 @@ namespace Symbolism
     {
         public static class Extensions
         {
-            public static Tuple<MathObject, int> CoefficientMonomialGpe(this MathObject u, MathObject x)
+            public static Tuple<MathObject, BigInteger> CoefficientMonomialGpe(this MathObject u, MathObject x)
             {
-                if (u == x) return Tuple.Create((MathObject)1, 1);
+                if (u == x) return Tuple.Create((MathObject)1, (BigInteger)1);
 
                 if (u is Power &&
                     (u as Power).bas == x &&
@@ -23,7 +24,7 @@ namespace Symbolism
 
                 if (u is Product)
                 {
-                    var m = 0;
+                    var m = (BigInteger) 0;
                     var c = u;
 
                     foreach (var elt in (u as Product).elts)
@@ -42,12 +43,12 @@ namespace Symbolism
                     return Tuple.Create(c, m);
                 }
 
-                if (u.FreeOf(x)) return Tuple.Create(u, 0);
+                if (u.FreeOf(x)) return Tuple.Create(u, (BigInteger)0);
 
                 return null;
             }
 
-            public static MathObject CoefficientGpe(this MathObject u, MathObject x, int j)
+            public static MathObject CoefficientGpe(this MathObject u, MathObject x, BigInteger j)
             {
                 if (!(u is Sum))
                 {
