@@ -1,17 +1,25 @@
 
+# Symbolism - A Computer Algebra Library for C#
+
 Library that implements automatic simplification of algebraic expressions in C#.
 
-To get an idea of the kinds of expressions it handles, see the [tests in this file](https://github.com/dharmatech/Symbolism/blob/master/Tests/Tests.cs).
+To get an idea of the kinds of expressions it handles, see the [tests in this file](Tests/Tests.cs).
 
 The automatic simplification algorithm comes from the book "Computer Algebra and Symbolic Computation: Mathematical Methods" by Joel S. Cohen.
 
-The core of the system is in [Symbolism.cs](https://github.com/dharmatech/Symbolism/blob/master/Symbolism/Symbolism.cs).
+The core of the system is in [Symbolism.cs](Symbolism/Symbolism.cs).
 
-Symbolism began as a port of the Scheme [MPL library](https://github.com/dharmatech/mpl) to C#.
+Symbolism currently targets .NET Standard 2.0 and thus can be used in .NET projects on Windows, Linux, and Mac.
 
-[GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
+Nuget package [available here](https://www.nuget.org/packages/Symbolism/).
 
-The "PSE 5E" examples and problems in the unit tests are from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett. Here's an [index](https://github.com/dharmatech/Symbolism/blob/master/Examples/unit-test-index.md) of some of the examples.
+# Setup on Linux
+
+[Tutorial](Examples/symbolism-linux.md) on how to build and run a simple Symbolism program on Linux.
+
+# Examples
+
+The "PSE 5E" examples and problems in the unit tests are from the textbook "Physics for Scientists and Engineers, 5th Edition" by Serway and Jewett. Here's an [index](Examples/unit-test-index.md) of some of the examples.
 
 [Here's a walk-through of solving a physics problem](https://gist.github.com/dharmatech/d6d499f14c808b159689).
 
@@ -25,7 +33,13 @@ In action:
 
 [Unit test](https://github.com/dharmatech/Symbolism/blob/ff09e2c20e026091225f4f303bbb06487a08f58d/Tests/Tests.cs#L2732) for that example.
 
-References:
+# See also
+
+Symbolism began as a port of the Scheme [MPL library](https://github.com/dharmatech/mpl) to C#.
+
+[GiNaC](http://www.ginac.de/) and [SymbolicC++](http://issc.uj.ac.za/symbolic/symbolic.html) are of course very inspirational.
+
+# References
 
 Computer Algebra and Symbolic Computation: Elementary Algorithms 
 by Joel S. Cohen
