@@ -4,14 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 
     <PackageId>Symbolism</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Eduardo Cavazos</Authors>
     <Company>dharmatech</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Description>Computer Algebra Library for C#</Description>
     <PackageProjectUrl>https://github.com/dharmatech/Symbolism</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dharmatech/Symbolism</RepositoryUrl>
-    <PackageTags>computer algebra;symbolic mathematics</PackageTags>
+    <PackageTags>computer-algebra;symbolic-mathematics</PackageTags>
     
 
   </PropertyGroup>
