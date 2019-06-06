@@ -23,7 +23,7 @@ namespace Symbolism.Trigonometric
             throw new Exception();
         }
 
-        MathObject SinProc(params MathObject[] ls)
+        static MathObject SinProc(params MathObject[] ls)
         {
             var Pi = new Symbol("Pi");
 
@@ -161,13 +161,8 @@ namespace Symbolism.Trigonometric
 
             return new Sin(u);
         }
-
-        public Sin(MathObject param)
-        {
-            name = "sin";
-            args = new List<MathObject>() { param };
-            proc = SinProc;
-        }
+        
+        public Sin(MathObject param) : base("sin", SinProc, new[] { param }) { }
     }
     public class Cos : Function
     {
@@ -183,7 +178,7 @@ namespace Symbolism.Trigonometric
             throw new Exception();
         }
 
-        MathObject CosProc(params MathObject[] ls)
+        static MathObject CosProc(params MathObject[] ls)
         {
             var Pi = new Symbol("Pi");
 
@@ -337,17 +332,12 @@ namespace Symbolism.Trigonometric
 
             return new Cos(ls[0]);
         }
-
-        public Cos(MathObject param)
-        {
-            name = "cos";
-            args = new List<MathObject>() { param };
-            proc = CosProc;
-        }
+                
+        public Cos(MathObject param) : base("cos", CosProc, new[] { param }) { }
     }
     public class Tan : Function
     {
-        MathObject TanProc(params MathObject[] ls)
+        static MathObject TanProc(params MathObject[] ls)
         {
             if (ls[0] is DoubleFloat)
                 return new DoubleFloat(Math.Tan(((DoubleFloat)ls[0]).val));
@@ -355,16 +345,11 @@ namespace Symbolism.Trigonometric
             return new Tan(ls[0]);
         }
 
-        public Tan(MathObject param)
-        {
-            name = "tan";
-            args = new List<MathObject>() { param };
-            proc = TanProc;
-        }
+        public Tan(MathObject param) : base("tan", TanProc, new[] { param }) { }
     }
     public class Asin : Function
     {
-        MathObject AsinProc(params MathObject[] ls)
+        static MathObject AsinProc(params MathObject[] ls)
         {
             if (ls[0] is DoubleFloat)
                 return new DoubleFloat(Math.Asin(((DoubleFloat)ls[0]).val));
@@ -372,16 +357,11 @@ namespace Symbolism.Trigonometric
             return new Asin(ls[0]);
         }
 
-        public Asin(MathObject param)
-        {
-            name = "asin";
-            args = new List<MathObject>() { param };
-            proc = AsinProc;
-        }
+        public Asin(MathObject param) : base("asin", AsinProc, new[] { param }) { }
     }
     public class Atan : Function
     {
-        MathObject AtanProc(params MathObject[] ls)
+        static MathObject AtanProc(params MathObject[] ls)
         {
             if (ls[0] is DoubleFloat)
                 return new DoubleFloat(Math.Atan(((DoubleFloat)ls[0]).val));
@@ -389,16 +369,11 @@ namespace Symbolism.Trigonometric
             return new Atan(ls[0]);
         }
 
-        public Atan(MathObject param)
-        {
-            name = "atan";
-            args = new List<MathObject>() { param };
-            proc = AtanProc;
-        }
+        public Atan(MathObject param) : base("atan", AtanProc, new[] { param }) { }
     }
     public class Atan2 : Function
     {
-        MathObject Atan2Proc(params MathObject[] ls)
+        static MathObject Atan2Proc(params MathObject[] ls)
         {
             //if (
             //    (ls[0] is DoubleFloat || ls[0] is Integer)
@@ -438,12 +413,7 @@ namespace Symbolism.Trigonometric
             return new Atan2(ls[0], ls[1]);
         }
 
-        public Atan2(MathObject a, MathObject b)
-        {
-            name = "atan2";
-            args = new List<MathObject>() { a, b };
-            proc = Atan2Proc;
-        }
+        public Atan2(MathObject a, MathObject b) : base("atan2", Atan2Proc, new[] { a, b }) { }
     }
 
     public static class Constructors

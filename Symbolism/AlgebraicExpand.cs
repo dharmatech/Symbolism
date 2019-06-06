@@ -46,15 +46,16 @@ namespace Symbolism
                     else 
                         return u;
                 }
-
+                                
                 if (u is Function)
                 {
-                    return new Function() 
-                    { 
-                        name = (u as Function).name,
-                        proc = (u as Function).proc,
-                        args = (u as Function).args.ConvertAll(elt => elt.AlgebraicExpand())
-                    }.Simplify();
+                    var u_ = u as Function;
+
+                    return new Function(
+                        u_.name,
+                        u_.proc,
+                        u_.args.ConvertAll(elt => elt.AlgebraicExpand()))
+                    .Simplify();
                 }
 
                 return u;

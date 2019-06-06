@@ -626,16 +626,20 @@ namespace Symbolism
 
     public class Function : MathObject
     {
-        public String name;
+        public readonly String name;
 
         public List<MathObject> args;
 
         public delegate MathObject Proc(params MathObject[] ls);
 
         public Proc proc;
-
-        // consider constructor
-        // new Function(name, proc, args)
+                
+        public Function(string name, Proc proc, IEnumerable<MathObject> args)
+        {
+            this.name = name;
+            this.proc = proc;
+            this.args = new List<MathObject>(args);
+        }
 
         public override bool Equals(object obj) =>
             GetType() == obj.GetType() &&
@@ -661,7 +665,7 @@ namespace Symbolism
 
     public class And : Function
     {
-        MathObject AndProc(MathObject[] ls)
+        static MathObject AndProc(MathObject[] ls)
         {
             if (ls.Count() == 0) return true;
 
@@ -689,16 +693,11 @@ namespace Symbolism
 
             return new And() { args = new List<MathObject>(ls) };
         }
+                
+        public And(params MathObject[] ls) : base("and", AndProc, ls) { }
 
-        public And(params MathObject[] ls)
-        {
-            name = "and";
-            args = new List<MathObject>(ls);
-            proc = AndProc;
-        }
-
-        public And() { name = "and"; args = new List<MathObject>(); proc = AndProc; }
-
+        public And() : base("and", AndProc, new List<MathObject>()) { }
+                
         public MathObject Add(MathObject obj)
         {
             var ls = new List<MathObject>(args);
@@ -715,7 +714,7 @@ namespace Symbolism
 
     public class Or : Function
     {
-        MathObject OrProc(params MathObject[] ls)
+        static MathObject OrProc(params MathObject[] ls)
         {
             if (ls.Count() == 1) return ls.First();
 
@@ -744,15 +743,10 @@ namespace Symbolism
 
             return new Or() { args = new List<MathObject>(ls) };
         }
+                
+        public Or(params MathObject[] ls) : base("or", OrProc, ls) { }
 
-        public Or(params MathObject[] ls)
-        {
-            name = "or";
-            args = new List<MathObject>(ls);
-            proc = OrProc;
-        }
-
-        public Or() { name = "or"; args = new List<MathObject>(); proc = OrProc; }
+        public Or() : base("or", OrProc, new List<MathObject>()) { }
     }
 
     public static class OrderRelation
