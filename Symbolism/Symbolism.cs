@@ -25,6 +25,8 @@ namespace Symbolism
         //////////////////////////////////////////////////////////////////////
         public static implicit operator MathObject(int n) => new Integer(n);
 
+        public static implicit operator MathObject(BigInteger n) => new Integer(n);
+
         public static implicit operator MathObject(bool val) => new Bool(val);
 
         public static implicit operator MathObject(double val) => new DoubleFloat(val);
@@ -269,6 +271,8 @@ namespace Symbolism
         public Integer(int n) { val = n; }
 
         public Integer(BigInteger n) { val = n; }
+                        
+        public static implicit operator Integer(BigInteger n) => new Integer(n);
 
         public override string FullForm() => val.ToString();
 
@@ -366,14 +370,14 @@ namespace Symbolism
                 var u_ = (Fraction)u;
                 var n = u_.numerator.val;
                 var d = u_.denominator.val;
-
-                if (Rem(n, d) == 0) return new Integer(Div(n, d));
+                                
+                if (Rem(n, d) == 0) return Div(n, d);
 
                 var g = Gcd(n, d);
-
-                if (d > 0) return new Fraction(new Integer(Div(n, g)), new Integer(Div(d, g)));
-
-                if (d < 0) return new Fraction(new Integer(Div(-n, g)), new Integer(Div(-d, g)));
+                                
+                if (d > 0) return new Fraction(Div(n, g), Div(d, g));
+                                
+                if (d < 0) return new Fraction(Div(-n, g), Div(-d, g));
             }
 
             throw new Exception();
@@ -387,14 +391,15 @@ namespace Symbolism
 
             if (u is Integer) return (Integer)u;
 
-            // if (u is Fraction) return Numerator(((Fraction)u).numerator);
-
             if (u is Fraction)
+            {
+                var u_ = u as Fraction;
+
                 return
-                    new Integer(
-                        Numerator(((Fraction)u).numerator).val
-                        *
-                        Denominator(((Fraction)u).denominator).val);
+                    Numerator(u_.numerator).val
+                    *
+                    Denominator(u_.denominator).val;
+            }
 
             throw new Exception();
         }
@@ -407,44 +412,38 @@ namespace Symbolism
 
             if (u is Integer) return new Integer(1);
 
-            // if (u is Fraction) return Denominator(((Fraction)u).denominator);
-
             if (u is Fraction)
+            {
+                var u_ = u as Fraction;
+
                 return
-                    new Integer(
-                        Denominator(((Fraction)u).numerator).val
-                        *
-                        Numerator(((Fraction)u).denominator).val);
+                    Denominator(u_.numerator).val
+                    *
+                    Numerator(u_.denominator).val;
+            }
 
             throw new Exception();
         }
 
-        public static Fraction EvaluateSum(MathObject v, MathObject w)
-        {
+        public static Fraction EvaluateSum(MathObject v, MathObject w) =>        
+
             // a / b + c / d
             // a d / b d + c b / b d
             // (a d + c b) / (b d)
-            return
-                new Fraction(
-                    new Integer(Numerator(v).val * Denominator(w).val + Numerator(w).val * Denominator(v).val),
-                    new Integer(Denominator(v).val * Denominator(w).val));
-        }
 
-        public static Fraction EvaluateDifference(MathObject v, MathObject w)
-        {
-            return
-                new Fraction(
-                    new Integer(Numerator(v).val * Denominator(w).val - Numerator(w).val * Denominator(v).val),
-                    new Integer(Denominator(v).val * Denominator(w).val));
-        }
+            new Fraction(
+                Numerator(v).val * Denominator(w).val + Numerator(w).val * Denominator(v).val,
+                Denominator(v).val * Denominator(w).val);
+        
+        public static Fraction EvaluateDifference(MathObject v, MathObject w) =>
+            new Fraction(
+                Numerator(v).val * Denominator(w).val - Numerator(w).val * Denominator(v).val,
+                Denominator(v).val * Denominator(w).val);
 
-        public static Fraction EvaluateProduct(MathObject v, MathObject w)
-        {
-            return
-                new Fraction(
-                    new Integer(Numerator(v).val * Numerator(w).val),
-                    new Integer(Denominator(v).val * Denominator(w).val));
-        }
+        public static Fraction EvaluateProduct(MathObject v, MathObject w) => 
+            new Fraction(
+                Numerator(v).val * Numerator(w).val,
+                Denominator(v).val * Denominator(w).val);
 
         public static MathObject EvaluateQuotient(MathObject v, MathObject w)
         {
@@ -452,8 +451,8 @@ namespace Symbolism
 
             return
                 new Fraction(
-                    new Integer(Numerator(v).val * Denominator(w).val),
-                    new Integer(Numerator(w).val * Denominator(v).val));
+                    Numerator(v).val * Denominator(w).val,
+                    Numerator(w).val * Denominator(v).val);
         }
 
         public static MathObject EvaluatePower(MathObject v, BigInteger n)
@@ -461,17 +460,20 @@ namespace Symbolism
             if (Numerator(v).val != 0)
             {
                 if (n > 0) return EvaluateProduct(EvaluatePower(v, n - 1), v);
-                if (n == 0) return new Integer(1);
-                if (n == -1)
-                    return new Fraction(new Integer(Denominator(v).val), new Integer(Numerator(v).val));
+
+                if (n == 0) return 1;
+                
+                if (n == -1) return new Fraction(Denominator(v), Numerator(v));
+
                 if (n < -1)
                 {
-                    var s = new Fraction(new Integer(Denominator(v).val), new Integer(Numerator(v).val));
+                    var s = new Fraction(Denominator(v), Numerator(v));
+
                     return EvaluatePower(s, -n);
                 }
             }
-
-            if (n >= 1) return new Integer(0);
+                        
+            if (n >= 1) return 0;
             if (n <= 0) return new Undefined();
 
             throw new Exception();
@@ -493,8 +495,8 @@ namespace Symbolism
                 var v = SimplifyRNERec(((Difference)u).elts[0]);
 
                 if (v == new Undefined()) return v;
-
-                return EvaluateProduct(new Integer(-1), v);
+                                
+                return EvaluateProduct(-1, v);
             }
 
             if (u is Sum && ((Sum)u).elts.Count == 2)

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 
     <PackageId>Symbolism</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>Eduardo Cavazos</Authors>
     <Company>dharmatech</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
