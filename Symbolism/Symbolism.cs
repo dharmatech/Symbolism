@@ -150,8 +150,8 @@ namespace Symbolism
     {
         public enum Operators { Equal, NotEqual, LessThan, GreaterThan }
 
-        public MathObject a;
-        public MathObject b;
+        public readonly MathObject a;
+        public readonly MathObject b;
 
         public Operators Operator;
 
@@ -236,7 +236,7 @@ namespace Symbolism
 
     public class Bool : MathObject
     {
-        public bool val;
+        public readonly bool val;
 
         public Bool(bool b) { val = b; }
 
@@ -266,7 +266,7 @@ namespace Symbolism
 
     public class Integer : Number
     {
-        public BigInteger val;
+        public readonly BigInteger val;
 
         public Integer(int n) { val = n; }
 
@@ -293,7 +293,7 @@ namespace Symbolism
     {
         public static double? tolerance;
 
-        public double val;
+        public readonly double val;
 
         public DoubleFloat(double n) { val = n; }
 
@@ -324,8 +324,8 @@ namespace Symbolism
 
     public class Fraction : Number
     {
-        public Integer numerator;
-        public Integer denominator;
+        public readonly Integer numerator;
+        public readonly Integer denominator;
 
         public Fraction(Integer a, Integer b)
         { numerator = a; denominator = b; }
@@ -580,7 +580,7 @@ namespace Symbolism
 
     public class Symbol : MathObject
     {
-        public String name;
+        public readonly String name;
 
         public Symbol(String str) { name = str; }
 
@@ -633,6 +633,9 @@ namespace Symbolism
         public delegate MathObject Proc(params MathObject[] ls);
 
         public Proc proc;
+
+        // consider constructor
+        // new Function(name, proc, args)
 
         public override bool Equals(object obj) =>
             GetType() == obj.GetType() &&
@@ -893,8 +896,8 @@ namespace Symbolism
 
     public class Power : MathObject
     {
-        public MathObject bas;
-        public MathObject exp;
+        public readonly MathObject bas;
+        public readonly MathObject exp;
 
         public Power(MathObject a, MathObject b) { bas = a; exp = b; }
 
@@ -902,7 +905,6 @@ namespace Symbolism
             string.Format("{0} ^ {1}",
                 bas.Precedence() < Precedence() ? $"({bas})" : $"{bas}",
                 exp.Precedence() < Precedence() ? $"({exp})" : $"{exp}");
-
 
         public override string StandardForm()
         {
@@ -1324,7 +1326,7 @@ namespace Symbolism
 
     class Difference : MathObject
     {
-        public List<MathObject> elts;
+        public readonly List<MathObject> elts;
 
         public Difference(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
@@ -1341,7 +1343,7 @@ namespace Symbolism
 
     class Quotient : MathObject
     {
-        public List<MathObject> elts;
+        public readonly List<MathObject> elts;
 
         public Quotient(params MathObject[] ls)
         { elts = new List<MathObject>(ls); }
