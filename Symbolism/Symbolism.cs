@@ -274,6 +274,12 @@ namespace Symbolism
                         
         public static implicit operator Integer(BigInteger n) => new Integer(n);
 
+        // public static MathObject operator *(MathObject a, MathObject b) => new Product(a, b).Simplify();
+
+        public static Integer operator +(Integer a, Integer b) => a.val + b.val;
+        public static Integer operator -(Integer a, Integer b) => a.val - b.val;
+        public static Integer operator *(Integer a, Integer b) => a.val * b.val;
+
         public override string FullForm() => val.ToString();
 
         public override bool Equals(object obj) => val == (obj as Integer)?.val;
@@ -395,10 +401,15 @@ namespace Symbolism
             {
                 var u_ = u as Fraction;
 
+                //return
+                //    Numerator(u_.numerator).val
+                //    *
+                //    Denominator(u_.denominator).val;
+
                 return
-                    Numerator(u_.numerator).val
+                    Numerator(u_.numerator)
                     *
-                    Denominator(u_.denominator).val;
+                    Denominator(u_.denominator);
             }
 
             throw new Exception();
@@ -417,9 +428,9 @@ namespace Symbolism
                 var u_ = u as Fraction;
 
                 return
-                    Denominator(u_.numerator).val
+                    Denominator(u_.numerator)
                     *
-                    Numerator(u_.denominator).val;
+                    Numerator(u_.denominator);
             }
 
             throw new Exception();
@@ -432,18 +443,18 @@ namespace Symbolism
             // (a d + c b) / (b d)
 
             new Fraction(
-                Numerator(v).val * Denominator(w).val + Numerator(w).val * Denominator(v).val,
-                Denominator(v).val * Denominator(w).val);
+                Numerator(v) * Denominator(w) + Numerator(w) * Denominator(v),
+                Denominator(v) * Denominator(w));
         
         public static Fraction EvaluateDifference(MathObject v, MathObject w) =>
             new Fraction(
-                Numerator(v).val * Denominator(w).val - Numerator(w).val * Denominator(v).val,
-                Denominator(v).val * Denominator(w).val);
+                Numerator(v) * Denominator(w) - Numerator(w) * Denominator(v),
+                Denominator(v) * Denominator(w));
 
         public static Fraction EvaluateProduct(MathObject v, MathObject w) => 
             new Fraction(
-                Numerator(v).val * Numerator(w).val,
-                Denominator(v).val * Denominator(w).val);
+                Numerator(v) * Numerator(w),
+                Denominator(v) * Denominator(w));
 
         public static MathObject EvaluateQuotient(MathObject v, MathObject w)
         {
@@ -451,8 +462,8 @@ namespace Symbolism
 
             return
                 new Fraction(
-                    Numerator(v).val * Denominator(w).val,
-                    Numerator(w).val * Denominator(v).val);
+                    Numerator(v) * Denominator(w),
+                    Numerator(w) * Denominator(v));
         }
 
         public static MathObject EvaluatePower(MathObject v, BigInteger n)
