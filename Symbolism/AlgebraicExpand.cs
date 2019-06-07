@@ -23,9 +23,7 @@ namespace Symbolism
 
                 if (u is Sum)
                 {
-                    return new Sum()
-                    { elts = (u as Sum).elts.Select(elt => elt.AlgebraicExpand()).ToList() }
-                    .Simplify();
+                    return Sum.FromRange((u as Sum).elts.Select(elt => elt.AlgebraicExpand())).Simplify();
                 }
 
                 if (u is Product)

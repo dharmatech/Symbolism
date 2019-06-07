@@ -147,7 +147,7 @@ namespace Symbolism.IsolateVariable
                 //var new_a = eq.a; items.ForEach(elt => new_a = new_a - elt);
                 //var new_b = eq.b; items.ForEach(elt => new_b = new_b - elt);
 
-                var new_a = new Sum() { elts = (eq.a as Sum).elts.Where(elt => items.Contains(elt) == false).ToList() }.Simplify();
+                var new_a = Sum.FromRange((eq.a as Sum).elts.Where(elt => items.Contains(elt) == false)).Simplify();
                 var new_b = eq.b; items.ForEach(elt => new_b = new_b - elt);
 
                 // (new_a as Sum).Where(elt => items.Contains(elt) == false)
@@ -172,7 +172,7 @@ namespace Symbolism.IsolateVariable
                 //    .IsolateVariable(sym);
 
                 return
-                    (sym * new Sum() { elts = (eq.a as Sum).elts.Select(elt => elt / sym).ToList() }.Simplify() == eq.b)
+                    (sym * Sum.FromRange((eq.a as Sum).elts.Select(elt => elt / sym)).Simplify() == eq.b)
                     .IsolateVariable(sym);
             }
 

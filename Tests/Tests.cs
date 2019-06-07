@@ -2249,7 +2249,7 @@ namespace SymbolismTests
                     else items.Add(item);
                 }
 
-                return new Sum() { elts = items }.Simplify();
+                return Sum.FromRange(items).Simplify();
             }
 
             return elt;
@@ -2302,7 +2302,7 @@ namespace SymbolismTests
                     else items.Add(item);
                 }
 
-                return new Sum() { elts = items }.Simplify();
+                return Sum.FromRange(items).Simplify();
             }
 
             return elt;

@@ -38,8 +38,7 @@ namespace Symbolism
 
                 if (obj is Sum)
                     return
-                        new Sum() { elts = (obj as Sum).elts.ConvertAll(elt => elt.Substitute(a, b)) }
-                        .Simplify();
+                        Sum.FromRange((obj as Sum).elts.ConvertAll(elt => elt.Substitute(a, b))).Simplify();
 
                 if (obj is Function)
                 {

@@ -35,7 +35,7 @@ namespace Symbolism
                 
                 if (result is Sum)
                     return
-                        new Sum() { elts = (result as Sum).elts.Select(elt => elt.DeepSelect(proc)).ToList() }.Simplify();
+                        Sum.FromRange((result as Sum).elts.Select(elt => elt.DeepSelect(proc))).Simplify();
 
                 if (result is Product)
                     return

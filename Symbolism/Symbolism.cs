@@ -1171,9 +1171,11 @@ namespace Symbolism
 
     public class Sum : MathObject
     {
-        public List<MathObject> elts;
+        public readonly List<MathObject> elts;
 
         public Sum(params MathObject[] ls) { elts = new List<MathObject>(ls); }
+
+        public static Sum FromRange(IEnumerable<MathObject> ls) => new Sum(ls.ToArray());
 
         public override int GetHashCode() => elts.GetHashCode();
 
@@ -1298,7 +1300,7 @@ namespace Symbolism
             if (res.Count == 0) return 0;
             if (res.Count == 1) return res[0];
 
-            return new Sum() { elts = res };
+            return Sum.FromRange(res);
         }
 
         public override string FullForm() =>
