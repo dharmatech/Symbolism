@@ -206,8 +206,8 @@ namespace Symbolism.IsolateVariable
 
                 return IsolateVariableEq(
                     new Equation(
-                        eq.a / new Product() { elts = items }.Simplify(),
-                        eq.b / new Product() { elts = items }.Simplify()),
+                        eq.a / Product.FromRange(items).Simplify(),
+                        eq.b / Product.FromRange(items).Simplify()),
                     sym);
             }
 

@@ -34,11 +34,9 @@ namespace Symbolism
 
                 if (u is Product)
                     return
-                        new Product()
-                        {
-                            elts = (u as Product).elts.Select(elt => elt.RationalizeExpression()).ToList()
-                        }.Simplify();
-                
+                        Product.FromRange((u as Product).elts.Select(elt => elt.RationalizeExpression())).Simplify();
+                        // (u as Product).Map(elt => elt.RationalizeExpression())
+
                 if (u is Sum)
                 {
                     var f = (u as Sum).elts[0];

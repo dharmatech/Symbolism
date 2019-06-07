@@ -763,7 +763,8 @@ namespace Symbolism
         public static MathObject Term(this MathObject u)
         {
             if (u is Product && ((Product)u).elts[0] is Number)
-                return new Product() { elts = ((Product)u).elts.Cdr() };
+                return Product.FromRange((u as Product).elts.Cdr());
+                // return (u as Product).Cdr()
 
             if (u is Product) return u;
 
@@ -969,8 +970,8 @@ namespace Symbolism
                 var list = new List<MathObject>();
 
                 ((Product)v).elts.ForEach(elt => list.Add(elt ^ w));
-
-                return new Product() { elts = list }.Simplify();
+                                
+                return Product.FromRange(list).Simplify();
             }
 
             return new Power(v, w);
@@ -999,10 +1000,11 @@ namespace Symbolism
 
     public class Product : MathObject
     {
-        public List<MathObject> elts;
+        public readonly List<MathObject> elts;
 
-        public Product(params MathObject[] ls)
-        { elts = new List<MathObject>(ls); }
+        public Product(params MathObject[] ls) => elts = new List<MathObject>(ls);
+
+        public static Product FromRange(IEnumerable<MathObject> ls) => new Product(ls.ToArray());
 
         public override string FullForm() =>
             string.Join(" * ", elts.ConvertAll(elt => elt.Precedence() < Precedence() ? $"({elt})" : $"{elt}"));
@@ -1154,17 +1156,17 @@ namespace Symbolism
 
             // Without the below, the following throws an exception:
             // sqrt(a * b) * (sqrt(a * b) / a) / c
-
-            if (res.Any(elt => elt is Product)) return new Product() { elts = res }.Simplify();
-
-            return new Product() { elts = res };
+                        
+            if (res.Any(elt => elt is Product)) return Product.FromRange(res).Simplify();
+                        
+            return Product.FromRange(res);
         }
 
         public override MathObject Numerator() =>
-            new Product() { elts = elts.Select(elt => elt.Numerator()).ToList() }.Simplify();
+            Product.FromRange(elts.Select(elt => elt.Numerator())).Simplify();
 
         public override MathObject Denominator() =>
-            new Product() { elts = elts.Select(elt => elt.Denominator()).ToList() }.Simplify();
+            Product.FromRange(elts.Select(elt => elt.Denominator())).Simplify();
     }
 
     public class Sum : MathObject

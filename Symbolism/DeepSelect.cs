@@ -39,8 +39,8 @@ namespace Symbolism
 
                 if (result is Product)
                     return
-                        new Product() { elts = (result as Product).elts.Select(elt => elt.DeepSelect(proc)).ToList() }.Simplify();
-                
+                        Product.FromRange((result as Product).elts.Select(elt => elt.DeepSelect(proc))).Simplify();
+
                 return result;
             }
         }

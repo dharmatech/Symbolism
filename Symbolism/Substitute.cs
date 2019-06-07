@@ -34,8 +34,7 @@ namespace Symbolism
 
                 if (obj is Product)
                     return
-                        new Product() { elts = (obj as Product).elts.ConvertAll(elt => elt.Substitute(a, b)) }
-                        .Simplify();
+                        Product.FromRange((obj as Product).elts.ConvertAll(elt => elt.Substitute(a, b))).Simplify();
 
                 if (obj is Sum)
                     return

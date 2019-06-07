@@ -2361,7 +2361,8 @@ namespace SymbolismTests
                         else items.Add(item);
 
                     }
-                    return new Product() { elts = items }.Simplify();
+
+                    return Product.FromRange(items).Simplify();
                 }
                 return elt;
             };

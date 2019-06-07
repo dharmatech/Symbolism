@@ -17,7 +17,7 @@ namespace Symbolism.SimplifyEquation
                 ((expr as Equation).a as Product).elts.Any(elt => elt is Number) &&
                 ((expr as Equation).b == 0))
                 return new Equation(
-                    new Product() { elts = ((expr as Equation).a as Product).elts.Where(elt => !(elt is Number)).ToList() }.Simplify(),
+                    Product.FromRange(((expr as Equation).a as Product).elts.Where(elt => !(elt is Number))).Simplify(),
                     0,
                     (expr as Equation).Operator).Simplify();
 
