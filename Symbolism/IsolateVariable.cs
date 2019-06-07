@@ -255,9 +255,9 @@ namespace Symbolism.IsolateVariable
 
         public static MathObject IsolateVariable(this MathObject obj, Symbol sym)
         {
-            if (obj is Or) return new Or() { args = (obj as Or).args.Select(elt => elt.IsolateVariable(sym)).ToList() }.Simplify();
-
-            if (obj is And) return new And() { args = (obj as And).args.Select(elt => elt.IsolateVariable(sym)).ToList() }.Simplify();
+            if (obj is Or) return new Or((obj as Or).args.Select(elt => elt.IsolateVariable(sym)).ToArray()).Simplify();
+                        
+            if (obj is And) return new And((obj as And).args.Select(elt => elt.IsolateVariable(sym)).ToArray()).Simplify();
 
             if (obj is Equation) return (obj as Equation).IsolateVariableEq(sym);
 

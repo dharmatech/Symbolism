@@ -44,11 +44,13 @@ namespace Symbolism
 
                 if (obj is Function)
                 {
-                    var obj_ = (obj as Function).Clone() as Function;
-                    
-                    obj_.args = (obj as Function).args.ConvertAll(arg => arg.Substitute(a, b));
+                    var obj_ = obj as Function;
 
-                    return obj_.Simplify();
+                    return new Function(
+                        obj_.name,
+                        obj_.proc,
+                        obj_.args.ConvertAll(arg => arg.Substitute(a, b)))
+                    .Simplify();   
                 }
 
                 return obj;

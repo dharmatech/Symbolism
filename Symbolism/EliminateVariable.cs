@@ -34,8 +34,8 @@ namespace Symbolism.EliminateVariable
             if (eqs.Any(eq => eq.Operator == Equation.Operators.Equal && eq.a.Numerator() == sym && eq.a.Denominator().FreeOf(sym) && eq.b == 0) &&
                 eqs.Any(eq => eq == (sym != 0)))
                 return false;
-            
-            return new And() { args = eqs.Select(eq => eq as MathObject).ToList() };
+                        
+            return And.FromRange(eqs.Select(eq => eq as MathObject));
         }
 
         public static MathObject CheckVariable(this MathObject expr, Symbol sym)
@@ -92,7 +92,8 @@ namespace Symbolism.EliminateVariable
                     elt.AlgebraicExpand().Has(sym) &&
                     elt.IsolateVariableEq(sym).Has(obj => obj is Equation && (obj as Equation).a == sym && (obj as Equation).b.FreeOf(sym))
                     ) == false)
-                return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
+                                
+                return And.FromRange(eqs.Select(elt => elt as MathObject));
 
             var eq = eqs.First(elt =>
                 elt.Operator == Equation.Operators.Equal &&
@@ -108,13 +109,13 @@ namespace Symbolism.EliminateVariable
 
             if (result is Equation && 
                 ((result as Equation).a != sym || (result as Equation).b.Has(sym)))
-                return new And() { args = eqs.Select(elt => elt as MathObject).ToList() };
-            
+                return And.FromRange(eqs.Select(elt => elt as MathObject));
+
             if (result is Equation)
             {
                 var eq_sym = result as Equation;
-
-                return new And() { args = rest.Select(elt => elt.Substitute(sym, eq_sym.b)).ToList() }.Simplify();
+                                
+                return And.FromRange(rest.Select(elt => elt.Substitute(sym, eq_sym.b))).Simplify();
 
                 // return new And() { args = rest.Select(rest_eq => rest_eq.SubstituteEq(eq_sym)).ToList() };
 
@@ -129,8 +130,8 @@ namespace Symbolism.EliminateVariable
             if (result is Or && (result as Or).args.All(elt => elt is And))
             {
                 (result as Or).args.ForEach(elt => (elt as And).args.AddRange(rest));
-
-                return new Or() { args = (result as Or).args.Select(elt => EliminateVariable(elt, sym)).ToList() };
+                                
+                return new Or((result as Or).args.Select(elt => EliminateVariable(elt, sym)).ToArray());
             }
 
             if (result is Or)
@@ -138,7 +139,7 @@ namespace Symbolism.EliminateVariable
                 var or = new Or();
 
                 foreach (Equation eq_sym in (result as Or).args)
-                    or.args.Add(new And() { args = rest.Select(rest_eq => rest_eq.Substitute(sym, eq_sym.b)).ToList() }.Simplify());
+                    or.args.Add(new And(rest.Select(rest_eq => rest_eq.Substitute(sym, eq_sym.b)).ToArray()).Simplify());
 
                 return or;
 
@@ -161,7 +162,7 @@ namespace Symbolism.EliminateVariable
 
             if (expr is Or)
             {
-                return new Or() { args = (expr as Or).args.Select(and_expr => and_expr.EliminateVariable(sym)).ToList() };
+                return new Or((expr as Or).args.Select(and_expr => and_expr.EliminateVariable(sym)).ToArray());
 
                 // expr.Map(and_expr => and_expr.EliminateVar(sym))
             }

@@ -32,9 +32,9 @@ namespace Symbolism.LogicalExpand
                 return
                     or.Map(or_elt =>
                         new And(
-                            new And() { args = before }.Simplify().LogicalExpand(),
+                            And.FromRange(before).Simplify().LogicalExpand(),
                             or_elt,
-                            new And() { args = after }.Simplify().LogicalExpand()).Simplify()).LogicalExpand();
+                            And.FromRange(after).Simplify().LogicalExpand()).Simplify()).LogicalExpand();
             }
 
             return obj;

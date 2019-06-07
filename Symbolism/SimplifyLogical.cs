@@ -29,11 +29,11 @@ namespace Symbolism.SimplifyLogical
         {
 
             if (expr is And && (expr as And).args.HasDuplicates())
-                return new And() { args = (expr as And).args.RemoveDuplicates().ToList() };
-
+                return And.FromRange((expr as And).args.RemoveDuplicates());
+                        
             if (expr is Or && (expr as Or).args.HasDuplicates())
                 return
-                    new Or() { args = (expr as Or).args.RemoveDuplicates().ToList() }
+                    new Or((expr as Or).args.RemoveDuplicates().ToArray())
                     .SimplifyLogical();
 
             if (expr is Or) return (expr as Or).Map(elt => elt.SimplifyLogical());

@@ -626,21 +626,21 @@ namespace Symbolism
 
     public class Function : MathObject
     {
-        public readonly String name;
-
-        public List<MathObject> args;
-
         public delegate MathObject Proc(params MathObject[] ls);
 
-        public Proc proc;
-                
+        public readonly String name;
+
+        public readonly Proc proc;
+
+        public readonly List<MathObject> args;
+        
         public Function(string name, Proc proc, IEnumerable<MathObject> args)
         {
             this.name = name;
             this.proc = proc;
             this.args = new List<MathObject>(args);
         }
-
+                
         public override bool Equals(object obj) =>
             GetType() == obj.GetType() &&
             name == (obj as Function).name &&
@@ -657,10 +657,13 @@ namespace Symbolism
 
     public static class FunctionExtensions
     {
-        public static MathObject Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
-        {
-            return new T() { args = obj.args.Select(proc).ToList() }.Simplify();
-        }
+        //public static MathObject Map<T>(this T obj, Func<MathObject, MathObject> proc) where T : Function, new()
+        //{
+        //    // return new T() { args = obj.args.Select(proc).ToList() }.Simplify();
+
+        //    // return 
+            
+        //}
     }
 
     public class And : Function
@@ -674,8 +677,7 @@ namespace Symbolism
             if (ls.Any(elt => elt == false)) return false;
 
             if (ls.Any(elt => elt == true))
-                return new And()
-                { args = new List<MathObject>(ls.Where(elt => elt != true)) }.Simplify();
+                return new And(ls.Where(elt => elt != true).ToArray()).Simplify();
 
             if (ls.Any(elt => elt is And))
             {
@@ -690,26 +692,26 @@ namespace Symbolism
 
                 return and.Simplify();
             }
-
-            return new And() { args = new List<MathObject>(ls) };
+                        
+            return new And(ls);
         }
                 
         public And(params MathObject[] ls) : base("and", AndProc, ls) { }
 
         public And() : base("and", AndProc, new List<MathObject>()) { }
-                
+
+        public static And FromRange(IEnumerable<MathObject> ls) => new And(ls.ToArray());
+
         public MathObject Add(MathObject obj)
         {
             var ls = new List<MathObject>(args);
 
             ls.Add(obj);
 
-            var and = new And();
-
-            and.args = ls;
-
-            return and.Simplify();
+            return And.FromRange(ls).Simplify();
         }
+
+        public MathObject Map(Func<MathObject, MathObject> proc) => new And(args.Select(proc).ToArray()).Simplify();
     }
 
     public class Or : Function
@@ -721,8 +723,7 @@ namespace Symbolism
             // 10 || false || 20   ->   10 || 20
 
             if (ls.Any(elt => elt == false))
-                return new Or()
-                { args = ls.Where(elt => elt != false).ToList() }.Simplify();
+                return new Or(ls.Where(elt => elt != false).ToArray()).Simplify();
 
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
 
@@ -740,13 +741,15 @@ namespace Symbolism
 
                 return or.Simplify();
             }
-
-            return new Or() { args = new List<MathObject>(ls) };
+                        
+            return new Or(ls);
         }
                 
         public Or(params MathObject[] ls) : base("or", OrProc, ls) { }
 
         public Or() : base("or", OrProc, new List<MathObject>()) { }
+
+        public MathObject Map(Func<MathObject, MathObject> proc) => new Or(args.Select(proc).ToArray()).Simplify();
     }
 
     public static class OrderRelation
@@ -1349,8 +1352,8 @@ namespace Symbolism
     {
         public static MathObject sqrt(MathObject obj) => obj ^ (new Integer(1) / new Integer(2));
 
-        public static MathObject and(params MathObject[] ls) => new And() { args = ls.ToList() }.Simplify();
+        public static MathObject and(params MathObject[] ls) => new And(ls).Simplify();
 
-        public static MathObject or(params MathObject[] ls) => new Or() { args = ls.ToList() }.Simplify();
+        public static MathObject or(params MathObject[] ls) => new Or(ls).Simplify();
     }
 }
