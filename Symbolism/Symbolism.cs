@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
 using static Symbolism.ListConstructor;
@@ -595,22 +596,18 @@ namespace Symbolism
     public static class ListConstructor
     {
         public static List<T> List<T>(params T[] items) => new List<T>(items);
+
+        public static ImmutableList<T> ImList<T>(params T[] items) => ImmutableList.Create(items);
     }
 
     public static class ListUtils
     {
-        public static bool IsEmpty(this List<MathObject> obj) => obj.Count == 0;
+        public static ImmutableList<MathObject> Cons(this ImmutableList<MathObject> obj, MathObject elt) => 
+            obj.Insert(0, elt);
+        
+        public static ImmutableList<MathObject> Cdr(this ImmutableList<MathObject> obj) => obj.RemoveAt(0);
 
-        public static List<MathObject> Cons(this List<MathObject> obj, MathObject elt)
-        {
-            var res = new List<MathObject>(obj);
-            res.Insert(0, elt);
-            return res;
-        }
-
-        public static List<MathObject> Cdr(this List<MathObject> obj) => obj.GetRange(1, obj.Count - 1);
-
-        public static bool equal(List<MathObject> a, List<MathObject> b)
+        public static bool equal(ImmutableList<MathObject> a, ImmutableList<MathObject> b)
         {
             if (a.Count == 0 && b.Count == 0) return true;
 
@@ -631,14 +628,14 @@ namespace Symbolism
         public readonly String name;
 
         public readonly Proc proc;
+                
+        public readonly ImmutableList<MathObject> args;
 
-        public readonly List<MathObject> args;
-        
         public Function(string name, Proc proc, IEnumerable<MathObject> args)
         {
             this.name = name;
             this.proc = proc;
-            this.args = new List<MathObject>(args);
+            this.args = ImmutableList.CreateRange(args);
         }
                 
         public override bool Equals(object obj) =>
@@ -678,21 +675,21 @@ namespace Symbolism
 
             if (ls.Any(elt => elt == true))
                 return new And(ls.Where(elt => elt != true).ToArray()).Simplify();
-
+                        
             if (ls.Any(elt => elt is And))
             {
-                var and = new And();
+                var items = new List<MathObject>();
 
                 foreach (var elt in ls)
                 {
-                    if (elt is And) and.args.AddRange((elt as And).args);
+                    if (elt is And) items.AddRange((elt as And).args);
 
-                    else and.args.Add(elt);
+                    else items.Add(elt);
                 }
 
-                return and.Simplify();
+                return And.FromRange(items).Simplify();
             }
-                        
+
             return new And(ls);
         }
                 
@@ -711,6 +708,9 @@ namespace Symbolism
             return And.FromRange(ls).Simplify();
         }
 
+        public MathObject AddRange(IEnumerable<MathObject> ls) =>
+            And.FromRange(args.AddRange(ls)).Simplify();
+
         public MathObject Map(Func<MathObject, MathObject> proc) => new And(args.Select(proc).ToArray()).Simplify();
     }
 
@@ -728,20 +728,20 @@ namespace Symbolism
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
 
             if (ls.All(elt => (elt is Bool) && (elt as Bool).val == false)) return new Bool(false);
-
+                        
             if (ls.Any(elt => elt is Or))
             {
-                var or = new Or();
+                var items = new List<MathObject>();
 
                 foreach (var elt in ls)
                 {
-                    if (elt is Or) or.args.AddRange((elt as Or).args);
-                    else or.args.Add(elt);
+                    if (elt is Or) items.AddRange((elt as Or).args);
+                    else items.Add(elt);
                 }
-
-                return or.Simplify();
+                                
+                return Or.FromRange(items).Simplify();
             }
-                        
+
             return new Or(ls);
         }
                 
@@ -774,10 +774,10 @@ namespace Symbolism
         public static MathObject Const(this MathObject u) =>
             (u is Product && (u as Product).elts[0] is Number) ? (u as Product).elts[0] : 1;
 
-        public static bool O3(List<MathObject> uElts, List<MathObject> vElts)
+        public static bool O3(ImmutableList<MathObject> uElts, ImmutableList<MathObject> vElts)
         {
-            if (uElts.IsEmpty()) return true;
-            if (vElts.IsEmpty()) return false;
+            if (uElts.IsEmpty) return true;
+            if (vElts.IsEmpty) return false;
 
             var u = uElts.First();
             var v = vElts.First();
@@ -831,22 +831,14 @@ namespace Symbolism
                         ((Symbol)v).name) < 0;
 
             if (u is Product && v is Product)
-            {
-                // var a = new List<MathObject>(((Product)u).elts.Cdr());
-                var a = new List<MathObject>(((Product)u).elts);
-                a.Reverse();
-
-                // var b = new List<MathObject>(((Product)v).elts.Cdr());
-                var b = new List<MathObject>(((Product)v).elts);
-                b.Reverse();
-
-                return O3(a, b);
-            }
-
+                return O3(
+                    (u as Product).elts.Reverse(),
+                    (v as Product).elts.Reverse());
+                                    
             if (u is Sum && v is Sum)
                 return O3(
-                    (u as Sum).elts.Reverse<MathObject>().ToList(),
-                    (v as Sum).elts.Reverse<MathObject>().ToList());
+                    (u as Sum).elts.Reverse(),
+                    (v as Sum).elts.Reverse());
 
             if (u is Power && v is Power)
             {
@@ -1000,9 +992,9 @@ namespace Symbolism
 
     public class Product : MathObject
     {
-        public readonly List<MathObject> elts;
-
-        public Product(params MathObject[] ls) => elts = new List<MathObject>(ls);
+        public readonly ImmutableList<MathObject> elts;
+                
+        public Product(params MathObject[] ls) => elts = ImmutableList.Create(ls);
 
         public static Product FromRange(IEnumerable<MathObject> ls) => new Product(ls.ToArray());
 
@@ -1036,7 +1028,7 @@ namespace Symbolism
         public override bool Equals(object obj) =>
             obj is Product && ListUtils.equal(elts, (obj as Product).elts);
 
-        static List<MathObject> MergeProducts(List<MathObject> pElts, List<MathObject> qElts)
+        static ImmutableList<MathObject> MergeProducts(ImmutableList<MathObject> pElts, ImmutableList<MathObject> qElts)
         {
             if (pElts.Count == 0) return qElts;
             if (qElts.Count == 0) return pElts;
@@ -1047,20 +1039,20 @@ namespace Symbolism
             var q = qElts[0];
             var qs = qElts.Cdr();
 
-            var res = RecursiveSimplify(List(p, q));
+            var res = RecursiveSimplify(ImList(p, q));
 
             if (res.Count == 0) return MergeProducts(ps, qs);
 
             if (res.Count == 1) return MergeProducts(ps, qs).Cons(res[0]);
 
-            if (ListUtils.equal(res, List(p, q))) return MergeProducts(ps, qElts).Cons(p);
+            if (ListUtils.equal(res, ImList(p, q))) return MergeProducts(ps, qElts).Cons(p);
 
-            if (ListUtils.equal(res, List(q, p))) return MergeProducts(pElts, qs).Cons(q);
+            if (ListUtils.equal(res, ImList(q, p))) return MergeProducts(pElts, qs).Cons(q);
 
             throw new Exception();
         }
 
-        static List<MathObject> SimplifyDoubleNumberProduct(DoubleFloat a, Number b)
+        static ImmutableList<MathObject> SimplifyDoubleNumberProduct(DoubleFloat a, Number b)
         {
             double val = 0.0;
 
@@ -1069,13 +1061,13 @@ namespace Symbolism
             if (b is Integer) val = a.val * (double)((Integer)b).val;
 
             if (b is Fraction) val = a.val * ((Fraction)b).ToDouble().val;
+                        
+            if (val == 1.0) return ImmutableList.Create<MathObject>();
 
-            if (val == 1.0) return new List<MathObject>() { };
-
-            return List<MathObject>(new DoubleFloat(val));
+            return ImList<MathObject>(new DoubleFloat(val));
         }
 
-        public static List<MathObject> RecursiveSimplify(List<MathObject> elts)
+        public static ImmutableList<MathObject> RecursiveSimplify(ImmutableList<MathObject> elts)
         {
             if (elts.Count == 2)
             {
@@ -1084,9 +1076,9 @@ namespace Symbolism
                         ((Product)elts[0]).elts,
                         ((Product)elts[1]).elts);
 
-                if (elts[0] is Product) return MergeProducts(((Product)elts[0]).elts, List(elts[1]));
+                if (elts[0] is Product) return MergeProducts(((Product)elts[0]).elts, ImList(elts[1]));
 
-                if (elts[1] is Product) return MergeProducts(List(elts[0]), ((Product)elts[1]).elts);
+                if (elts[1] is Product) return MergeProducts(ImList(elts[0]), ((Product)elts[1]).elts);
 
                 //////////////////////////////////////////////////////////////////////
 
@@ -1103,14 +1095,14 @@ namespace Symbolism
                     (elts[1] is Integer || elts[1] is Fraction))
                 {
                     var P = Rational.SimplifyRNE(new Product(elts[0], elts[1]));
+                                        
+                    if (P == 1) return ImmutableList.Create<MathObject>();
 
-                    if (P == 1) return new List<MathObject>() { };
-
-                    return List(P);
+                    return ImList(P);
                 }
 
-                if (elts[0] == 1) return List(elts[1]);
-                if (elts[1] == 1) return List(elts[0]);
+                if (elts[0] == 1) return ImList(elts[1]);
+                if (elts[1] == 1) return ImList(elts[0]);
 
                 var p = elts[0];
                 var q = elts[1];
@@ -1118,15 +1110,15 @@ namespace Symbolism
                 if (OrderRelation.Base(p) == OrderRelation.Base(q))
                 {
                     var res = OrderRelation.Base(p) ^ (OrderRelation.Exponent(p) + OrderRelation.Exponent(q));
+                                        
+                    if (res == 1) return ImmutableList.Create<MathObject>();
 
-                    if (res == 1) return new List<MathObject>() { };
-
-                    return List(res);
+                    return ImList(res);
                 }
 
-                if (OrderRelation.Compare(q, p)) return List(q, p);
+                if (OrderRelation.Compare(q, p)) return ImList(q, p);
 
-                return List(p, q);
+                return ImList(p, q);
             }
 
             if (elts[0] is Product)
@@ -1136,7 +1128,7 @@ namespace Symbolism
                         RecursiveSimplify(elts.Cdr()));
 
             return MergeProducts(
-                List(elts[0]),
+                ImList(elts[0]),
                 RecursiveSimplify(elts.Cdr()));
 
             throw new Exception();
@@ -1150,7 +1142,7 @@ namespace Symbolism
 
             var res = RecursiveSimplify(elts);
 
-            if (res.IsEmpty()) return 1;
+            if (res.IsEmpty) return 1;
 
             if (res.Count == 1) return res[0];
 
@@ -1171,9 +1163,9 @@ namespace Symbolism
 
     public class Sum : MathObject
     {
-        public readonly List<MathObject> elts;
+        public readonly ImmutableList<MathObject> elts;
 
-        public Sum(params MathObject[] ls) { elts = new List<MathObject>(ls); }
+        public Sum(params MathObject[] ls) { elts = ImmutableList.Create(ls); }
 
         public static Sum FromRange(IEnumerable<MathObject> ls) => new Sum(ls.ToArray());
 
@@ -1182,7 +1174,7 @@ namespace Symbolism
         public override bool Equals(object obj) =>
             obj is Sum && ListUtils.equal(elts, (obj as Sum).elts);
 
-        static List<MathObject> MergeSums(List<MathObject> pElts, List<MathObject> qElts)
+        static ImmutableList<MathObject> MergeSums(ImmutableList<MathObject> pElts, ImmutableList<MathObject> qElts)
         {
             if (pElts.Count == 0) return qElts;
             if (qElts.Count == 0) return pElts;
@@ -1193,20 +1185,20 @@ namespace Symbolism
             var q = qElts[0];
             var qs = qElts.Cdr();
 
-            var res = RecursiveSimplify(List(p, q));
+            var res = RecursiveSimplify(ImList(p, q));
 
             if (res.Count == 0) return MergeSums(ps, qs);
 
             if (res.Count == 1) return MergeSums(ps, qs).Cons(res[0]);
 
-            if (ListUtils.equal(res, List(p, q))) return MergeSums(ps, qElts).Cons(p);
+            if (ListUtils.equal(res, ImList(p, q))) return MergeSums(ps, qElts).Cons(p);
 
-            if (ListUtils.equal(res, List(q, p))) return MergeSums(pElts, qs).Cons(q);
+            if (ListUtils.equal(res, ImList(q, p))) return MergeSums(pElts, qs).Cons(q);
 
             throw new Exception();
         }
 
-        static List<MathObject> SimplifyDoubleNumberSum(DoubleFloat a, Number b)
+        static ImmutableList<MathObject> SimplifyDoubleNumberSum(DoubleFloat a, Number b)
         {
             double val = 0.0;
 
@@ -1216,12 +1208,12 @@ namespace Symbolism
 
             if (b is Fraction) val = a.val + ((Fraction)b).ToDouble().val;
 
-            if (val == 0.0) return new List<MathObject>() { };
-
-            return new List<MathObject>() { new DoubleFloat(val) };
+            if (val == 0.0) return ImmutableList.Create<MathObject>();
+                        
+            return ImmutableList.Create<MathObject>(new DoubleFloat(val));
         }
 
-        static List<MathObject> RecursiveSimplify(List<MathObject> elts)
+        static ImmutableList<MathObject> RecursiveSimplify(ImmutableList<MathObject> elts)
         {
             if (elts.Count == 2)
             {
@@ -1233,11 +1225,11 @@ namespace Symbolism
                 if (elts[0] is Sum)
                     return MergeSums(
                         ((Sum)elts[0]).elts,
-                        List(elts[1]));
+                        ImList(elts[1]));
 
                 if (elts[1] is Sum)
                     return MergeSums(
-                        List(elts[0]),
+                        ImList(elts[0]),
                         ((Sum)elts[1]).elts);
 
                 //////////////////////////////////////////////////////////////////////
@@ -1255,15 +1247,15 @@ namespace Symbolism
                     (elts[1] is Integer || elts[1] is Fraction))
                 {
                     var P = Rational.SimplifyRNE(new Sum(elts[0], elts[1]));
+                                        
+                    if (P == 0) return ImmutableList.Create<MathObject>();
 
-                    if (P == 0) return new List<MathObject>() { };
-
-                    return List(P);
+                    return ImList(P);
                 }
 
-                if (elts[0] == 0) return List(elts[1]);
+                if (elts[0] == 0) return ImList(elts[1]);
 
-                if (elts[1] == 0) return List(elts[0]);
+                if (elts[1] == 0) return ImList(elts[0]);
 
                 var p = elts[0];
                 var q = elts[1];
@@ -1272,14 +1264,14 @@ namespace Symbolism
                 {
                     var res = p.Term() * (p.Const() + q.Const());
 
-                    if (res == 0) return new List<MathObject>() { };
+                    if (res == 0) return ImmutableList.Create<MathObject>();
 
-                    return List(res);
+                    return ImList(res);
                 }
 
-                if (OrderRelation.Compare(q, p)) return List(q, p);
+                if (OrderRelation.Compare(q, p)) return ImList(q, p);
 
-                return List(p, q);
+                return ImList(p, q);
             }
 
             if (elts[0] is Sum)
@@ -1288,7 +1280,7 @@ namespace Symbolism
                         ((Sum)elts[0]).elts, RecursiveSimplify(elts.Cdr()));
 
             return MergeSums(
-                List(elts[0]), RecursiveSimplify(elts.Cdr()));
+                ImList(elts[0]), RecursiveSimplify(elts.Cdr()));
         }
 
         public MathObject Simplify()
@@ -1329,10 +1321,9 @@ namespace Symbolism
 
     class Difference : MathObject
     {
-        public readonly List<MathObject> elts;
+        public readonly ImmutableList<MathObject> elts;
 
-        public Difference(params MathObject[] ls)
-        { elts = new List<MathObject>(ls); }
+        public Difference(params MathObject[] ls) => elts = ImmutableList.Create(ls);
 
         public MathObject Simplify()
         {
@@ -1346,10 +1337,9 @@ namespace Symbolism
 
     class Quotient : MathObject
     {
-        public readonly List<MathObject> elts;
-
-        public Quotient(params MathObject[] ls)
-        { elts = new List<MathObject>(ls); }
+        public readonly ImmutableList<MathObject> elts;
+                
+        public Quotient(params MathObject[] ls) => elts = ImmutableList.Create(ls);
 
         public MathObject Simplify() => elts[0] * (elts[1] ^ -1);
     }

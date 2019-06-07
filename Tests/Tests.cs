@@ -1365,6 +1365,56 @@ namespace SymbolismTests
         );
 
         #endregion
+               
+        [Fact]
+        public void Test253_a()
+        {
+            var x = new Symbol("x");
+            var y = new Symbol("y");
+            var z = new Symbol("z");
+
+            var eqs = and(
+                (x ^ 2) - 4 == 0,
+                y + x == 0,
+                x + z == 10
+            );
+
+            var half = new Integer(1) / 2;
+
+            ((x ^ 2) - 4 == 0)
+                .IsolateVariableEq(x)
+                .AssertEqTo(or(x == half * sqrt(16), x == -half * sqrt(16)));
+        }
+
+        [Fact]
+        public void Test253_b()
+        {
+            var x = new Symbol("x");
+            var y = new Symbol("y");
+            var z = new Symbol("z");
+
+            var eqs = and(
+                (x ^ 2) - 4 == 0,
+                y + x == 0,
+                x + z == 10
+            );
+
+            var half = new Integer(1) / 2;
+                        
+            eqs.EliminateVariable(x)
+                .AssertEqTo(
+                    or(
+                        and(
+                            half * sqrt(16) + y == 0,
+                            half * sqrt(16) + z == 10
+                        ),
+                        and(
+                            -half * sqrt(16) + y == 0,
+                            -half * sqrt(16) + z == 10
+                        )
+                    )
+                );
+        }
 
         [Fact]
         public void Test253()

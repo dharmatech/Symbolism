@@ -126,26 +126,18 @@ namespace Symbolism.EliminateVariable
             //     And(eq0, eq1, eq2, ...)
             //     And(eq3, eq4, eq5, ...)
             // )
-
+                        
             if (result is Or && (result as Or).args.All(elt => elt is And))
-            {
-                (result as Or).args.ForEach(elt => (elt as And).args.AddRange(rest));
-                                
-                return Or.FromRange((result as Or).args.Select(elt => EliminateVariable(elt, sym)));
-            }
-
+                return (result as Or).Map(elt => (elt as And).AddRange(rest).EliminateVariable(sym));   
+                        
             if (result is Or)
             {
-                var or = new Or();
+                var items = new List<MathObject>();
 
                 foreach (Equation eq_sym in (result as Or).args)
-                    or.args.Add(new And(rest.Select(rest_eq => rest_eq.Substitute(sym, eq_sym.b)).ToArray()).Simplify());
-
-                return or;
-
-                // (result as Or).Map(eq_sym => new And() { args = rest.Select(rest_eq => rest_eq.SubstituteEq(eq_sym)).ToList() });
-
-                // (result as Or).Map(eq_sym => rest.Map(rest_eq => rest_eq.Substitute(eq_sym))
+                    items.Add(new And(rest.Select(rest_eq => rest_eq.Substitute(sym, eq_sym.b)).ToArray()).Simplify());
+                                
+                return Or.FromRange(items);
             }
 
             throw new Exception();
