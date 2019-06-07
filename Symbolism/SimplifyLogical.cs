@@ -33,7 +33,7 @@ namespace Symbolism.SimplifyLogical
                         
             if (expr is Or && (expr as Or).args.HasDuplicates())
                 return
-                    new Or((expr as Or).args.RemoveDuplicates().ToArray())
+                    Or.FromRange((expr as Or).args.RemoveDuplicates())
                     .SimplifyLogical();
 
             if (expr is Or) return (expr as Or).Map(elt => elt.SimplifyLogical());

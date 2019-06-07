@@ -723,7 +723,7 @@ namespace Symbolism
             // 10 || false || 20   ->   10 || 20
 
             if (ls.Any(elt => elt == false))
-                return new Or(ls.Where(elt => elt != false).ToArray()).Simplify();
+                return Or.FromRange(ls.Where(elt => elt != false)).Simplify();
 
             if (ls.Any(elt => (elt is Bool) && (elt as Bool).val)) return new Bool(true);
 
@@ -749,7 +749,9 @@ namespace Symbolism
 
         public Or() : base("or", OrProc, new List<MathObject>()) { }
 
-        public MathObject Map(Func<MathObject, MathObject> proc) => new Or(args.Select(proc).ToArray()).Simplify();
+        public static Or FromRange(IEnumerable<MathObject> ls) => new Or(ls.ToArray());
+
+        public MathObject Map(Func<MathObject, MathObject> proc) => Or.FromRange(args.Select(proc)).Simplify();
     }
 
     public static class OrderRelation
@@ -1352,8 +1354,8 @@ namespace Symbolism
     {
         public static MathObject sqrt(MathObject obj) => obj ^ (new Integer(1) / new Integer(2));
 
-        public static MathObject and(params MathObject[] ls) => new And(ls).Simplify();
+        public static MathObject and(params MathObject[] ls) => And.FromRange(ls).Simplify();
 
-        public static MathObject or(params MathObject[] ls) => new Or(ls).Simplify();
+        public static MathObject or(params MathObject[] ls) => Or.FromRange(ls).Simplify();
     }
 }

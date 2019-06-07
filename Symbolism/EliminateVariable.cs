@@ -131,7 +131,7 @@ namespace Symbolism.EliminateVariable
             {
                 (result as Or).args.ForEach(elt => (elt as And).args.AddRange(rest));
                                 
-                return new Or((result as Or).args.Select(elt => EliminateVariable(elt, sym)).ToArray());
+                return Or.FromRange((result as Or).args.Select(elt => EliminateVariable(elt, sym)));
             }
 
             if (result is Or)
@@ -162,7 +162,7 @@ namespace Symbolism.EliminateVariable
 
             if (expr is Or)
             {
-                return new Or((expr as Or).args.Select(and_expr => and_expr.EliminateVariable(sym)).ToArray());
+                return Or.FromRange((expr as Or).args.Select(and_expr => and_expr.EliminateVariable(sym)));
 
                 // expr.Map(and_expr => and_expr.EliminateVar(sym))
             }
