@@ -430,12 +430,14 @@ namespace Symbolism.Trigonometric
     {
         public static Symbol Pi = new Symbol("Pi");
 
-        public static MathObject ToRadians(this MathObject n) { return n * Pi / 180; }
+        public static MathObject ToRadians(this MathObject n) => n * Pi / 180;
 
-        public static MathObject ToDegrees(this MathObject n) { return 180 * n / Pi; }
+        public static MathObject ToDegrees(this MathObject n) => 180 * n / Pi;
 
-        public static MathObject ToRadians(this int n) { return new Integer(n) * Pi / 180; }
+        public static MathObject ToRadians(this int n) => new Integer(n) * Pi / 180;
 
-        public static MathObject ToDegrees(this int n) { return 180 * new Integer(n) / Pi; }
+        public static MathObject ToDegrees(this int n) => 180 * new Integer(n) / Pi;
+
+        // (Integer) 180 * n / Pi
     }
 }

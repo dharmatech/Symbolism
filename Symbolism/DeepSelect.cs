@@ -14,12 +14,10 @@ namespace Symbolism
                 var result = proc(obj);
 
                 if (result is Power)
-                {
                     return
                         (result as Power).bas.DeepSelect(proc) ^
                         (result as Power).exp.DeepSelect(proc);
-                }
-
+                
                 if (result is Or)
                     return (result as Or).Map(elt => elt.DeepSelect(proc));
 
@@ -32,14 +30,14 @@ namespace Symbolism
                             (result as Equation).a.DeepSelect(proc),
                             (result as Equation).b.DeepSelect(proc),
                             (result as Equation).Operator);
-                
+
                 if (result is Sum)
                     return
-                        Sum.FromRange((result as Sum).elts.Select(elt => elt.DeepSelect(proc))).Simplify();
+                        (result as Sum).Map(elt => elt.DeepSelect(proc));
 
                 if (result is Product)
                     return
-                        Product.FromRange((result as Product).elts.Select(elt => elt.DeepSelect(proc))).Simplify();
+                        (result as Product).Map(elt => elt.DeepSelect(proc));
 
                 return result;
             }

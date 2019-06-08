@@ -699,19 +699,14 @@ namespace Symbolism
 
         public static And FromRange(IEnumerable<MathObject> ls) => new And(ls.ToArray());
 
-        public MathObject Add(MathObject obj)
-        {
-            var ls = new List<MathObject>(args);
-
-            ls.Add(obj);
-
-            return And.FromRange(ls).Simplify();
-        }
+        public MathObject Add(MathObject obj) =>
+            And.FromRange(args.Add(obj)).Simplify();
 
         public MathObject AddRange(IEnumerable<MathObject> ls) =>
             And.FromRange(args.AddRange(ls)).Simplify();
-
-        public MathObject Map(Func<MathObject, MathObject> proc) => new And(args.Select(proc).ToArray()).Simplify();
+                
+        public MathObject Map(Func<MathObject, MathObject> proc) => 
+            And.FromRange(args.Select(proc)).Simplify();
     }
 
     public class Or : Function
@@ -958,14 +953,8 @@ namespace Symbolism
             { return ((Power)v).bas ^ (((Power)v).exp * w); }
 
             if (v is Product && w is Integer)
-            {
-                var list = new List<MathObject>();
-
-                ((Product)v).elts.ForEach(elt => list.Add(elt ^ w));
-                                
-                return Product.FromRange(list).Simplify();
-            }
-
+                return (v as Product).Map(elt => elt ^ w);
+            
             return new Power(v, w);
         }
 
@@ -1159,6 +1148,9 @@ namespace Symbolism
 
         public override MathObject Denominator() =>
             Product.FromRange(elts.Select(elt => elt.Denominator())).Simplify();
+
+        public MathObject Map(Func<MathObject, MathObject> proc) =>
+            Product.FromRange(elts.Select(proc)).Simplify();
     }
 
     public class Sum : MathObject
@@ -1317,6 +1309,9 @@ namespace Symbolism
 
             return result;
         }
+
+        public MathObject Map(Func<MathObject, MathObject> proc) =>
+            Sum.FromRange(elts.Select(proc)).Simplify();
     }
 
     class Difference : MathObject

@@ -34,11 +34,11 @@ namespace Symbolism
 
                 if (obj is Product)
                     return
-                        Product.FromRange((obj as Product).elts.ConvertAll(elt => elt.Substitute(a, b))).Simplify();
+                        (obj as Product).Map(elt => elt.Substitute(a, b));
 
                 if (obj is Sum)
                     return
-                        Sum.FromRange((obj as Sum).elts.ConvertAll(elt => elt.Substitute(a, b))).Simplify();
+                        (obj as Sum).Map(elt => elt.Substitute(a, b));
 
                 if (obj is Function)
                 {
@@ -54,17 +54,17 @@ namespace Symbolism
                 return obj;
             }
 
-            public static MathObject SubstituteEq(this MathObject obj, Equation eq)
-            { return obj.Substitute(eq.a, eq.b); }
+            public static MathObject SubstituteEq(this MathObject obj, Equation eq) => 
+                obj.Substitute(eq.a, eq.b);
 
-            public static MathObject SubstituteEqLs(this MathObject obj, List<Equation> eqs)
-            { return eqs.Aggregate(obj, (a, eq) => a.SubstituteEq(eq)); }
+            public static MathObject SubstituteEqLs(this MathObject obj, List<Equation> eqs) => 
+                eqs.Aggregate(obj, (a, eq) => a.SubstituteEq(eq));
 
-            public static MathObject Substitute(this MathObject obj, MathObject a, int b)
-            { return obj.Substitute(a, new Integer(b)); }
+            public static MathObject Substitute(this MathObject obj, MathObject a, int b) => 
+                obj.Substitute(a, new Integer(b));
 
-            public static MathObject Substitute(this MathObject obj, MathObject a, double b)
-            { return obj.Substitute(a, new DoubleFloat(b)); }
+            public static MathObject Substitute(this MathObject obj, MathObject a, double b) => 
+                obj.Substitute(a, new DoubleFloat(b));
 
         }
     }

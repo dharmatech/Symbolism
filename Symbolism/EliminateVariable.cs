@@ -52,7 +52,7 @@ namespace Symbolism.EliminateVariable
                 (((expr as Equation).SimplifyEquation() as Equation).a as Power).exp is Integer &&
                 ((((expr as Equation).SimplifyEquation() as Equation).a as Power).exp as Integer).val < 0)
                 return false;
-
+            
             if (expr is And)
             {
                 var result = (expr as And).Map(elt => elt.CheckVariable(sym));
@@ -67,15 +67,12 @@ namespace Symbolism.EliminateVariable
                 return result;
             }
 
-
             if (expr is Or &&
                 (expr as Or).args.All(elt => elt is And))
                 return (expr as Or).Map(elt => elt.CheckVariable(sym));
 
             return expr;
         }
-
-
 
         // EliminateVarAnd
         // EliminateVarOr
@@ -162,7 +159,7 @@ namespace Symbolism.EliminateVariable
             throw new Exception();
         }
 
-        public static MathObject EliminateVariables(this MathObject expr, params Symbol[] syms)
-        { return syms.Aggregate(expr, (result, sym) => result.EliminateVariable(sym)); }
+        public static MathObject EliminateVariables(this MathObject expr, params Symbol[] syms) => 
+            syms.Aggregate(expr, (result, sym) => result.EliminateVariable(sym));
     }
 }

@@ -22,10 +22,8 @@ namespace Symbolism
                 }
 
                 if (u is Sum)
-                {
-                    return Sum.FromRange((u as Sum).elts.Select(elt => elt.AlgebraicExpand())).Simplify();
-                }
-
+                    return (u as Sum).Map(elt => elt.AlgebraicExpand());
+                
                 if (u is Product)
                 {
                     var v = (u as Product).elts[0];
